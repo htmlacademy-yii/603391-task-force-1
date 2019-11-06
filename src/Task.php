@@ -139,11 +139,11 @@ class Task
                 && $item['name'] == $action
                 && $item['role'] == $role) {
                 $next = $item['to'];
-            } else {
-                throw new \Exception('Next status cannot be determined');
+
             }
         }
 
+        if ($next==='') { throw new \Exception('Next status cannot be determined');}
         return $next;
     }
 }
