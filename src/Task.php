@@ -4,6 +4,8 @@
 namespace TaskForce;
 
 
+use Cassandra\Date;
+
 class Task
 {
     const ROLE_CONSUMER = 'Consumer';
@@ -29,7 +31,6 @@ class Task
     const STATUSES = [self::STATUS_NEW, self::STATUS_CANCEL, self::STATUS_IN_WORK, self::STATUS_DONE,
         self::STATUS_FAILED];
 
-
     // массив действий(переходов) из статуса в статус для определенных ролей
     const CONVERSIONS = [
         [
@@ -42,7 +43,7 @@ class Task
         ],
         [
             'name' => self::ACTION_ASSIGN,
-            'from' => self::STATUS_NEW, 'to' => self::STATUSES['IN_WORK'], 'role' => self::ROLE_CONSUMER
+            'from' => self::STATUS_NEW, 'to' => self::STATUS_IN_WORK, 'role' => self::ROLE_CONSUMER
         ],
         [
             'name' => self::ACTION_DONE,
@@ -56,11 +57,18 @@ class Task
 
     private $performerID;
     private $customerID;
-    private $activeStatus;
     private $deadLine;
     private $status;
 
-    public function __construct($performerID, $customerID, $deadLine, $status = self::STATUS_NEW)
+
+    /**
+     * Task constructor.
+     * @param int $performerID
+     * @param int $customerID
+     * @param DateTime $deadLine
+     * @param string $status
+     */
+    public function __construct(int $performerID, int $customerID,  \DateTime $deadLine, string $status = self::STATUS_NEW)
     {
         $this->performerID = $performerID;
         $this->customerID = $customerID;
@@ -78,7 +86,52 @@ class Task
         return self::ACTIONS;
     }
 
-    public function setNextStatus($action, $role)
+    public function cancel(string $role) {
+        if($this->status !== self::STATUS_NEW
+           &&  $role !== self::ROLE_CONSUMER)
+        {
+            throw new \Exception('Cancel status not allowed');
+        }
+        $this->status=self::STATUS_CANCEL;
+    }
+
+    public function respond(string $role) {
+        if($this->status !== self::STATUS_NEW
+            &&  $role !== self::ROLE_EXECUTOR)
+        {
+            throw new \Exception('Respond status not allowed');
+        }
+        $this->status=self::STATUS_IN_WORK;
+    }
+
+    public function assign(string $role) {
+        if($this->status !== self::STATUS_NEW
+            &&  $role !== self::ROLE_CONSUMER)
+        {
+            throw new \Exception('Assign status not allowed');
+        }
+        $this->status=self::STATUS_IN_WORK;
+    }
+
+    public function done(string $role) {
+        if($this->status !== self::STATUS_IN_WORK
+            &&  $role !== self::ROLE_CONSUMER)
+        {
+            throw new \Exception('Done status not allowed');
+        }
+        $this->status=self::STATUS_DONE;
+    }
+
+    public function refuse(string $role) {
+        if($this->status !== self::STATUS_IN_WORK
+            &&  $role !== self::ROLE_EXECUTOR)
+        {
+            throw new \Exception('Refuse status not allowed');
+        }
+        $this->status=self::STATUS_FAILED;
+    }
+
+    public function getNextStatus($action, $role)
     {
         $next = '';
         foreach (self::CONVERSIONS as $item) {
@@ -86,9 +139,11 @@ class Task
                 && $item['name'] == $action
                 && $item['role'] == $role) {
                 $next = $item['to'];
+            } else {
+                throw new \Exception('Next status cannot be determined');
             }
         }
+
         return $next;
     }
-
 }
