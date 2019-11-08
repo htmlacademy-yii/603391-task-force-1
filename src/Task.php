@@ -1,10 +1,6 @@
 <?php
 
-
 namespace TaskForce;
-
-
-use Cassandra\Date;
 
 class Task
 {
@@ -55,95 +51,95 @@ class Task
         ],
     ];
 
-    private $performerID;
+    private $executorID;
     private $customerID;
     private $deadLine;
     private $status;
 
-
     /**
      * Task constructor.
-     * @param int $performerID
+     * @param int $executorID
      * @param int $customerID
      * @param DateTime $deadLine
      * @param string $status
      */
-    public function __construct(int $performerID, int $customerID,  \DateTime $deadLine, string $status = self::STATUS_NEW)
+    public function __construct(int $executorID, int $customerID, \DateTime $deadLine, string $status = self::STATUS_NEW)
     {
-        $this->performerID = $performerID;
+        $this->executorID = $executorID;
         $this->customerID = $customerID;
         $this->deadLine = $deadLine;
         $this->status = $status;
     }
 
-    public function getAllStatuses()
+    static function getAllStatuses()
     {
         return self::STATUSES;
     }
 
-    public function getAllActions()
+    static function getAllActions()
     {
         return self::ACTIONS;
     }
 
-    public function cancel(string $role) {
-        if($this->status !== self::STATUS_NEW
-           &&  $role !== self::ROLE_CONSUMER)
-        {
+    public function cancel(string $role)
+    {
+        if ($this->status !== self::STATUS_NEW
+            && $role !== self::ROLE_CONSUMER) {
             throw new \Exception('Cancel status not allowed');
         }
-        $this->status=self::STATUS_CANCEL;
+        $this->status = self::STATUS_CANCEL;
     }
 
-    public function respond(string $role) {
-        if($this->status !== self::STATUS_NEW
-            &&  $role !== self::ROLE_EXECUTOR)
-        {
+    public function respond(string $role)
+    {
+        if ($this->status !== self::STATUS_NEW
+            && $role !== self::ROLE_EXECUTOR) {
             throw new \Exception('Respond status not allowed');
         }
-        $this->status=self::STATUS_IN_WORK;
+        $this->status = self::STATUS_IN_WORK;
     }
 
-    public function assign(string $role) {
-        if($this->status !== self::STATUS_NEW
-            &&  $role !== self::ROLE_CONSUMER)
-        {
+    public function assign(string $role)
+    {
+        if ($this->status !== self::STATUS_NEW
+            && $role !== self::ROLE_CONSUMER) {
             throw new \Exception('Assign status not allowed');
         }
-        $this->status=self::STATUS_IN_WORK;
+        $this->status = self::STATUS_IN_WORK;
     }
 
-    public function done(string $role) {
-        if($this->status !== self::STATUS_IN_WORK
-            &&  $role !== self::ROLE_CONSUMER)
-        {
+    public function done(string $role)
+    {
+        if ($this->status !== self::STATUS_IN_WORK
+            && $role !== self::ROLE_CONSUMER) {
             throw new \Exception('Done status not allowed');
         }
-        $this->status=self::STATUS_DONE;
+        $this->status = self::STATUS_DONE;
     }
 
-    public function refuse(string $role) {
-        if($this->status !== self::STATUS_IN_WORK
-            &&  $role !== self::ROLE_EXECUTOR)
-        {
+    public function refuse(string $role)
+    {
+        if ($this->status !== self::STATUS_IN_WORK
+            && $role !== self::ROLE_EXECUTOR) {
             throw new \Exception('Refuse status not allowed');
         }
-        $this->status=self::STATUS_FAILED;
+        $this->status = self::STATUS_FAILED;
     }
 
-    public function getNextStatus($action, $role)
-    {
-        $next = '';
-        foreach (self::CONVERSIONS as $item) {
-            if ($item['from'] == $this->activeStatus
-                && $item['name'] == $action
-                && $item['role'] == $role) {
-                $next = $item['to'];
 
+    public function getNextStatus(string $action, string $role)
+    {
+        if (in_array($action, Task::ACTIONS) && !empty($role)) {
+            foreach (self::CONVERSIONS as $item) {
+                if ($item['from'] === $this->status
+                    && $item['name'] === $action
+                    && $item['role'] === $role) {
+                    return $item['to'];
+                }
             }
         }
 
-        if ($next==='') { throw new \Exception('Next status cannot be determined');}
-        return $next;
+        throw new \Exception('Next status cannot be determined');
+
     }
 }
