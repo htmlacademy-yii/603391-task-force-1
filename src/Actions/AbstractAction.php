@@ -5,5 +5,5 @@ abstract class AbstractAction
 {
     abstract public static function getTitle() : string;
     abstract public static function getName() : string;
-    abstract public static function isAllowed(string $role, string $state) : bool;
+    abstract public static function isAllowed(string $role, string $status) : bool;
 }

@@ -17,6 +17,6 @@ class RefuseAction extends AbstractAction
 
     public static function isAllowed(string $role, string $status) : bool
     {
-        return ($role === Task::ROLE_CONSUMER  &&   $status === Task::STATUS_NEW);
+        return ($role === Task::ROLE_EXECUTOR  &&   $status === Task::STATUS_IN_WORK);
     }
 }
