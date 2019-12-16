@@ -16,14 +16,21 @@ function my_assert_handler($file, $line, $code, $desc = null)
     echo " line $line <br/>";
 }
 
+
 assert_options(ASSERT_CALLBACK, 'my_assert_handler');
 
-$action1 = new Task(1, 1, new DateTime('2019-11-06 21:00:00 EDT'), Task::STATUS_NEW);
-assert($action1->getNextStatus(Task::ACTION_CANCEL, Task::ROLE_CONSUMER) === 'Cancel');
-assert($action1->getNextStatus(Task::ACTION_ASSIGN, Task::ROLE_CONSUMER) === 'In_work');
-assert($action1->getNextStatus(Task::ACTION_RESPOND, Task::ROLE_EXECUTOR) === 'In_work');
+// проверяем метод получения следующего статуса
+$action1 = new Task(1, 2, new DateTime('2019-11-06 21:00:00 EDT'), Task::STATUS_NEW);
+assert($action1->getNextStatus(Task::ACTION_CANCEL, Task::ROLE_CONSUMER) === Task::STATUS_CANCEL);
+assert($action1->getNextStatus(Task::ACTION_ASSIGN, Task::ROLE_CONSUMER) === Task::STATUS_IN_WORK);
+assert($action1->getNextStatus(Task::ACTION_RESPOND, Task::ROLE_EXECUTOR) === Task::STATUS_IN_WORK);
 
-$action1 = new Task(1, 1, new DateTime('2019-11-06 21:00:00 EDT'), Task::STATUS_IN_WORK);
-assert($action1->getNextStatus(Task::ACTION_REFUSE, Task::ROLE_EXECUTOR) === 'Failed');
-assert($action1->getNextStatus(Task::ACTION_DONE, Task::ROLE_CONSUMER) === 'Done');
+$action1 = new Task(1, 2, new DateTime('2019-11-06 21:00:00 EDT'), Task::STATUS_IN_WORK);
+assert($action1->getNextStatus(Task::ACTION_REFUSE, Task::ROLE_EXECUTOR) === Task::STATUS_FAILED);
+assert($action1->getNextStatus(Task::ACTION_COMPLETE, Task::ROLE_CONSUMER) === Task::STATUS_COMPLETE);
+
+// проверяем метод получения возможных действий
+$action1 = new Task(1, 2, new DateTime('2019-11-06 21:00:00 EDT'), Task::STATUS_NEW);
+assert($action1->getAvailableActions(1) === ['TaskForce\Actions\RespondAction']);
+assert($action1->getAvailableActions(2) === ['TaskForce\Actions\CancelAction','TaskForce\Actions\AssignAction']);
 
