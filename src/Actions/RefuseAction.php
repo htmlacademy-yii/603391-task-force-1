@@ -19,4 +19,5 @@ class RefuseAction extends AbstractAction
     {
         return ($role === Task::ROLE_EXECUTOR  &&   $status === Task::STATUS_IN_WORK);
     }
+
 }

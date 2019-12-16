@@ -18,4 +18,6 @@ class CancelAction extends AbstractAction
     {
         return ($role === Task::ROLE_CONSUMER && $status === Task::STATUS_NEW);
     }
+
 }
+

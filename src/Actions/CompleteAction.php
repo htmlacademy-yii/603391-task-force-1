@@ -19,4 +19,5 @@ class CompleteAction extends AbstractAction
     {
         return ($role === Task::ROLE_CONSUMER && $status === Task::STATUS_IN_WORK);
     }
+
 }

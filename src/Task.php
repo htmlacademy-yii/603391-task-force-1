@@ -26,6 +26,14 @@ class Task
     const STATUS_COMPLETE = 'Complete';
     const STATUS_FAILED = 'Failed';
 
+    const ACTION_TO_STATUS = [
+        self::ACTION_CANCEL => self::STATUS_CANCEL,
+        self::ACTION_COMPLETE => self::STATUS_COMPLETE,
+        self::ACTION_RESPOND => self::STATUS_IN_WORK,
+        self::ACTION_ASSIGN => self::STATUS_IN_WORK,
+        self::ACTION_REFUSE => self::STATUS_FAILED
+    ];
+
     const STATUSES = [self::STATUS_NEW, self::STATUS_CANCEL, self::STATUS_IN_WORK, self::STATUS_COMPLETE,
         self::STATUS_FAILED];
 
@@ -66,24 +74,23 @@ class Task
 
     public function getAvailableActions (int $currentUserId) : array
     {
-        $array = [];
-
+        $availableActions = [];
         foreach (self::ACTIONS as $action) {
             if ($action::isAllowed($this->getCurrentRole($currentUserId), $this->status)) {
-                array_push($array, $action::getName());
+                array_push($availableActions, $action::getName());
             }
         }
-
-        return $array;
+        return $availableActions;
 
     }
 
     public function getNextStatus(string $action, string $role) : string
     {
+
         if ($action::isAllowed($role, $this->status)) {
-            return $action::getTitle();
+            return  self::ACTION_TO_STATUS[$action];
         };
-        return '';
+        throw new \Exception('Can not get next status');
     }
 }
 

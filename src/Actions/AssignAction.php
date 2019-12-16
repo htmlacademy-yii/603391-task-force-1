@@ -19,5 +19,6 @@ class AssignAction extends AbstractAction
     {
         return ($role === Task::ROLE_CONSUMER && $status === Task::STATUS_NEW);
     }
+
 }
 
