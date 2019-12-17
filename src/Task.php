@@ -2,6 +2,7 @@
 
 namespace TaskForce;
 use TaskForce\Actions;
+use TaskForce\Exception\TaskForceException;
 
 
 class Task
@@ -45,6 +46,9 @@ class Task
 
     public function __construct(int $executorID, int $customerID, \DateTime $deadLine, string $status = self::STATUS_NEW)
     {
+        //при передаче в конструктор класса имени статуса, в теле конструктора должна быть проверка,
+        // что такой статус существует. В противном случае метод должен вызвать исключение.
+
         $this->executorID = $executorID;
         $this->customerID = $customerID;
         $this->deadLine = $deadLine;
@@ -68,12 +72,14 @@ class Task
         if ($id === $this->customerID) {
             return self::ROLE_CONSUMER;
         }
-          throw new \Exception('Can not get current role');
+          throw new TaskForceException('Can not get current role');
 
     }
 
     public function getAvailableActions (int $currentUserId) : array
     {
+        //при передаче в конструктор класса имени статуса, в теле конструктора должна быть проверка, что такой статус
+        // существует. В противном случае метод должен вызвать исключение.
         $availableActions = [];
         foreach (self::ACTIONS as $action) {
             if ($action::isAllowed($this->getCurrentRole($currentUserId), $this->status)) {
@@ -90,7 +96,7 @@ class Task
         if ($action::isAllowed($role, $this->status)) {
             return  self::ACTION_TO_STATUS[$action];
         };
-        throw new \Exception('Can not get next status');
+        throw new TaskForceException('Can not get next status');
     }
 }
 
