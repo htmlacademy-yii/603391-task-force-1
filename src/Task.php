@@ -43,11 +43,11 @@ class Task
     private $deadLine;
     private $status;
 
-
     public function __construct(int $executorID, int $customerID, \DateTime $deadLine, string $status = self::STATUS_NEW)
     {
-        //при передаче в конструктор класса имени статуса, в теле конструктора должна быть проверка,
-        // что такой статус существует. В противном случае метод должен вызвать исключение.
+        if (!in_array($status, self::STATUSES)) {
+            throw new TaskForceException('Unknown status');
+        }
 
         $this->executorID = $executorID;
         $this->customerID = $customerID;
@@ -73,13 +73,10 @@ class Task
             return self::ROLE_CONSUMER;
         }
           throw new TaskForceException('Can not get current role');
-
     }
 
     public function getAvailableActions (int $currentUserId) : array
     {
-        //при передаче в конструктор класса имени статуса, в теле конструктора должна быть проверка, что такой статус
-        // существует. В противном случае метод должен вызвать исключение.
         $availableActions = [];
         foreach (self::ACTIONS as $action) {
             if ($action::isAllowed($this->getCurrentRole($currentUserId), $this->status)) {
@@ -87,11 +84,16 @@ class Task
             }
         }
         return $availableActions;
-
     }
 
     public function getNextStatus(string $action, string $role) : string
     {
+        if (!in_array($action, self::ACTIONS)) {
+            throw new TaskForceException('Unknown action');
+        }
+        if (!in_array($role, self::ROLES)) {
+            throw new TaskForceException('Unknown role');
+        }
 
         if ($action::isAllowed($role, $this->status)) {
             return  self::ACTION_TO_STATUS[$action];
