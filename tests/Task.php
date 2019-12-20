@@ -1,6 +1,7 @@
 <?php
-require  "../vendor/autoload.php";
+require "../vendor/autoload.php";
 define('DEBUG_MODE', true);
+
 use TaskForce\Task;
 
 assert_options(ASSERT_ACTIVE, 1);
@@ -32,5 +33,5 @@ assert($action1->getNextStatus(Task::ACTION_COMPLETE, Task::ROLE_CONSUMER) === T
 // проверяем метод получения возможных действий
 $action1 = new Task(1, 2, new DateTime('2019-11-06 21:00:00 EDT'), Task::STATUS_NEW);
 assert($action1->getAvailableActions(1) === ['TaskForce\Actions\RespondAction']);
-assert($action1->getAvailableActions(2) === ['TaskForce\Actions\CancelAction','TaskForce\Actions\AssignAction']);
+assert($action1->getAvailableActions(2) === ['TaskForce\Actions\CancelAction', 'TaskForce\Actions\AssignAction']);
 
