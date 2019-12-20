@@ -1,6 +1,7 @@
 <?php
 
 namespace TaskForce;
+
 use TaskForce\Actions;
 use TaskForce\Exception\TaskForceException;
 
@@ -45,8 +46,8 @@ class Task
 
     public function __construct(int $executorID, int $customerID, \DateTime $deadLine, string $status = self::STATUS_NEW)
     {
-        if (!in_array($status, self::STATUSES)) {
-            throw new TaskForceException('Unknown status');
+        if (!in_array($status, self::STATUSES, true)) {
+            throw new TaskForceException('Unknown status ' . $status);
         }
 
         $this->executorID = $executorID;
@@ -55,27 +56,28 @@ class Task
         $this->status = $status;
     }
 
-    static function getAllStatuses() : array
+    static function getAllStatuses(): array
     {
         return self::STATUSES;
     }
 
-    static function getAllActions() : array
+    static function getAllActions(): array
     {
         return self::ACTIONS;
     }
 
-    public function getCurrentRole(int $id) : string {
+    public function getCurrentRole(int $id): string
+    {
         if ($id === $this->executorID) {
             return self::ROLE_EXECUTOR;
         };
         if ($id === $this->customerID) {
             return self::ROLE_CONSUMER;
         }
-          throw new TaskForceException('Can not get current role');
+        throw new TaskForceException('Can not get current role');
     }
 
-    public function getAvailableActions (int $currentUserId) : array
+    public function getAvailableActions(int $currentUserId): array
     {
         $availableActions = [];
         foreach (self::ACTIONS as $action) {
@@ -86,19 +88,19 @@ class Task
         return $availableActions;
     }
 
-    public function getNextStatus(string $action, string $role) : string
+    public function getNextStatus(string $action, string $role): string
     {
-        if (!in_array($action, self::ACTIONS)) {
-            throw new TaskForceException('Unknown action');
+        if (!in_array($action, self::ACTIONS, true)) {
+            throw new TaskForceException('Unknown action' . $action);
         }
-        if (!in_array($role, self::ROLES)) {
-            throw new TaskForceException('Unknown role');
+        if (!in_array($role, self::ROLES, true)) {
+            throw new TaskForceException('Unknown role ' . $role);
         }
 
         if ($action::isAllowed($role, $this->status)) {
-            return  self::ACTION_TO_STATUS[$action];
+            return self::ACTION_TO_STATUS[$action];
         };
-        throw new TaskForceException('Can not get next status');
+        throw new TaskForceException('Can not get next status ');
     }
 }
 
