@@ -1,6 +1,6 @@
-INSERT INTO `category` 
-(`name`,`icon`)
- VALUES ('Курьерские услуги','translation'),
+INSERT INTO `category` (`name`,`icon`) 
+  VALUES 
+('Курьерские услуги','translation'),
 ('Уборка','clean'),
 ('Переезды','cargo'),
 ('Компьютерная помощь','neo'),

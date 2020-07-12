@@ -1,6 +1,6 @@
-INSERT INTO `specialization` 
-(`profile_id`,`category_id`)
- VALUES (1,2),
+INSERT INTO `specialization` (`profile_id`,`category_id`) 
+  VALUES 
+(1,2),
 (1,1),
 (2,3),
 (3,4),

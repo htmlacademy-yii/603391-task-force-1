@@ -14,7 +14,7 @@ class StringSeeder extends Seeder
         $this->string =  $value;
     }
 
-    public function getData()
+    public function getData(): string
     {
         return $this->string;
     }

@@ -1,6 +1,6 @@
-INSERT INTO `status` 
-(`name`)
- VALUES ('New'),
+INSERT INTO `status` (`name`) 
+  VALUES 
+('New'),
 ('Cancel'),
 ('In_work'),
 ('Complete'),

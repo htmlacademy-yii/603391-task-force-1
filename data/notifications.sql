@@ -1,5 +1,5 @@
-INSERT INTO `notification` 
-(`name`)
- VALUES ('New Message'),
+INSERT INTO `notification` (`name`) 
+  VALUES 
+('New Message'),
 ('Task actions'),
 ('New review')

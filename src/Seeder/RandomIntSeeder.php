@@ -4,6 +4,8 @@
 namespace TaskForce\Seeder;
 
 
+use Exception;
+
 class RandomIntSeeder extends Seeder
 {
     private $from;
@@ -15,7 +17,11 @@ class RandomIntSeeder extends Seeder
         $this->to = $to;
     }
 
-    public function getData()
+    /**
+     * @return int
+     * @throws Exception
+     */
+    public function getData(): int
     {
         return random_int($this->from, $this->to);
     }

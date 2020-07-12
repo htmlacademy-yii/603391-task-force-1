@@ -4,6 +4,8 @@
 namespace TaskForce\Seeder;
 
 
+use Exception;
+
 class ArrayElementSeeder
 {
 
@@ -14,6 +16,10 @@ class ArrayElementSeeder
         $this->data = $data;
     }
 
+    /**
+     * @return mixed
+     * @throws Exception
+     */
     public function getData()
     {
         return $this->data [random_int(0, count($this->data) - 1)];

@@ -7,33 +7,42 @@ use SplFileObject;
 use TaskForce\Exception\FileException;
 use TaskForce\Exception\TaskForceException;
 
-class ProviderCSV extends Provider
+class ProviderCSV
 {
 
     private $csvFile;
-    public $fo;
+    public $fileObject;
     public $columns;
     public $isValidColumns;
     private $distColumns;
 
+    /**
+     * ProviderCSV constructor.
+     * @param string $csvFile
+     * @param array $distColumns
+     */
     public function __construct(string $csvFile, array $distColumns)
     {
         $this->csvFile = $csvFile;
         $this->distColumns = $distColumns;
     }
 
+    /**
+     * @throws FileException
+     * @throws TaskForceException
+     */
     public function open(): void
     {
         if (!file_exists($this->csvFile)) {
             throw new FileException("Файл не существует");
         }
 
-        $this->fo = new SplFileObject($this->csvFile, "r");
+        $this->fileObject = new SplFileObject($this->csvFile, "r");
 
-        if (!$this->fo) {
+        if (!$this->fileObject) {
             throw new TaskForceException("Не удалось открыть файл на чтение");
         }
-        $this->fo->setFlags(SplFileObject::READ_CSV);
+        $this->fileObject->setFlags(SplFileObject::READ_CSV);
 
         $headerData = $this->getHeaderData();
         if ($headerData !== $this->distColumns) {
@@ -51,17 +60,16 @@ class ProviderCSV extends Provider
 
     private function getHeaderData(): ?array
     {
-        $this->fo->rewind();
-        return $this->fo->fgetcsv();
+        $this->fileObject->rewind();
+        return $this->fileObject->fgetcsv();
     }
 
     public function getNextLine(): ?iterable
     {
-        $result = null;
-        while (!$this->fo->eof()) {
-            yield $this->fo->fgetcsv();
+        while (!$this->fileObject->eof()) {
+            yield $this->fileObject->fgetcsv();
         }
-        return $result;
+        return null;
     }
 
     public function validateColumns(array $columns): bool

@@ -1,6 +1,6 @@
-INSERT INTO `user` 
-(`email`,`name`,`password`,`date_add`)
- VALUES ('kbuttress0@1und1.de','Karrie Buttress','JcfoKBYAB4k','2019-08-10'),
+INSERT INTO `user` (`email`,`name`,`password`,`date_add`) 
+  VALUES 
+('kbuttress0@1und1.de','Karrie Buttress','JcfoKBYAB4k','2019-08-10'),
 ('baymer1@hp.com','Bob Aymer','ZEE54kg','2018-12-21'),
 ('zboulding2@macromedia.com','Zilvia Boulding','VJyMV1Zat','2019-07-25'),
 ('emollon3@bloglovin.com','Emalee Mollon','XUIeJ693h','2018-11-13'),

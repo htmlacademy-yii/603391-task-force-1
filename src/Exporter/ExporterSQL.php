@@ -3,40 +3,45 @@ declare(strict_types=1);
 
 namespace TaskForce\Exporter;
 
-
-use SplFileObject;
 use TaskForce\Exception\FileException;
 
 
-
-class ExporterSQL extends Exporter
+class ExporterSQL
 {
-    private $SQLfo;
+    private $sqlFile;
 
-    /**
-     * CSVToSQLconvertor constructor.
-     * @param string $sqlFile
-     */
     public function __construct(string $sqlFile)
     {
-        $this->SQLfo = new SplFileObject($sqlFile, "w");
+        $this->sqlFile = fopen($sqlFile, 'w');
     }
 
 
+    /**
+     * @throws FileException
+     */
     public function prepare(): void
     {
-        if (!$this->SQLfo) {
+        if (!$this->sqlFile) {
             throw new FileException("Can not open file for write.");
         }
     }
 
-    public function saveData(string $data): void
+    /**
+     * @param string $template
+     * @param string $data
+     * @throws FileException
+     */
+    public function saveData(string $template, string $data = ''): void
     {
         if ($data === null) {
             throw new FileException('Can not write null to file.');
         }
 
-        $written = $this->SQLfo->fwrite($data);
+        if ($template === null) {
+            throw new FileException('Need template.');
+        }
+
+        $written = fprintf($this->sqlFile, $template, $data);
 
         if ($written === null) {
             throw new FileException('Error write to file.');
