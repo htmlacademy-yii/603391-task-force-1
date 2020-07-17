@@ -7,7 +7,7 @@ use SplFileObject;
 use TaskForce\Exception\FileException;
 use TaskForce\Exception\TaskForceException;
 
-class ProviderCSV
+class ProviderCSV implements IProvider
 {
 
     private $csvFile;
@@ -58,7 +58,7 @@ class ProviderCSV
 
     }
 
-    private function getHeaderData(): ?array
+    public function getHeaderData(): ?array
     {
         $this->fileObject->rewind();
         return $this->fileObject->fgetcsv();

@@ -6,7 +6,7 @@ namespace TaskForce\Exporter;
 use TaskForce\Exception\FileException;
 
 
-class ExporterSQL
+class ExporterSQL implements IExporter
 {
     private $sqlFile;
 

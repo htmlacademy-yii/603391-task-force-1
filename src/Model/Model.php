@@ -18,9 +18,4 @@ class Model
         $this->dataObjects = $dataObjects;
     }
 
-    public function countFields()
-    {
-        return count($this->fields);
-    }
-
 }
