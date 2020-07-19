@@ -124,15 +124,15 @@ class SqlToCsvConverter
     private function getListValues(array $line_array, string $symbol = null): string
     {
         $list = '';
-        $quotes = $symbol;
+        $template= $symbol.'%s'.$symbol;
 
         foreach ($line_array as $element) {
 
             if (!$symbol) {
-                $quotes = (is_numeric($element)) ? '' : "'";
+                $template = (is_numeric($element)) ? '%s': "'%s'";
             }
 
-            $list .= $quotes . $element . $quotes;
+            $list .= sprintf($template,$element) ;
             $list .= (next($line_array)) ? ',' : '';
         }
 

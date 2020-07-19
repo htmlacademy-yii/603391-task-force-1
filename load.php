@@ -23,10 +23,6 @@ $converter->setProvider(new ProviderCSV($dataDir . 'status.csv', ['name']));
 $converter->setExporter(new ExporterSQL($dataDir . 'status.sql'));
 $converter->start(new Model('status', ['name'], [new NullSeeder]));
 
-$converter->setProvider(new ProviderCSV($dataDir . 'status.csv', ['name']));
-$converter->setExporter(new ExporterSQL($dataDir . 'status.sql'));
-$converter->start(new Model('status', ['name'], [new NullSeeder]));
-
 $converter->setProvider(new ProviderCSV($dataDir . 'categories.csv', ['name', 'icon']));
 $converter->setExporter(new ExporterSQL($dataDir . 'categories.sql'));
 $converter->start(new Model('category', ['name', 'icon'], [new NullSeeder, new NullSeeder]));
