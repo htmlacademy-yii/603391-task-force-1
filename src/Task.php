@@ -88,6 +88,12 @@ class Task
         return $availableActions;
     }
 
+    /**
+     * @param string $action
+     * @param string $role
+     * @return string
+     * @throws TaskForceException
+     */
     public function getNextStatus(string $action, string $role): string
     {
         if (!in_array($action, self::ACTIONS, true)) {
