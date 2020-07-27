@@ -7,7 +7,7 @@
 
 **Обратите внимание на файл:**
 
-- [Contributing.md](Contributing.md) — руководство по внесению изменений.
+- [Contributing.md](2/Contributing.md) — руководство по внесению изменений.
 
 --
 
