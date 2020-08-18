@@ -19,22 +19,10 @@ class TasksController extends Controller
      */
     public function actionIndex()
     {
+        $models = Task::findNewTask();
 
-
-        $query = new Query();
-        $query->select(['t.*', 'c.name as cat_name', 'c.icon as icon'])->from('task t')
-            ->join('LEFT JOIN', 'category as c', 't.category_id = c.id')
-            ->where('t.status_id = 1') // 1 - Status New
-            ->orderBy(['date_add' => SORT_DESC])
-            ->limit(5);
-
-        $model = $query->all();
-        foreach ($model as $key => $element) {
-            $model[$key]['afterTime'] = Utils::timeAfter($element['date_add']);
-
-        }
         return $this->render('index', [
-            'model' => $model,
+            'models' => $models,
         ]);
 
     }

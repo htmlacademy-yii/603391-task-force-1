@@ -2,7 +2,9 @@
 
 namespace frontend\models;
 
+use TaskForce\Helpers\Utils;
 use Yii;
+use yii\db\Query;
 
 /**
  * This is the model class for table "profile".
@@ -99,4 +101,46 @@ class Profile extends \yii\db\ActiveRecord
     {
         return new ProfileQuery(get_called_class());
     }
+
+
+
+    /**
+     *
+     *
+     */
+    public static function findActiveProfiles(): ?array
+    {
+        $query = new Query();
+        $query->select(['p.*', 'u.name', 'u.date_login'])->from('profile p')
+            ->join('LEFT JOIN', 'user as u', 'p.user_id = u.id')
+            ->where("p.role = 'executor'")
+            ->orderBy(['u.date_add' => SORT_DESC]);
+
+        $models = $query->all();
+
+        foreach ($models as $key => $element) {
+            $query = new Query();
+            $query->select('c.name')->from('specialisation s')
+                ->join('LEFT JOIN', 'category as c', 's.category_id = c.id')
+                ->where("profile_id = " . $element['id']);
+            $models[$key]['categories'] = $query->all();
+
+
+            $models[$key]['countTasks'] = Task::find()
+                ->where(["executor_id" => $element['id']])
+                ->count();
+
+            $models[$key]['countReplies'] = Opinion::find()
+                ->where(['executor_id' => $element['id']])
+                ->count();
+
+            $models[$key]['afterTime'] = Utils::timeAfter($element['date_login']);
+        }
+
+        return $models;
+    }
+
+
+
+
 }

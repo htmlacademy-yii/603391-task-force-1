@@ -20,8 +20,9 @@ $this->title = 'TaskForce - Исполнители';
         </ul>
     </div>
     <?php
-    if (isset($model)) {
-    foreach ($model
+    if (isset($models)) {
+
+    foreach ($models
 
     as $user): ?>
     <div class="content-view__feedback-card user__search-wrapper">

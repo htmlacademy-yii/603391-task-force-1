@@ -12,8 +12,8 @@ $this->title = 'TaskForce - Tasks';
         <h1>Новые задания</h1>
         <?php
 
-        if (isset($model)) {
-            foreach ($model as $key => $task):
+        if (isset($models)) {
+            foreach ($models as $key => $task):
                 ?>
                 <div class="new-task__card">
                     <div class="new-task__title">
