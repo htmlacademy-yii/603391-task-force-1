@@ -2,9 +2,11 @@
 
 namespace frontend\models;
 
+
 use TaskForce\Helpers\Utils;
 use Yii;
 use yii\db\Query;
+
 
 /**
  * This is the model class for table "task".
@@ -161,6 +163,7 @@ class Task extends \yii\db\ActiveRecord
     {
         return new TaskQuery(get_called_class());
     }
+
 
     /**
      * Gets array with New Tasks

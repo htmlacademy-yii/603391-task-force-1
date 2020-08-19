@@ -2,9 +2,11 @@
 
 namespace frontend\models;
 
+
 use TaskForce\Helpers\Utils;
 use Yii;
 use yii\db\Query;
+
 
 /**
  * This is the model class for table "profile".
@@ -103,6 +105,7 @@ class Profile extends \yii\db\ActiveRecord
     }
 
 
+
     /**
      * @return array|null
      */
@@ -138,8 +141,6 @@ class Profile extends \yii\db\ActiveRecord
 
         return $models;
     }
-
-
 
 
 }
