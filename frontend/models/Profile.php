@@ -103,12 +103,10 @@ class Profile extends \yii\db\ActiveRecord
     }
 
 
-
     /**
-     *
-     *
+     * @return array|null
      */
-    public static function findActiveProfiles(): ?array
+    public static function findNewExecutors(): ?array
     {
         $query = new Query();
         $query->select(['p.*', 'u.name', 'u.date_login'])->from('profile p')
@@ -118,6 +116,7 @@ class Profile extends \yii\db\ActiveRecord
 
         $models = $query->all();
 
+        if (count($models))
         foreach ($models as $key => $element) {
             $query = new Query();
             $query->select('c.name')->from('specialisation s')

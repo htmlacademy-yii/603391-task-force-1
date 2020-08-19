@@ -3,10 +3,7 @@
 
 namespace frontend\controllers;
 
-use frontend\models\Opinion;
 use frontend\models\Profile;
-use frontend\models\Task;
-use TaskForce\Helpers\Utils;
 use yii\db\Query;
 use yii\web\Controller;
 
@@ -19,7 +16,7 @@ class UsersController extends Controller
      */
     public function actionIndex()
     {
-        $models = Profile::findActiveProfiles();
+        $models = Profile::findNewExecutors();
 
         return $this->render('index', [
             'models' => $models,
