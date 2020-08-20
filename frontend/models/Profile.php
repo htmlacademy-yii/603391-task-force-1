@@ -116,30 +116,29 @@ class Profile extends \yii\db\ActiveRecord
 
         $models = $query->all();
 
-        if (count($models))
-        foreach ($models as $key => $element) {
-            $query = new Query();
-            $query->select('c.name')->from('specialisation s')
-                ->join('LEFT JOIN', 'category as c', 's.category_id = c.id')
-                ->where("profile_id = " . $element['id']);
-            $models[$key]['categories'] = $query->all();
+        if (count($models)) {
+
+            foreach ($models as $key => $element) {
+                $query = new Query();
+                $query->select('c.name')->from('specialisation s')
+                    ->join('LEFT JOIN', 'category as c', 's.category_id = c.id')
+                    ->where("profile_id = " . $element['id']);
+                $models[$key]['categories'] = $query->all();
 
 
-            $models[$key]['countTasks'] = Task::find()
-                ->where(["executor_id" => $element['id']])
-                ->count();
+                $models[$key]['countTasks'] = Task::find()
+                    ->where(["executor_id" => $element['id']])
+                    ->count();
 
-            $models[$key]['countReplies'] = Opinion::find()
-                ->where(['executor_id' => $element['id']])
-                ->count();
+                $models[$key]['countReplies'] = Opinion::find()
+                    ->where(['executor_id' => $element['id']])
+                    ->count();
 
-            $models[$key]['afterTime'] = Utils::timeAfter($element['date_login']);
+                $models[$key]['afterTime'] = Utils::timeAfter($element['date_login']);
+            }
         }
-
         return $models;
     }
-
-
 
 
 }

@@ -19,7 +19,7 @@ class UsersController extends Controller
         $models = Profile::findNewExecutors();
 
         return $this->render('index', [
-            'models' => $models,
+            'models' => $models ?? [],
         ]);
     }
 

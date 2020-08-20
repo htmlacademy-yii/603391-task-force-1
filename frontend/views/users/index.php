@@ -20,11 +20,7 @@ $this->title = 'TaskForce - Исполнители';
         </ul>
     </div>
     <?php
-    if (isset($models)) {
-
-    foreach ($models
-
-    as $user): ?>
+    foreach ($models as $user): ?>
     <div class="content-view__feedback-card user__search-wrapper">
         <div class="feedback-card__top">
             <div class="user__search-icon">
@@ -53,8 +49,7 @@ $this->title = 'TaskForce - Исполнители';
                 <?php endforeach;
             } ?>
         </div>
-        <?php endforeach;
-        } ?>
+        <?php endforeach ?>
     </div>
 </section>
 <section class="search-task">

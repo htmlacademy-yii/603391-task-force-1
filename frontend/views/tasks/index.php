@@ -1,7 +1,7 @@
 <?php
 /* @var $this yii\web\View */
 
-$this->title = 'TaskForce - Tasks';
+$this->title = 'TaskForce - Задачи';
 
 ?>
 
@@ -10,26 +10,21 @@ $this->title = 'TaskForce - Tasks';
 
 
         <h1>Новые задания</h1>
-        <?php
-
-        if (isset($models)) {
-            foreach ($models as $key => $task):
-                ?>
-                <div class="new-task__card">
-                    <div class="new-task__title">
-                        <a href="#" class="link-regular"><h2><?= $task['name'] ?></h2></a>
-                        <a class="new-task__type link-regular" href="#"><p><?= $task['cat_name'] ?></p></a>
-                    </div>
-                    <div class="new-task__icon new-task__icon--<?= $task['icon'] ?>"></div>
-                    <p class="new-task_description">
-                        <?= $task['description'] ?>
-                    </p>
-                    <b class="new-task__price new-task__price--translation"><?= $task['budget'] ?><b> ₽</b></b>
-                    <p class="new-task__place">Санкт-Петербург, Центральный район</p>
-                    <span class="new-task__time"><?= $task['afterTime'] ?>  назад</span>
+        <?php foreach ($models as $task): ?>
+            <div class="new-task__card">
+                <div class="new-task__title">
+                    <a href="#" class="link-regular"><h2><?= $task['name'] ?></h2></a>
+                    <a class="new-task__type link-regular" href="#"><p><?= $task['cat_name'] ?></p></a>
                 </div>
-            <?php endforeach;
-        } ?>
+                <div class="new-task__icon new-task__icon--<?= $task['icon'] ?>"></div>
+                <p class="new-task_description">
+                    <?= $task['description'] ?>
+                </p>
+                <b class="new-task__price new-task__price--translation"><?= $task['budget'] ?><b> ₽</b></b>
+                <p class="new-task__place">Санкт-Петербург, Центральный район</p>
+                <span class="new-task__time"><?= $task['afterTime'] ?>  назад</span>
+            </div>
+        <?php endforeach; ?>
     </div>
     <div class="new-task__pagination">
         <ul class="new-task__pagination-list">
