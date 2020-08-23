@@ -29,19 +29,19 @@ class Utils
         }
 
         if ($dateInterval->m >= 1) {
-            return sprintf('%2d ', $dateInterval->m) . $casesMonth[self::caseType($dateInterval->m)];
+            return sprintf('%2d %s', $dateInterval->m, $casesMonth[self::caseType($dateInterval->m)]);
         }
 
         if ($dateInterval->d >= 1) {
-            return sprintf('%2d ', $dateInterval->d) . $casesDay[self::caseType($dateInterval->d)];
+            return sprintf('%2d %s', $dateInterval->d, $casesDay[self::caseType($dateInterval->d)]);
         }
 
         if ($dateInterval->h >= 1) {
-            return sprintf('%2d ', $dateInterval->h) . $casesHour[self::caseType($dateInterval->h)];
+            return sprintf('%2d %s', $dateInterval->h, $casesHour[self::caseType($dateInterval->h)]);
         }
 
         if ($dateInterval->i > 1) {
-            return sprintf('%2d ', $dateInterval->i) . $casesMinute[self::caseType($dateInterval->i)];
+            return sprintf('%2d %s', $dateInterval->i, $casesMinute[self::caseType($dateInterval->i)]);
         }
         return 'менее минуты';
     }
