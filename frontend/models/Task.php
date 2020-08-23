@@ -2,7 +2,11 @@
 
 namespace frontend\models;
 
+
+use TaskForce\Helpers\Utils;
 use Yii;
+use yii\db\Query;
+
 
 /**
  * This is the model class for table "task".
@@ -159,4 +163,29 @@ class Task extends \yii\db\ActiveRecord
     {
         return new TaskQuery(get_called_class());
     }
+
+
+    /**
+     * Gets array with New Tasks
+     * @return array
+     */
+    public static function findNewTask(): ?array
+    {
+        $query = new Query();
+        $models = $query->select(['t.*', 'c.name as cat_name', 'c.icon as icon'])->from('task t')
+            ->join('LEFT JOIN', 'category as c', 't.category_id = c.id')
+            ->where('t.status_id = 1') // 1 - Status New
+            ->orderBy(['date_add' => SORT_DESC])
+            ->limit(5)->all();
+
+        if (count($models)) {
+            foreach ($models as $key => $element) {
+                $models[$key]['afterTime'] = Utils::timeAfter($element['date_add']);
+            }
+         }
+
+        return $models;
+    }
+
+
 }
