@@ -1,4 +1,4 @@
-INSERT INTO `specialisation` (`profile_id`,`category_id`) 
+INSERT INTO `specialization` (`profile_id`,`category_id`) 
   VALUES 
 (1,2),
 (1,1),
