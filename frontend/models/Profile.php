@@ -117,13 +117,13 @@ class Profile extends ActiveRecord
         $query = new Query();
         $query->select(['p.*', 'u.name', 'u.date_login'])->from('profile p')
             ->join('LEFT JOIN', 'user as u', 'p.user_id = u.id')
-            ->where("p.role = 'executor'")
-            ->orderBy(['u.date_add' => SORT_DESC]);
+            ->where("p.role = 'executor'");
+
 
         if (strlen($request['UsersFilterForm']['searchName']) > 0) {
             $query->andWhere(sprintf('u.name LIKE \'%s\'', '%' . $request['UsersFilterForm']['searchName'] . '%'));
 
-            return $query->all();
+            return $query->limit(5)->orderBy(['u.date_add' => SORT_DESC])->all();
         }
 
         // фильтрация по категории
@@ -177,7 +177,7 @@ class Profile extends ActiveRecord
             $query->andWhere(['exists', $subQuery3]);
         }
 
-        return $query->all();
+        return $query->limit(5)->orderBy(['u.date_add' => SORT_DESC])->all();
     }
 
 
@@ -188,10 +188,6 @@ class Profile extends ActiveRecord
      */
     public static function findNewExecutors(array $request): ?array
     {
-        if (empty($request)) {
-            return [];
-        }
-
         $models = self::applyFilters($request);
 
         if (count($models)) {

@@ -18,7 +18,7 @@ class CategoriesFilterForm extends Model
         $this->categoriesId = ArrayHelper::map(Category::find()->select(['id', 'name'])->all(), 'id', 'name');
 
         foreach ($this->categoriesId as $key => $element) {
-            $this->categories[$key] = false;
+            $this->categories[$key] = true;
         }
 
     }
