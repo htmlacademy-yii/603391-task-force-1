@@ -12,10 +12,6 @@ use yii\web\Controller;
 class UsersController extends Controller
 {
 
-    /**
-     *
-     * @return mixed
-     */
     public function actionIndex()
     {
         $filterRequest = [];
@@ -26,10 +22,16 @@ class UsersController extends Controller
         if (Yii::$app->request->getIsPost()) {
             $modelUsersFilter->load(Yii::$app->request->post());
             $modelCategoriesFilter->updateProperties((Yii::$app->request->post())['CategoriesFilterForm']['categories']);
+
             $filterRequest = (Yii::$app->request->post());
+
+            if (strlen($filterRequest['UsersFilterForm']['searchName']) > 0) {
+                $modelCategoriesFilter->init();
+                $modelUsersFilter = new UsersFilterForm();
+            }
         }
 
-        $modelsUsers = Profile::findNewExecutors($filterRequest ?? []);
+        $modelsUsers = Profile::findNewExecutors($filterRequest);
 
         return $this->render('index', [
             'models' => $modelsUsers ?? [],

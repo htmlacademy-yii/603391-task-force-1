@@ -107,42 +107,48 @@ class Profile extends ActiveRecord
 
 
     /**
+     * Применить фильры формы
      * @param array $request
      * @return array|null
      */
-    public static function findNewExecutors($request = []): ?array
+    public static function applyFilters($request): ?array
     {
-        $list = [];
-        if (isset($request['CategoriesFilterForm']['categories'])) {
-            foreach ($request['CategoriesFilterForm']['categories'] as $key => $item) {
-                if ($item) {
-                    $list[] = sprintf("'%s'", $key);
-                }
-            }
-        }
-
-        $subQuery = (new Query())
-            ->select('category_id')->from('specialisation s')
-            ->where('s.profile_id = p.id');
-
-        if (!empty($list)) {
-            $categoryList = sprintf('s.category_id in (%s)', implode(",", $list));
-            $subQuery->andWhere($categoryList);
-
-        }
-
+        // фильтрация по имени
         $query = new Query();
         $query->select(['p.*', 'u.name', 'u.date_login'])->from('profile p')
             ->join('LEFT JOIN', 'user as u', 'p.user_id = u.id')
             ->where("p.role = 'executor'")
-            ->andFilterWhere(['exists', $subQuery])
             ->orderBy(['u.date_add' => SORT_DESC]);
 
         if (strlen($request['UsersFilterForm']['searchName']) > 0) {
             $query->andWhere(sprintf('u.name LIKE \'%s\'', '%' . $request['UsersFilterForm']['searchName'] . '%'));
 
+            return $query->all();
         }
 
+        // фильтрация по категории
+        if (isset($request['CategoriesFilterForm']['categories'])) {
+            $list = [];
+            foreach ($request['CategoriesFilterForm']['categories'] as $key => $item) {
+                if ($item) {
+                    $list[] = sprintf("'%s'", $key);
+                }
+            }
+
+            $subQuery = (new Query())
+                ->select('category_id')->from('specialization s')
+                ->where('s.profile_id = p.id');
+
+            if (!empty($list)) {
+                $categoryList = sprintf('s.category_id in (%s)', implode(",", $list));
+                $subQuery->andWhere($categoryList);
+                $query->andFilterWhere(['exists', $subQuery]);
+
+            }
+
+        }
+
+        // фильтрация по 'Сейчас свободен'
         if ($request['UsersFilterForm']['freeNow']) {
             $subQuery1 = (new Query())
                 ->select('id')->from('task t')
@@ -150,10 +156,12 @@ class Profile extends ActiveRecord
             $query->andWhere(['not exists', $subQuery1]);
         }
 
+        // фильтрация по 'Сейчас онлайн'
         if ($request['UsersFilterForm']['onlineNow']) {
             $query->andWhere('u.date_login > DATE_SUB(NOW(), INTERVAL 30 MINUTE)');
         }
 
+        // фильтрация по 'Есть отзывы'
         if ($request['UsersFilterForm']['feedbackExists']) {
             $subQuery2 = (new Query())
                 ->select('id')->from('opinion o')
@@ -161,6 +169,7 @@ class Profile extends ActiveRecord
             $query->andWhere(['exists', $subQuery2]);
         }
 
+        // фильтрация по 'В избранном'
         if ($request['UsersFilterForm']['isFavorite']) {
             $subQuery3 = (new Query())
                 ->select('favorite_id')->from('favorite f')
@@ -168,15 +177,29 @@ class Profile extends ActiveRecord
             $query->andWhere(['exists', $subQuery3]);
         }
 
+        return $query->all();
+    }
 
-        $models = $query->all();
+
+    /**
+     * Дополнить данными
+     * @param array $request
+     * @return array|null
+     */
+    public static function findNewExecutors(array $request): ?array
+    {
+        if (empty($request)) {
+            return [];
+        }
+
+        $models = self::applyFilters($request);
 
         if (count($models)) {
 
             foreach ($models as $key => $element) {
                 $query = new Query();
 
-                $query->select('c.name')->from('specialisation s')
+                $query->select('c.name')->from('specialization s')
                     ->join('LEFT JOIN', 'category as c', 's.category_id = c.id')
                     ->where("profile_id = " . $element['id']);
 

@@ -10,8 +10,6 @@ use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Query;
 
-
-
 /**
  * This is the model class for table "task".
  *
@@ -37,6 +35,7 @@ use yii\db\Query;
  * @property User $customer
  * @property User $executor
  */
+
 class Task extends ActiveRecord
 {
     /**
@@ -192,7 +191,7 @@ class Task extends ActiveRecord
             ->where('t.status_id = 1');
 
 
-        // todo в будущем добавить задания из города пользователя, либо из города, выбранного пользователем в текущей сессии.
+        // todo добавить задания из города пользователя, либо из города, выбранного пользователем в текущей сессии.
 
 
         if (!empty($list)) {

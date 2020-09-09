@@ -15,6 +15,7 @@ class TasksFilterForm extends Model
     private const FILTER_DAY = 'day';
     private const FILTER_WEEK = 'week';
     private const FILTER_MONTH = 'month';
+    private const FILTER_YEAR = 'year'; // для тестирования
 
     public $withoutExecutor = false;
     public $remoteWork = false;
@@ -27,6 +28,7 @@ class TasksFilterForm extends Model
             self::FILTER_DAY => 'За день',
             self::FILTER_WEEK => 'За неделю',
             self::FILTER_MONTH => 'За месяц',
+            self::FILTER_YEAR => 'За год',
         ];
     }
 
@@ -78,6 +80,7 @@ class TasksFilterForm extends Model
             self::FILTER_DAY => '-1 day',
             self::FILTER_WEEK => '-1 week',
             self::FILTER_MONTH => '-1 month',
+            self::FILTER_YEAR => '-1 year',
         ];
 
         if (!isset($intervalDiff[$interval])) {

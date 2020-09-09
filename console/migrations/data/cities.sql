@@ -1,5 +1,5 @@
-INSERT INTO `city` (`city`,`lat`,`long`) 
-  VALUES 
+INSERT INTO `city` (`city`,`lat`,`lng`)
+  VALUES
 ('Абаза',52.6517296,90.0885929),
 ('Абакан',53.7223661,91.4437792),
 ('Абдулино',53.6778096,53.6473115),

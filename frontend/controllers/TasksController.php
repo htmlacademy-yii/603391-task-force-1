@@ -26,7 +26,6 @@ class TasksController extends Controller
         $modelCategoriesFilter = new CategoriesFilterForm();
         $modelCategoriesFilter->init();
 
-
         if (Yii::$app->request->getIsPost()) {
             $modelTasksFilter->load(Yii::$app->request->post());
             $modelCategoriesFilter->updateProperties((Yii::$app->request->post())['CategoriesFilterForm']['categories']);
