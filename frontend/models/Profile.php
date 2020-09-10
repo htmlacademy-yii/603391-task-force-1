@@ -4,7 +4,8 @@ namespace frontend\models;
 
 
 use TaskForce\Helpers\Utils;
-use Yii;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 use yii\db\Query;
 
 
@@ -27,7 +28,7 @@ use yii\db\Query;
  * @property City $city
  * @property User $user
  */
-class Profile extends \yii\db\ActiveRecord
+class Profile extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -49,8 +50,8 @@ class Profile extends \yii\db\ActiveRecord
             [['about', 'role'], 'string'],
             [['address', 'skype', 'messenger', 'avatar'], 'string', 'max' => 255],
             [['phone'], 'string', 'max' => 11],
-            [['city_id'], 'exist', 'skipOnError' => true, 'targetClass' => City::className(), 'targetAttribute' => ['city_id' => 'id']],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['city_id'], 'exist', 'skipOnError' => true, 'targetClass' => City::class, 'targetAttribute' => ['city_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
@@ -78,21 +79,21 @@ class Profile extends \yii\db\ActiveRecord
     /**
      * Gets query for [[City]].
      *
-     * @return \yii\db\ActiveQuery|CityQuery
+     * @return ActiveQuery|CityQuery
      */
     public function getCity()
     {
-        return $this->hasOne(City::className(), ['id' => 'city_id']);
+        return $this->hasOne(City::class, ['id' => 'city_id']);
     }
 
     /**
      * Gets query for [[User]].
      *
-     * @return \yii\db\ActiveQuery|UserQuery
+     * @return ActiveQuery|UserQuery
      */
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
     /**
@@ -105,29 +106,100 @@ class Profile extends \yii\db\ActiveRecord
     }
 
 
-
     /**
+     * Применить фильры формы
+     * @param array $request
      * @return array|null
      */
-    public static function findNewExecutors(): ?array
+    public static function applyFilters($request): ?array
     {
+        // фильтрация по имени
         $query = new Query();
         $query->select(['p.*', 'u.name', 'u.date_login'])->from('profile p')
             ->join('LEFT JOIN', 'user as u', 'p.user_id = u.id')
-            ->where("p.role = 'executor'")
-            ->orderBy(['u.date_add' => SORT_DESC]);
+            ->where("p.role = 'executor'");
 
-        $models = $query->all();
+
+        if (strlen($request['UsersFilterForm']['searchName']) > 0) {
+            $query->andWhere(sprintf('u.name LIKE \'%s\'', '%' . $request['UsersFilterForm']['searchName'] . '%'));
+
+            return $query->limit(5)->orderBy(['u.date_add' => SORT_DESC])->all();
+        }
+
+        // фильтрация по категории
+        if (isset($request['CategoriesFilterForm']['categories'])) {
+            $list = [];
+            foreach ($request['CategoriesFilterForm']['categories'] as $key => $item) {
+                if ($item) {
+                    $list[] = sprintf("'%s'", $key);
+                }
+            }
+
+            $subQuery = (new Query())
+                ->select('category_id')->from('specialization s')
+                ->where('s.profile_id = p.id');
+
+            if (!empty($list)) {
+                $categoryList = sprintf('s.category_id in (%s)', implode(",", $list));
+                $subQuery->andWhere($categoryList);
+                $query->andFilterWhere(['exists', $subQuery]);
+
+            }
+
+        }
+
+        // фильтрация по 'Сейчас свободен'
+        if ($request['UsersFilterForm']['freeNow']) {
+            $subQuery1 = (new Query())
+                ->select('id')->from('task t')
+                ->where('t.executor_id = p.user_id');
+            $query->andWhere(['not exists', $subQuery1]);
+        }
+
+        // фильтрация по 'Сейчас онлайн'
+        if ($request['UsersFilterForm']['onlineNow']) {
+            $query->andWhere('u.date_login > DATE_SUB(NOW(), INTERVAL 30 MINUTE)');
+        }
+
+        // фильтрация по 'Есть отзывы'
+        if ($request['UsersFilterForm']['feedbackExists']) {
+            $subQuery2 = (new Query())
+                ->select('id')->from('opinion o')
+                ->where('o.executor_id = p.user_id');
+            $query->andWhere(['exists', $subQuery2]);
+        }
+
+        // фильтрация по 'В избранном'
+        if ($request['UsersFilterForm']['isFavorite']) {
+            $subQuery3 = (new Query())
+                ->select('favorite_id')->from('favorite f')
+                ->where('f.favorite_id = p.user_id');
+            $query->andWhere(['exists', $subQuery3]);
+        }
+
+        return $query->limit(5)->orderBy(['u.date_add' => SORT_DESC])->all();
+    }
+
+
+    /**
+     * Дополнить данными
+     * @param array $request
+     * @return array|null
+     */
+    public static function findNewExecutors(array $request): ?array
+    {
+        $models = self::applyFilters($request);
 
         if (count($models)) {
 
             foreach ($models as $key => $element) {
                 $query = new Query();
-                $query->select('c.name')->from('specialisation s')
+
+                $query->select('c.name')->from('specialization s')
                     ->join('LEFT JOIN', 'category as c', 's.category_id = c.id')
                     ->where("profile_id = " . $element['id']);
-                $models[$key]['categories'] = $query->all();
 
+                $models[$key]['categories'] = $query->all();
 
                 $models[$key]['countTasks'] = Task::find()
                     ->where(["executor_id" => $element['id']])
