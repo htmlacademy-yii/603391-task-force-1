@@ -3,10 +3,12 @@
 namespace frontend\models;
 
 
+use frontend\models\forms\TasksFilterForm;
+use TaskForce\Exception\TaskForceException;
 use TaskForce\Helpers\Utils;
-use Yii;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 use yii\db\Query;
-
 
 /**
  * This is the model class for table "task".
@@ -33,7 +35,8 @@ use yii\db\Query;
  * @property User $customer
  * @property User $executor
  */
-class Task extends \yii\db\ActiveRecord
+
+class Task extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -56,10 +59,10 @@ class Task extends \yii\db\ActiveRecord
             [['expire', 'date_add'], 'safe'],
             [['name'], 'string', 'max' => 128],
             [['address'], 'string', 'max' => 255],
-            [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => Status::className(), 'targetAttribute' => ['status_id' => 'id']],
-            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::className(), 'targetAttribute' => ['category_id' => 'id']],
-            [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['customer_id' => 'id']],
-            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['executor_id' => 'id']],
+            [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => Status::class, 'targetAttribute' => ['status_id' => 'id']],
+            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'id']],
+            [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['customer_id' => 'id']],
+            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['executor_id' => 'id']],
         ];
     }
 
@@ -88,71 +91,71 @@ class Task extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Chats]].
      *
-     * @return \yii\db\ActiveQuery|ChatQuery
+     * @return ActiveQuery|ChatQuery
      */
     public function getChats()
     {
-        return $this->hasMany(Chat::className(), ['task_id' => 'id']);
+        return $this->hasMany(Chat::class, ['task_id' => 'id']);
     }
 
     /**
      * Gets query for [[Files]].
      *
-     * @return \yii\db\ActiveQuery|FileQuery
+     * @return ActiveQuery|FileQuery
      */
     public function getFiles()
     {
-        return $this->hasMany(File::className(), ['task_id' => 'id']);
+        return $this->hasMany(File::class, ['task_id' => 'id']);
     }
 
     /**
      * Gets query for [[Responses]].
      *
-     * @return \yii\db\ActiveQuery|ResponseQuery
+     * @return ActiveQuery|ResponseQuery
      */
     public function getResponses()
     {
-        return $this->hasMany(Response::className(), ['task_id' => 'id']);
+        return $this->hasMany(Response::class, ['task_id' => 'id']);
     }
 
     /**
      * Gets query for [[Status]].
      *
-     * @return \yii\db\ActiveQuery|StatusQuery
+     * @return ActiveQuery|StatusQuery
      */
     public function getStatus()
     {
-        return $this->hasOne(Status::className(), ['id' => 'status_id']);
+        return $this->hasOne(Status::class, ['id' => 'status_id']);
     }
 
     /**
      * Gets query for [[Category]].
      *
-     * @return \yii\db\ActiveQuery|CategoryQuery
+     * @return ActiveQuery|CategoryQuery
      */
     public function getCategory()
     {
-        return $this->hasOne(Category::className(), ['id' => 'category_id']);
+        return $this->hasOne(Category::class, ['id' => 'category_id']);
     }
 
     /**
      * Gets query for [[Customer]].
      *
-     * @return \yii\db\ActiveQuery|UserQuery
+     * @return ActiveQuery|UserQuery
      */
     public function getCustomer()
     {
-        return $this->hasOne(User::className(), ['id' => 'customer_id']);
+        return $this->hasOne(User::class, ['id' => 'customer_id']);
     }
 
     /**
      * Gets query for [[Executor]].
      *
-     * @return \yii\db\ActiveQuery|UserQuery
+     * @return ActiveQuery|UserQuery
      */
     public function getExecutor()
     {
-        return $this->hasOne(User::className(), ['id' => 'executor_id']);
+        return $this->hasOne(User::class, ['id' => 'executor_id']);
     }
 
     /**
@@ -166,23 +169,61 @@ class Task extends \yii\db\ActiveRecord
 
 
     /**
-     * Gets array with New Tasks
+     * Возвращает массив задач со статусом 'Новый' и без привязки к адресу
+     * @param array $request
      * @return array
+     * @throws TaskForceException
      */
-    public static function findNewTask(): ?array
+    public static function findNewTask(array $request = []): ?array
     {
         $query = new Query();
-        $models = $query->select(['t.*', 'c.name as cat_name', 'c.icon as icon'])->from('task t')
+        $list = [];
+        if (isset($request['CategoriesFilterForm']['categories'])) {
+            foreach ($request['CategoriesFilterForm']['categories'] as $key => $item) {
+                if ($item) {
+                    $list[] = sprintf("'%s'", $key);
+                }
+            }
+        }
+
+        $query->select(['t.*', 'c.name as cat_name', 'c.icon as icon'])->from('task t')
             ->join('LEFT JOIN', 'category as c', 't.category_id = c.id')
-            ->where('t.status_id = 1') // 1 - Status New
-            ->orderBy(['date_add' => SORT_DESC])
+            ->where('t.status_id = 1');
+
+
+        // todo добавить задания из города пользователя, либо из города, выбранного пользователем в текущей сессии.
+
+
+        if (!empty($list)) {
+            $categoryList = sprintf('c.id in (%s)', implode(",", $list));
+            $query->andWhere($categoryList);
+        }
+
+        if (strlen($request['TasksFilterForm']['searchName']) > 0) {
+            $query->andWhere(sprintf('t.name LIKE \'%s\'', '%' . $request['TasksFilterForm']['searchName'] . '%'));
+        }
+
+        if ($request['TasksFilterForm']['withoutExecutor']) {
+            $query->andWhere('t.executor_id IS NULL');
+        }
+
+        if ( $request['TasksFilterForm']['remoteWork']) {
+            $query->andWhere('t.lat IS NULL AND t.lng IS NULL');
+        }
+
+        if (isset($request['TasksFilterForm']['timeInterval'])) {
+            $datetime = TasksFilterForm::timeBeforeInterval($request['TasksFilterForm']['timeInterval']);
+            $query->andWhere("t.date_add > STR_TO_DATE('$datetime','%Y-%m-%d %H:%i:%s')");
+        }
+
+        $models = $query->orderBy(['date_add' => SORT_DESC])
             ->limit(5)->all();
 
-        if (count($models)) {
+        if (isset($models)) {
             foreach ($models as $key => $element) {
                 $models[$key]['afterTime'] = Utils::timeAfter($element['date_add']);
             }
-         }
+        }
 
         return $models;
     }

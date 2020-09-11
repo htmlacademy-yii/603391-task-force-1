@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace TaskForce\Helpers;
 
+use TaskForce\Exception\TaskForceException;
+
 class Utils
 {
     public static function caseType($n): int
@@ -11,7 +13,6 @@ class Utils
             0 :
             ($n % 10 >= 2 && $n % 10 <= 4 && ($n % 100 < 10 || $n % 100 >= 20) ? 1 : 2));
     }
-
 
     public static function timeAfter(string $time): string
     {
@@ -45,4 +46,19 @@ class Utils
         }
         return 'менее минуты';
     }
+
+    public static function timeBeforeInterval(string $interval): ?string
+    {
+        $intervalDiff  = [
+            'day'=>'-1 days',
+            'week'=>'-7 days',
+            'month'=>'-1 month',
+        ];
+        if (!isset($intervalDiff[$interval])) {
+            throw new TaskForceException('Unknown interval name');
+        }
+        $date = new \DateTime($intervalDiff[$interval]);
+        return  $date->format('Y-m-d h:i:s');
+    }
+
 }

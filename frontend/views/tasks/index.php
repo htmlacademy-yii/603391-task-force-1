@@ -1,6 +1,15 @@
 <?php
 /* @var $this yii\web\View */
 
+/** @var TasksFilterForm $modelTasksFilter */
+/** @var CategoriesFilterForm $modelCategoriesFilter */
+
+use frontend\models\forms\CategoriesFilterForm;
+use frontend\models\Task;
+use frontend\models\forms\TasksFilterForm;
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+
 $this->title = 'TaskForce - Задачи';
 
 ?>
@@ -10,7 +19,8 @@ $this->title = 'TaskForce - Задачи';
 
 
         <h1>Новые задания</h1>
-        <?php foreach ($models as $task): ?>
+        <?php /** @var Task $modelsTasks */
+        foreach ($modelsTasks as $task): ?>
             <div class="new-task__card">
                 <div class="new-task__title">
                     <a href="#" class="link-regular"><h2><?= $task['name'] ?></h2></a>
@@ -37,38 +47,78 @@ $this->title = 'TaskForce - Задачи';
         </ul>
     </div>
 </section>
+
 <section class="search-task">
     <div class="search-task__wrapper">
-        <form class="search-task__form" name="test" method="post" action="#">
-            <fieldset class="search-task__categories">
-                <legend>Категории</legend>
-                <input class="visually-hidden checkbox__input" id="1" type="checkbox" name="" value="" checked>
-                <label for="1">Курьерские услуги </label>
-                <input class="visually-hidden checkbox__input" id="2" type="checkbox" name="" value="" checked>
-                <label for="2">Грузоперевозки </label>
-                <input class="visually-hidden checkbox__input" id="3" type="checkbox" name="" value="">
-                <label for="3">Переводы </label>
-                <input class="visually-hidden checkbox__input" id="4" type="checkbox" name="" value="">
-                <label for="4">Строительство и ремонт </label>
-                <input class="visually-hidden checkbox__input" id="5" type="checkbox" name="" value="">
-                <label for="5">Выгул животных </label>
-            </fieldset>
-            <fieldset class="search-task__categories">
-                <legend>Дополнительно</legend>
-                <input class="visually-hidden checkbox__input" id="6" type="checkbox" name="" value="">
-                <label for="6">Без исполнителя </label>
-                <input class="visually-hidden checkbox__input" id="7" type="checkbox" name="" value="" checked>
-                <label for="7">Удаленная работа </label>
-            </fieldset>
-            <label class="search-task__name" for="8">Период</label>
-            <select class="multiple-select input" id="8" size="1" name="time[]">
-                <option value="day">За день</option>
-                <option selected value="week">За неделю</option>
-                <option value="month">За месяц</option>
-            </select>
-            <label class="search-task__name" for="9">Поиск по названию</label>
-            <input class="input-middle input" id="9" type="search" name="q" placeholder="">
-            <button class="button" type="submit">Искать</button>
-        </form>
+        <?php $form = ActiveForm::begin([
+            'options' => [
+                'class' => 'search-task__form'],
+            'fieldConfig' => [
+                'options' => [
+                    'tag' => false,
+                ],
+            ],
+        ]); ?>
+
+        <fieldset class="search-task__categories">
+            <legend>Категории</legend>
+
+            <?php
+
+
+            foreach ($modelCategoriesFilter->attributeLabels() as $key => $label): ?>
+                <?= $form
+                    ->field($modelCategoriesFilter, sprintf('categories[%s]', $key), [
+                        'template' => '{input}{label}'
+                    ])
+                    ->checkbox(
+                        ['class' => 'visually-hidden checkbox__input',
+                            'id' => $key,
+                            'checked' => (bool)$modelCategoriesFilter[$key]
+                        ],
+                        false)
+                    ->label($label, [
+                        'for' => $key,
+                        'class' => false,
+                        'tag' => false
+                    ]); ?>
+            <?php endforeach; ?>
+
+        </fieldset>
+        <fieldset class="search-task__categories">
+            <legend>Дополнительно</legend>
+            <?php foreach ($modelTasksFilter->checkboxesLabels() as $key => $value) {
+               echo $form->field($modelTasksFilter, $key, ['template' => '{input}{label}']
+                )->checkbox(
+                    ['class' => 'visually-hidden checkbox__input', 'id' => $key],
+                    false)->label($value, ['for' => $key, 'class' => false]);
+            } ?>
+        </fieldset>
+
+        <?php foreach ($modelTasksFilter->checkboxesLabels() as $key => $value) {
+            $form->field($modelTasksFilter, $key, ['template' => '{input}{label}']
+            )->checkbox(
+                ['class' => 'visually-hidden checkbox__input', 'id' => $key],
+                false)->label($value, ['for' => $key, 'class' => false]);
+        } ?>
+
+
+
+        <?= $form->field($modelTasksFilter, 'timeInterval', [
+            'template' => '{label}{input}',
+            'labelOptions' => ['tag' => false],
+        ])->label($modelTasksFilter->attributeLabels()['timeInterval'], ['for' => 'timeInterval', 'class' => 'search-task__name'])
+            ->dropDownList($modelTasksFilter::getIntervalList()
+                , ['class' => "multiple-select input", 'id' => 'sa']);
+        ?>
+
+        <?= $form->field($modelTasksFilter, 'searchName', ['template' => '{label}{input}'])
+            ->input('search',
+                ['class' => "input-middle input"])
+            ->label($modelTasksFilter->attributeLabels()['searchName'], ['class' => "search-task__name"]); ?>
+
+        <?= Html::submitButton('Искать', ['class' => 'button']) ?>
+        <?php ActiveForm::end(); ?>
+
     </div>
 </section>
