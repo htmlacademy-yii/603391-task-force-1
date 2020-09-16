@@ -37,8 +37,8 @@ class Opinion extends \yii\db\ActiveRecord
             [['owner_id', 'executor_id', 'rate', 'description'], 'required'],
             [['owner_id', 'executor_id', 'rate'], 'integer'],
             [['description'], 'string'],
-            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['executor_id' => 'id']],
-            [['owner_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['owner_id' => 'id']],
+            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['executor_id' => 'id']],
+            [['owner_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['owner_id' => 'id']],
         ];
     }
 
@@ -64,7 +64,7 @@ class Opinion extends \yii\db\ActiveRecord
      */
     public function getExecutor()
     {
-        return $this->hasOne(User::className(), ['id' => 'executor_id']);
+        return $this->hasOne(User::class, ['id' => 'executor_id']);
     }
 
     /**
@@ -74,7 +74,7 @@ class Opinion extends \yii\db\ActiveRecord
      */
     public function getOwner()
     {
-        return $this->hasOne(User::className(), ['id' => 'owner_id']);
+        return $this->hasOne(User::class, ['id' => 'owner_id']);
     }
 
     /**
@@ -85,4 +85,32 @@ class Opinion extends \yii\db\ActiveRecord
     {
         return new OpinionQuery(get_called_class());
     }
+
+
+    /**
+     *
+     * @param int $id
+     * @return array|Opinion[]
+     */
+    public static function findOpinionsByUserId(int $id): array
+    {
+        return self::find()->select('o.*, t.name as taskName, u.name as userName, p.*')
+            ->from('opinion o')
+            ->join('LEFT JOIN', 'profile as p', 'o.executor_id = p.user_id')
+            ->join('LEFT JOIN', 'user as u', 'o.executor_id = u.id')
+            ->join('LEFT JOIN', 'task as t', 'o.executor_id = t.customer_id')
+            ->where(['o.executor_id' => $id])->asArray()->all();
+    }
+
+    /**
+     *
+     * @param int $id
+     * @return int
+     */
+    public static function findCountOpinionsByUserId(int $id): ?int
+    {
+        return self::find()->where(['executor_id'=>$id])->count();
+    }
+
+
 }

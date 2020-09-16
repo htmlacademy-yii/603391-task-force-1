@@ -28,7 +28,7 @@ class TasksFilterForm extends Model
             self::FILTER_DAY => 'За день',
             self::FILTER_WEEK => 'За неделю',
             self::FILTER_MONTH => 'За месяц',
-            self::FILTER_YEAR => 'За год',
+            self::FILTER_YEAR => 'За все время',
         ];
     }
 

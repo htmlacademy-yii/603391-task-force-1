@@ -3,6 +3,9 @@
 namespace frontend\models;
 
 use Yii;
+use yii\base\InvalidConfigException;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "file".
@@ -15,7 +18,7 @@ use Yii;
  * @property User[] $users
  * @property Task $task
  */
-class File extends \yii\db\ActiveRecord
+class File extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -34,7 +37,7 @@ class File extends \yii\db\ActiveRecord
             [['task_id', 'filename'], 'required'],
             [['task_id'], 'integer'],
             [['filename'], 'string', 'max' => 512],
-            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Task::className(), 'targetAttribute' => ['task_id' => 'id']],
+            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Task::class, 'targetAttribute' => ['task_id' => 'id']],
         ];
     }
 
@@ -53,31 +56,32 @@ class File extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Favorites]].
      *
-     * @return \yii\db\ActiveQuery|FavoriteQuery
+     * @return ActiveQuery|FavoriteQuery
      */
     public function getFavorites()
     {
-        return $this->hasMany(Favorite::className(), ['favorite_id' => 'id']);
+        return $this->hasMany(Favorite::class, ['favorite_id' => 'id']);
     }
 
     /**
      * Gets query for [[Users]].
      *
-     * @return \yii\db\ActiveQuery|UserQuery
+     * @return ActiveQuery|UserQuery
+     * @throws InvalidConfigException
      */
     public function getUsers()
     {
-        return $this->hasMany(User::className(), ['id' => 'user_id'])->viaTable('favorite', ['favorite_id' => 'id']);
+        return $this->hasMany(User::class, ['id' => 'user_id'])->viaTable('favorite', ['favorite_id' => 'id']);
     }
 
     /**
      * Gets query for [[Task]].
      *
-     * @return \yii\db\ActiveQuery|TaskQuery
+     * @return ActiveQuery|TaskQuery
      */
     public function getTask()
     {
-        return $this->hasOne(Task::className(), ['id' => 'task_id']);
+        return $this->hasOne(Task::class, ['id' => 'task_id']);
     }
 
     /**
@@ -87,5 +91,15 @@ class File extends \yii\db\ActiveRecord
     public static function find()
     {
         return new FileQuery(get_called_class());
+    }
+
+    /**
+     *
+     * @param int $id
+     * @return array
+     */
+    public static function findFilesByTaskID(int $id): array
+    {
+        return self::find()->where(['task_id' => $id])->asArray()->all();
     }
 }

@@ -10,6 +10,7 @@ use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Query;
 
+
 /**
  * This is the model class for table "task".
  *
@@ -35,9 +36,15 @@ use yii\db\Query;
  * @property User $customer
  * @property User $executor
  */
-
 class Task extends ActiveRecord
 {
+    public const STATUS_ID_NEW = 1;
+    public const STATUS_ID_CANCEL = 2;
+    public const STATUS_ID_IN_WORK = 3;
+    public const STATUS_ID_COMPLETE = 4;
+    public const STATUS_ID_FAILED = 5;
+
+
     /**
      * {@inheritdoc}
      */
@@ -171,10 +178,10 @@ class Task extends ActiveRecord
     /**
      * Возвращает массив задач со статусом 'Новый' и без привязки к адресу
      * @param array $request
-     * @return array
+     * @return Query
      * @throws TaskForceException
      */
-    public static function findNewTask(array $request = []): ?array
+    public static function findNewTask(array $request = []): Query
     {
         $query = new Query();
         $list = [];
@@ -200,14 +207,14 @@ class Task extends ActiveRecord
         }
 
         if (strlen($request['TasksFilterForm']['searchName']) > 0) {
-            $query->andWhere(sprintf('t.name LIKE \'%s\'', '%' . $request['TasksFilterForm']['searchName'] . '%'));
+            $query->andWhere(['LIKE','t.name',  $request['TasksFilterForm']['searchName'], false]);
         }
 
         if ($request['TasksFilterForm']['withoutExecutor']) {
             $query->andWhere('t.executor_id IS NULL');
         }
 
-        if ( $request['TasksFilterForm']['remoteWork']) {
+        if ($request['TasksFilterForm']['remoteWork']) {
             $query->andWhere('t.lat IS NULL AND t.lng IS NULL');
         }
 
@@ -216,16 +223,51 @@ class Task extends ActiveRecord
             $query->andWhere("t.date_add > STR_TO_DATE('$datetime','%Y-%m-%d %H:%i:%s')");
         }
 
-        $models = $query->orderBy(['date_add' => SORT_DESC])
-            ->limit(5)->all();
+        return $query->orderBy(['date_add' => SORT_DESC]);
 
-        if (isset($models)) {
-            foreach ($models as $key => $element) {
-                $models[$key]['afterTime'] = Utils::timeAfter($element['date_add']);
-            }
+    }
+
+
+    /**
+     * Найти задчу по ID
+     * @param int $id
+     * @return array
+     * @throws TaskForceException
+     */
+    public static function findTaskByID(int $id = null): ?array
+    {
+        $query = new Query();
+
+        $query->select(['t.*', 'c.name as cat_name', 'c.icon as icon'])->from('task t')
+            ->join('LEFT JOIN', 'category as c', 't.category_id = c.id')
+            ->where(['t.id' => $id])
+            ->limit(1);
+
+        $model = $query->one();
+
+        if (!empty($model)) {
+            $model['afterTime'] = Utils::getTimeAfter((string)$model['date_add']);
+        } else {
+            $model = null;
+        };
+
+        return $model;
+    }
+
+    /**
+     * @param int $id
+     * @return bool|int|string|null
+     * @throws TaskForceException
+     */
+    public static function findCountTasksByUserId(int $id)
+    {
+
+        if (empty($id)) {
+            throw new TaskForceException('Не задан ID пользователя');
         }
 
-        return $models;
+        return self::find()->where(['id' => $id])->andWhere(['status_id' => self::STATUS_ID_COMPLETE])->count();
+
     }
 
 

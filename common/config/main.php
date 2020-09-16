@@ -9,10 +9,14 @@ return [
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'enableStrictParsing' => true,
+            'enableStrictParsing' => false,
             'rules' => [
-                'executors' => 'users/index',
-                'tasks' => 'tasks/index'
+                'users' => 'users/index',
+                'tasks' => 'tasks/index',
+                'tasks/view/<id:\d+>' => 'tasks/view',
+                'users/view/<id:\d+>' => 'users/view',
+                'users/<sortType:\d+>' => 'users/index',
+
                 ]
             ],
         'cache' => [

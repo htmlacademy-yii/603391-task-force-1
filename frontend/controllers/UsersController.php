@@ -3,17 +3,33 @@
 
 namespace frontend\controllers;
 
+use frontend\models\Opinion;
+use frontend\models\Specialization;
+use frontend\models\Task;
+use frontend\models\Work;
+use TaskForce\Exception\TaskForceException;
+use TaskForce\Helpers\Utils;
+use TaskForce\SortingUsers;
 use Yii;
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\UsersFilterForm;
 use frontend\models\Profile;
+use yii\data\Pagination;
+use yii\db\Exception;
+use yii\db\Query;
 use yii\web\Controller;
+use yii\web\NotFoundHttpException;
 
 class UsersController extends Controller
 {
-
-    public function actionIndex()
+    /**
+     * @param string $sortType
+     * @return string
+     * @throws TaskForceException
+     */
+    public function actionIndex($sortType = ''): string
     {
+
         $filterRequest = [];
         $modelCategoriesFilter = new CategoriesFilterForm();
         $modelCategoriesFilter->init();
@@ -31,14 +47,56 @@ class UsersController extends Controller
             }
         }
 
-        $modelsUsers = Profile::findNewExecutors($filterRequest);
+        $modelsUsers = Profile::findNewExecutors($filterRequest, $sortType);
 
-        return $this->render('index', [
-            'models' => $modelsUsers ?? [],
-            'modelUsersFilter' => $modelUsersFilter,
-            'modelCategoriesFilter' => $modelCategoriesFilter,
-        ]);
+        $pagination = new Pagination(['totalCount' => $modelsUsers->count(), 'pageSize' => 5, 'forcePageParam' => false,
+            'pageSizeParam' => false]);
 
+        $modelsUsers = $modelsUsers->offset($pagination->offset)->limit($pagination->limit)->all();
+
+        if (count($modelsUsers)) {
+            foreach ($modelsUsers as $key => $element) {
+                $modelsUsers[$key]['categories'] = Specialization::findSpecializationByUserId($element['id']);
+                $modelsUsers[$key]['countTasks'] = Task::findCountTasksByUserId($element['id']);
+                $modelsUsers[$key]['countReplies'] = Opinion::findCountOpinionsByUserId($element['id']);
+                $modelsUsers[$key]['afterTime'] = Utils::getTimeAfter($element['date_login']);
+            }
+        }
+
+        return $this->render('index', compact('modelsUsers', 'sortType',
+            'modelUsersFilter', 'modelCategoriesFilter', 'pagination'));
 
     }
+
+    /**
+     * Просмотр пользователя c $id
+     *
+     * @param int $id
+     * @return mixed
+     * @throws NotFoundHttpException
+     * @throws TaskForceException
+     */
+    public function actionView(int $id): string
+    {
+        if (!$id) {
+            throw new NotFoundHttpException("ID пользователя не передан");
+        }
+
+        $modelUser = Profile::findProfileByUserId($id);
+
+        if ($modelUser['role'] != 'executor') {
+            throw new NotFoundHttpException('Профиль исполнителя не найден.');
+        }
+
+        $modelUser['countTask'] = Task::findCountTasksByUserId($id);
+        $modelsOpinions = Opinion::findOpinionsByUserId($id);
+        $countOpinions = Opinion::findCountOpinionsByUserId($id);
+        $specializations = Specialization::findSpecializationByUserId($id);
+        $works = Work::findWorkFilesByUserId($id);
+
+
+        return $this->render('view', compact('modelUser', 'modelsOpinions',
+            'specializations', 'countOpinions', 'works'));
+    }
+
 }

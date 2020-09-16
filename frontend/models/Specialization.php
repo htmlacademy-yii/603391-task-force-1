@@ -2,7 +2,7 @@
 
 namespace frontend\models;
 
-use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "specialization".
@@ -12,7 +12,7 @@ use Yii;
  *
  * @property Category $category
  */
-class Specialization extends \yii\db\ActiveRecord
+class Specialization extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -31,7 +31,7 @@ class Specialization extends \yii\db\ActiveRecord
             [['profile_id', 'category_id'], 'required'],
             [['profile_id', 'category_id'], 'integer'],
             [['profile_id', 'category_id'], 'unique', 'targetAttribute' => ['profile_id', 'category_id']],
-            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::className(), 'targetAttribute' => ['category_id' => 'id']],
+            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'id']],
         ];
     }
 
@@ -53,7 +53,7 @@ class Specialization extends \yii\db\ActiveRecord
      */
     public function getCategory()
     {
-        return $this->hasOne(Category::className(), ['id' => 'category_id']);
+        return $this->hasOne(Category::class, ['id' => 'category_id']);
     }
 
     /**
@@ -64,4 +64,18 @@ class Specialization extends \yii\db\ActiveRecord
     {
         return new SpecializationQuery(get_called_class());
     }
+
+    /**
+     *
+     * @param int $userId
+     * @return array|Specialization[]
+     */
+    public static function findSpecializationByUserId(int $userId)
+    {
+        return self::find()->select('c.name')->from('specialization s')
+            ->join('LEFT JOIN', 'profile as p', 's.profile_id = p.id')
+            ->join('LEFT JOIN', 'category as c', 's.category_id = c.id')
+            ->where(['p.id' => $userId])->asArray()->all();
+    }
+
 }
