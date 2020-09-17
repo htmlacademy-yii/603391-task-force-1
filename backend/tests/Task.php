@@ -22,13 +22,13 @@ assert_options(ASSERT_CALLBACK, 'my_assert_handler');
 
 // проверяем метод получения следующего статуса
 $action1 = new Task(1, 2, new DateTime('2019-11-06 21:00:00 EDT'), Task::STATUS_NEW);
-assert($action1->getNextStatus(Task::ACTION_CANCEL, Task::ROLE_CONSUMER) === Task::STATUS_CANCEL);
-assert($action1->getNextStatus(Task::ACTION_ASSIGN, Task::ROLE_CONSUMER) === Task::STATUS_IN_WORK);
+assert($action1->getNextStatus(Task::ACTION_CANCEL, Task::ROLE_CUSTOMER) === Task::STATUS_CANCEL);
+assert($action1->getNextStatus(Task::ACTION_ASSIGN, Task::ROLE_CUSTOMER) === Task::STATUS_IN_WORK);
 assert($action1->getNextStatus(Task::ACTION_RESPOND, Task::ROLE_EXECUTOR) === Task::STATUS_IN_WORK);
 
 $action1 = new Task(1, 2, new DateTime('2019-11-06 21:00:00 EDT'), Task::STATUS_IN_WORK);
 assert($action1->getNextStatus(Task::ACTION_REFUSE, Task::ROLE_EXECUTOR) === Task::STATUS_FAILED);
-assert($action1->getNextStatus(Task::ACTION_COMPLETE, Task::ROLE_CONSUMER) === Task::STATUS_COMPLETE);
+assert($action1->getNextStatus(Task::ACTION_COMPLETE, Task::ROLE_CUSTOMER) === Task::STATUS_COMPLETE);
 
 // проверяем метод получения возможных действий
 $action1 = new Task(1, 2, new DateTime('2019-11-06 21:00:00 EDT'), Task::STATUS_NEW);

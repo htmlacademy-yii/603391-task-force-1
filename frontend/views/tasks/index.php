@@ -1,13 +1,16 @@
 <?php
+
 /* @var $this yii\web\View */
-
 /** @var TasksFilterForm $modelTasksFilter */
-
+/** @var Task $modelsTasks */
 /** @var CategoriesFilterForm $modelCategoriesFilter */
+/** @var Pagination $pagination */
+
 
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\Task;
 use frontend\models\forms\TasksFilterForm;
+use yii\data\Pagination;
 use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -23,8 +26,7 @@ $this->title = 'TaskForce - Задания';
 
 
                 <h1>Новые задания</h1>
-                <?php /** @var Task $modelsTasks */
-                foreach ($modelsTasks as $task): ?>
+                <?php foreach ($modelsTasks as $task): ?>
                     <div class="new-task__card">
                         <div class="new-task__title">
                             <a href="<?= Url::to(['tasks/view', 'id' => $task['id']]) ?>" class="link-regular">
@@ -95,37 +97,37 @@ $this->title = 'TaskForce - Задания';
 
                 </fieldset>
                 <fieldset class="search-task__categories">
+
                     <legend>Дополнительно</legend>
                     <?php foreach ($modelTasksFilter->checkboxesLabels() as $key => $value) {
                         echo $form->field($modelTasksFilter, $key, ['template' => '{input}{label}']
                         )->checkbox(
                             ['class' => 'visually-hidden checkbox__input', 'id' => $key],
                             false)->label($value, ['for' => $key, 'class' => false]);
-                    } ?>
-                </fieldset>
+                    }
+                    echo '</fieldset>';
 
-                <?php foreach ($modelTasksFilter->checkboxesLabels() as $key => $value) {
-                    $form->field($modelTasksFilter, $key, ['template' => '{input}{label}']
-                    )->checkbox(
-                        ['class' => 'visually-hidden checkbox__input', 'id' => $key],
-                        false)->label($value, ['for' => $key, 'class' => false]);
-                } ?>
+                    foreach ($modelTasksFilter->checkboxesLabels() as $key => $value) {
+                        $form->field($modelTasksFilter, $key, ['template' => '{input}{label}']
+                        )->checkbox(
+                            ['class' => 'visually-hidden checkbox__input', 'id' => $key],
+                            false)->label($value, ['for' => $key, 'class' => false]);
+                    }
 
-                <?= $form->field($modelTasksFilter, 'timeInterval', [
-                    'template' => '{label}{input}',
-                    'labelOptions' => ['tag' => false],
-                ])->label($modelTasksFilter->attributeLabels()['timeInterval'], ['for' => 'timeInterval', 'class' => 'search-task__name'])
-                    ->dropDownList($modelTasksFilter::getIntervalList()
-                        , ['class' => "multiple-select input", 'id' => 'sa']);
-                ?>
+                    echo $form->field($modelTasksFilter, 'timeInterval', [
+                        'template' => '{label}{input}',
+                        'labelOptions' => ['tag' => false],
+                    ])->label($modelTasksFilter->attributeLabels()['timeInterval'], ['for' => 'timeInterval', 'class' => 'search-task__name'])
+                        ->dropDownList($modelTasksFilter::getIntervalList()
+                            , ['class' => "multiple-select input", 'id' => 'sa']);
 
-                <?= $form->field($modelTasksFilter, 'searchName', ['template' => '{label}{input}'])
-                    ->input('search',
-                        ['class' => "input-middle input"])
-                    ->label($modelTasksFilter->attributeLabels()['searchName'], ['class' => "search-task__name"]); ?>
+                    echo $form->field($modelTasksFilter, 'searchName', ['template' => '{label}{input}'])
+                        ->input('search',
+                            ['class' => "input-middle input"])
+                        ->label($modelTasksFilter->attributeLabels()['searchName'], ['class' => "search-task__name"]);
 
-                <?= Html::submitButton('Искать', ['class' => 'button']) ?>
-                <?php ActiveForm::end(); ?>
+                    echo Html::submitButton('Искать', ['class' => 'button']);
+                    ActiveForm::end(); ?>
 
             </div>
         </section>

@@ -22,7 +22,7 @@ class TasksController extends Controller
     /**
      * Список заданий в статусе 'Новый', без привязки к адресу
      *
-     * @return mixed
+     * @return string
      * @throws TaskForceException
      */
     public function actionIndex(): string
@@ -55,22 +55,16 @@ class TasksController extends Controller
         return $this->render('index', compact('modelsTasks', 'modelTasksFilter', 'modelCategoriesFilter', 'pagination'));
     }
 
-
     /**
      * Просмотр задания c id
      *
      * @param int $id
-     * @return mixed
+     * @return string
      * @throws TaskForceException
      * @throws NotFoundHttpException
      */
     public function actionView(int $id): string
     {
-
-        if (!$id) {
-            throw new NotFoundHttpException("ID задания не передан");
-        }
-
         $modelTask = Task::findTaskById($id);
 
         if (!$modelTask) {
@@ -87,7 +81,6 @@ class TasksController extends Controller
             $modelTaskUser = Profile::findProfileByUserId($userId);
             $modelTaskUser['countTask'] = Task::findCountTasksByUserId($userId);
         }
-
 
         return $this->render('view', compact('modelTask', 'modelsFiles', 'modelsResponse',
             'modelTaskUser', 'currentUser'));

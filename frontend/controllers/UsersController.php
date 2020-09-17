@@ -54,7 +54,7 @@ class UsersController extends Controller
 
         $modelsUsers = $modelsUsers->offset($pagination->offset)->limit($pagination->limit)->all();
 
-        if (count($modelsUsers)) {
+        if (!empty($modelsUsers)) {
             foreach ($modelsUsers as $key => $element) {
                 $modelsUsers[$key]['categories'] = Specialization::findSpecializationByUserId($element['id']);
                 $modelsUsers[$key]['countTasks'] = Task::findCountTasksByUserId($element['id']);
@@ -78,13 +78,10 @@ class UsersController extends Controller
      */
     public function actionView(int $id): string
     {
-        if (!$id) {
-            throw new NotFoundHttpException("ID пользователя не передан");
-        }
 
         $modelUser = Profile::findProfileByUserId($id);
 
-        if ($modelUser['role'] != 'executor') {
+        if ($modelUser['role'] !== \TaskForce\Task::ROLE_EXECUTOR) {
             throw new NotFoundHttpException('Профиль исполнителя не найден.');
         }
 
