@@ -8,15 +8,12 @@ use frontend\models\Specialization;
 use frontend\models\Task;
 use frontend\models\Work;
 use TaskForce\Exception\TaskForceException;
-use TaskForce\Helpers\Utils;
-use TaskForce\SortingUsers;
+use TaskForce\Helpers\DeclinationNums;
 use Yii;
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\UsersFilterForm;
 use frontend\models\Profile;
 use yii\data\Pagination;
-use yii\db\Exception;
-use yii\db\Query;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -59,7 +56,7 @@ class UsersController extends Controller
                 $modelsUsers[$key]['categories'] = Specialization::findSpecializationByUserId($element['id']);
                 $modelsUsers[$key]['countTasks'] = Task::findCountTasksByUserId($element['id']);
                 $modelsUsers[$key]['countReplies'] = Opinion::findCountOpinionsByUserId($element['id']);
-                $modelsUsers[$key]['afterTime'] = Utils::getTimeAfter($element['date_login']);
+                $modelsUsers[$key]['afterTime'] = DeclinationNums::getTimeAfter($element['date_login']);
             }
         }
 

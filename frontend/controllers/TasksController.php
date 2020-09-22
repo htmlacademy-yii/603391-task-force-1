@@ -10,7 +10,7 @@ use frontend\models\forms\TasksFilterForm;
 use frontend\models\Profile;
 use frontend\models\Response;
 use TaskForce\Exception\TaskForceException;
-use TaskForce\Helpers\Utils;
+use TaskForce\Helpers\DeclinationNums;
 use yii;
 use frontend\models\Task;
 use yii\data\Pagination;
@@ -48,7 +48,7 @@ class TasksController extends Controller
 
         if (isset($modelsTasks)) {
             foreach ($modelsTasks as $key => $element) {
-                $modelsTasks[$key]['afterTime'] = Utils::getTimeAfter($element['date_add']);
+                $modelsTasks[$key]['afterTime'] = DeclinationNums::getTimeAfter($element['date_add']);
             }
         }
 

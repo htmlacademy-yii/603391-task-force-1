@@ -1,14 +1,33 @@
 <?php
-declare(strict_types=1);
+
 
 namespace TaskForce\Helpers;
 
+
 use DateTime;
-use Exception;
+use http\Exception;
 use TaskForce\Exception\TaskForceException;
 
-class Utils
+class DeclinationNums
 {
+
+    public $firstForm = '';
+    public $secondForm = '';
+    public $thirdForm = '';
+
+
+    public function __construct(string $first, string $second, string $third)
+    {
+        $this->firstForm = $first;
+        $this->secondForm = $second;
+        $this->thirdForm = $third;
+    }
+
+    private function getWordsList(): array
+    {
+        return array($this->firstForm, $this->secondForm, $this->thirdForm);
+    }
+
     /**
      * @param $n
      * @return int
@@ -19,17 +38,16 @@ class Utils
         return ($n % 10 == 1 && $n % 100 != 11) ? 0 : $form;
     }
 
+
     /**
      * @param int $value
-     * @param string $first
-     * @param string $second
-     * @param string $third
+     * @param DeclinationNums $form
      * @return string
      */
-    public static function selectWordByValue(int $value, string $first, string $second, string $third): string
+    public function getWord(int $value, self $form): string
     {
-        $caseWords = array($first, $second, $third);
-        return $caseWords[self::caseType($value)];
+        $caseWords = $this->getWordsList();
+        return ' ' . $caseWords[self::caseType($value)];
     }
 
 
@@ -44,12 +62,13 @@ class Utils
 
         try {
             $sourceTime = new DateTime($time);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new TaskForceException($e);
         }
         $dateInterval = $now->diff($sourceTime);
 
-        $units = [[$dateInterval->y, ['год', 'года', 'лет']],
+        $units = [
+            [$dateInterval->y, ['год', 'года', 'лет']],
             [$dateInterval->m, ['месяц', 'месяца', 'месяцев']],
             [$dateInterval->d, ['день', 'дня', 'дней']],
             [$dateInterval->h, ['час', 'часа', 'часов']],

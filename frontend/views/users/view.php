@@ -11,7 +11,7 @@
 
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\TasksFilterForm;
-use TaskForce\Helpers\Utils;
+use TaskForce\Helpers\DeclinationNums;
 
 $this->title = 'TaskForce - Исполнитель';
 
@@ -24,22 +24,24 @@ $this->title = 'TaskForce - Исполнитель';
                     <img src="../../img/<?= $modelUser['avatar'] ?>" width="120" height="120" alt="Аватар пользователя">
                     <div class="content-view__headline">
                         <h1><?= $modelUser['name'] ?></h1>
-                        <p>Россия, Санкт-Петербург, <?= Utils::getTimeAfter((string)$modelUser['birthday']) ?></p>
+                        <p>Россия, Санкт-Петербург, <?= DeclinationNums::getTimeAfter((string)$modelUser['birthday']) ?></p>
                         <div class="profile-mini__name five-stars__rate">
                             <?= str_repeat('<span></span>', $modelUser['rate']); ?>
                             <?= str_repeat('<span class="star-disabled"></span>', 5 - $modelUser['rate']); ?>
                             <b><?= $modelUser['rate'] ?></b>
                         </div>
-                        <b class="done-task">Выполнил <?= $modelUser['countTask'] ?>
-                            <?= Utils::selectWordByValue($modelUser['countTask'],
-                                'заказ', 'заказа', 'заказов') ?></b>
-                        <b class="done-review">Получил <?=
-                            $countOpinions ?>
-                            <?= Utils::selectWordByValue($modelUser['countTask'],
-                                'отзыв', 'отзыва', 'отзывов') ?></b>
+                        <b class="done-task">Выполнил <?php
+                            echo $modelUser['countTask'];
+                            $words = new DeclinationNums('заказ', 'заказа', 'заказов');
+                            echo $words->getWord($modelUser['countTask'], $words) ?></b>
+                        <b class="done-review">Получил <?php
+                            echo $countOpinions;
+                            $words = new DeclinationNums( 'отзыв', 'отзыва', 'отзывов');
+                            echo $words->getWord($modelUser['countTask'], $words);
+                                 ?></b>
                     </div>
                     <div class="content-view__headline user__card-bookmark user__card-bookmark--current">
-                        <span>Был на сайте <?= Utils::getTimeAfter($modelUser['date_login']) ?> назад</span>
+                        <span>Был на сайте <?= DeclinationNums::getTimeAfter($modelUser['date_login']) ?> назад</span>
                         <a href="#"><?= $modelUser['favorite'] ?><b></b></a>
                     </div>
                 </div>

@@ -4,7 +4,6 @@ namespace frontend\models;
 
 
 use TaskForce\Exception\TaskForceException;
-use TaskForce\Helpers\Utils;
 use TaskForce\SortingUsers;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;

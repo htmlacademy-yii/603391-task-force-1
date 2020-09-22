@@ -9,7 +9,7 @@
 
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\TasksFilterForm;
-use TaskForce\Helpers\Utils;
+use TaskForce\Helpers\DeclinationNums;
 use yii\helpers\Url;
 
 $this->title = 'TaskForce - Задачи';
@@ -76,7 +76,7 @@ $this->title = 'TaskForce - Задачи';
             </div>
             <div class="content-view__feedback">
                 <?php
-                if (count($modelsResponse) > 0): ?>
+                if (!empty($modelsResponse)): ?>
                     <h2>Отклики <span>(<?= count($modelsResponse) ?>)</span></h2>
                 <?php else: ?>
                     <h2>Нет откликов</h2>
@@ -95,7 +95,7 @@ $this->title = 'TaskForce - Задачи';
                                     <?= str_repeat('<span class="star-disabled"></span>', 5 - $response['rate']); ?>
                                     <b><?= $response['rate'] ?></b>
                                 </div>
-                                <span class="new-task__time"><?= Utils::getTimeAfter((string)$response['created_at']) ?> назад</span>
+                                <span class="new-task__time"><?= DeclinationNums::getTimeAfter((string)$response['created_at']) ?> назад</span>
                             </div>
                             <div class="feedback-card__content">
                                 <p>
@@ -115,7 +115,7 @@ $this->title = 'TaskForce - Задачи';
             </div>
         </section>
 
-        <?php if (count($modelTaskUser) > 0): ?>
+        <?php if (!empty($modelTaskUser) ): ?>
 
             <section class="connect-desk">
                 <div class="connect-desk__profile-mini">
@@ -132,7 +132,7 @@ $this->title = 'TaskForce - Задачи';
                             </div>
                         </div>
                         <p class="info-customer"><span><?= $modelTaskUser['countTask'] ?> заданий</span>
-                            <span class="last-"><?= Utils::getTimeAfter($modelTaskUser['date_add']) ?> на сайте</span>
+                            <span class="last-"><?= DeclinationNums::getTimeAfter($modelTaskUser['date_add']) ?> на сайте</span>
                         </p>
                         <a href="<?= Url::to(['users/view', 'id' => $modelTaskUser['user_id']]) ?>"
                            class="link-regular">Смотреть профиль</a>
