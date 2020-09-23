@@ -65,4 +65,17 @@ class Work extends \yii\db\ActiveRecord
     {
         return new WorkQuery(get_called_class());
     }
+
+
+    /**
+     *
+     * @param int $id
+     * @return  array
+     */
+    public static function findWorkFilesByUserId(int $id): array
+    {
+        return self::find()->where(['user_id' => $id])->asArray()->limit(5)->all();
+    }
+
+
 }

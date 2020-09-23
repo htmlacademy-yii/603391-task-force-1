@@ -32,8 +32,8 @@ class UserNotification extends \yii\db\ActiveRecord
             [['user_id', 'notification_id'], 'required'],
             [['user_id', 'notification_id'], 'integer'],
             [['user_id', 'notification_id'], 'unique', 'targetAttribute' => ['user_id', 'notification_id']],
-            [['notification_id'], 'exist', 'skipOnError' => true, 'targetClass' => Notification::className(), 'targetAttribute' => ['notification_id' => 'id']],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['notification_id'], 'exist', 'skipOnError' => true, 'targetClass' => Notification::class, 'targetAttribute' => ['notification_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
@@ -55,7 +55,7 @@ class UserNotification extends \yii\db\ActiveRecord
      */
     public function getNotification()
     {
-        return $this->hasOne(Notification::className(), ['id' => 'notification_id']);
+        return $this->hasOne(Notification::class, ['id' => 'notification_id']);
     }
 
     /**
@@ -65,7 +65,7 @@ class UserNotification extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
     /**

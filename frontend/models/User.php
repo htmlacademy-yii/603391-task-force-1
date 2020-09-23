@@ -3,6 +3,7 @@
 namespace frontend\models;
 
 use Yii;
+use yii\db\ActiveQuery;
 
 /**
  * This is the model class for table "user".
@@ -69,7 +70,7 @@ class User extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Chats]].
      *
-     * @return \yii\db\ActiveQuery|ChatQuery
+     * @return ActiveQuery|ChatQuery
      */
     public function getChats()
     {
@@ -79,7 +80,7 @@ class User extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Chats0]].
      *
-     * @return \yii\db\ActiveQuery|ChatQuery
+     * @return ActiveQuery|ChatQuery
      */
     public function getChats0()
     {
@@ -89,7 +90,7 @@ class User extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Favorites]].
      *
-     * @return \yii\db\ActiveQuery|FavoriteQuery
+     * @return ActiveQuery|FavoriteQuery
      */
     public function getFavorites()
     {
@@ -99,7 +100,7 @@ class User extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Favorites0]].
      *
-     * @return \yii\db\ActiveQuery|FileQuery
+     * @return ActiveQuery|FileQuery
      */
     public function getFavorites0()
     {
@@ -109,7 +110,7 @@ class User extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Opinions]].
      *
-     * @return \yii\db\ActiveQuery|OpinionQuery
+     * @return ActiveQuery|OpinionQuery
      */
     public function getOpinions()
     {
@@ -119,7 +120,7 @@ class User extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Opinions0]].
      *
-     * @return \yii\db\ActiveQuery|OpinionQuery
+     * @return ActiveQuery|OpinionQuery
      */
     public function getOpinions0()
     {
@@ -129,7 +130,7 @@ class User extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Profiles]].
      *
-     * @return \yii\db\ActiveQuery|ProfileQuery
+     * @return ActiveQuery|ProfileQuery
      */
     public function getProfiles()
     {
@@ -139,7 +140,7 @@ class User extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Tasks]].
      *
-     * @return \yii\db\ActiveQuery|TaskQuery
+     * @return ActiveQuery|TaskQuery
      */
     public function getTasks()
     {
@@ -149,7 +150,7 @@ class User extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Tasks0]].
      *
-     * @return \yii\db\ActiveQuery|TaskQuery
+     * @return ActiveQuery|TaskQuery
      */
     public function getTasks0()
     {
@@ -159,7 +160,7 @@ class User extends \yii\db\ActiveRecord
     /**
      * Gets query for [[UserNotifications]].
      *
-     * @return \yii\db\ActiveQuery|UserNotificationQuery
+     * @return ActiveQuery|UserNotificationQuery
      */
     public function getUserNotifications()
     {
@@ -169,7 +170,7 @@ class User extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Notifications]].
      *
-     * @return \yii\db\ActiveQuery|NotificationQuery
+     * @return ActiveQuery|NotificationQuery
      */
     public function getNotifications()
     {
@@ -179,7 +180,7 @@ class User extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Works]].
      *
-     * @return \yii\db\ActiveQuery|WorkQuery
+     * @return ActiveQuery|WorkQuery
      */
     public function getWorks()
     {

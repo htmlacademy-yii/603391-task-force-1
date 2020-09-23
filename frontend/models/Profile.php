@@ -3,7 +3,8 @@
 namespace frontend\models;
 
 
-use TaskForce\Helpers\Utils;
+use TaskForce\Exception\TaskForceException;
+use TaskForce\SortingUsers;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Query;
@@ -109,21 +110,15 @@ class Profile extends ActiveRecord
     /**
      * Применить фильры формы
      * @param array $request
-     * @return array|null
+     * @param Query $query
+     * @return Query|null
      */
-    public static function applyFilters($request): ?array
+    public static function applyFilters(array $request, Query $query): ?Query
     {
-        // фильтрация по имени
-        $query = new Query();
-        $query->select(['p.*', 'u.name', 'u.date_login'])->from('profile p')
-            ->join('LEFT JOIN', 'user as u', 'p.user_id = u.id')
-            ->where("p.role = 'executor'");
-
-
         if (strlen($request['UsersFilterForm']['searchName']) > 0) {
             $query->andWhere(sprintf('u.name LIKE \'%s\'', '%' . $request['UsersFilterForm']['searchName'] . '%'));
 
-            return $query->limit(5)->orderBy(['u.date_add' => SORT_DESC])->all();
+            return $query;
         }
 
         // фильтрация по категории
@@ -177,42 +172,77 @@ class Profile extends ActiveRecord
             $query->andWhere(['exists', $subQuery3]);
         }
 
-        return $query->limit(5)->orderBy(['u.date_add' => SORT_DESC])->all();
+        return $query;
+    }
+
+
+    /**
+     * Сортировка
+     * @param string $sortType
+     * @param Query $query
+     * @return Query
+     */
+    public static function applySort(string $sortType, Query $query): Query
+    {
+        switch ($sortType) {
+            case SortingUsers::SORT_BY_RATING:
+                $query->orderBy(['rate' => SORT_DESC]);
+                break;
+            case SortingUsers::SORT_BY_COUNT_TASK:
+                $query->orderBy(['task_count' => SORT_DESC]);
+                break;
+            case SortingUsers::SORT_BY_POPULARITY:
+                $query->orderBy(['show' => SORT_DESC]);
+                break;
+            default:
+                $query->orderBy(['date_add' => SORT_DESC]);
+        }
+
+        return $query;
     }
 
 
     /**
      * Дополнить данными
-     * @param array $request
+     * @param array $request Запрос
+     * @param string $sortType Тип сортировки
      * @return array|null
      */
-    public static function findNewExecutors(array $request): ?array
+    public static function findNewExecutors(array $request, string $sortType): ?Query
     {
-        $models = self::applyFilters($request);
 
-        if (count($models)) {
+        $countTasks = Task::find()
+            ->select('executor_id,count(*) AS task_count')
+            ->from('task t')
+            ->groupBy('executor_id');
 
-            foreach ($models as $key => $element) {
-                $query = new Query();
+        $query = new Query();
+        $query->from('profile p')
+            ->select(['p.*', 'u.name', 'u.date_login' ])
+            ->join('LEFT JOIN', 'user as u', 'p.user_id = u.id')
+            ->join('LEFT JOIN', ['t' => $countTasks], 'p.user_id = t.executor_id')
+            ->where("p.role = 'executor'");
 
-                $query->select('c.name')->from('specialization s')
-                    ->join('LEFT JOIN', 'category as c', 's.category_id = c.id')
-                    ->where("profile_id = " . $element['id']);
+        $query = self::applyFilters($request, $query);
+        $query = self::applySort($sortType, $query);
 
-                $models[$key]['categories'] = $query->all();
+        return $query;
+    }
 
-                $models[$key]['countTasks'] = Task::find()
-                    ->where(["executor_id" => $element['id']])
-                    ->count();
 
-                $models[$key]['countReplies'] = Opinion::find()
-                    ->where(['executor_id' => $element['id']])
-                    ->count();
-
-                $models[$key]['afterTime'] = Utils::timeAfter($element['date_login']);
-            }
-        }
-        return $models;
+    /**
+     * Дополнить данными
+     * @param int $id
+     * @return array|null
+     */
+    public static function findProfileByUserId(int $id): ?array
+    {
+        return self::find()
+            ->select('p.*, p.birthday, p.avatar, p.rate, u.email, u.date_login, u.name, u.date_add')
+            ->from('profile p')
+            ->join('LEFT JOIN', 'user as u', 'p.user_id = u.id')
+            ->where(['p.id' => $id])
+            ->asArray()->one();
     }
 
 
