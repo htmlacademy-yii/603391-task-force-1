@@ -1,35 +1,38 @@
 <?php
 
 /* @var $this \yii\web\View */
-/* @var $content string */
+
+/** @var string $content */
+
 
 use yii\helpers\Html;
-use yii\helpers\Url;
 use frontend\assets\AppAsset;
+use yii\helpers\Url;
+use yii\widgets\ActiveForm;
 use common\widgets\Alert;
 
-AppAsset::register($this);
+
 ?>
+
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>">
 <head>
     <meta charset="<?= Yii::$app->charset ?>">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <?php $this->registerCsrfMetaTags() ?>
+
+
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
 </head>
-<body>
+<body class="landing">
 <?php $this->beginBody() ?>
 <div class="table-layout">
-    <header class="page-header">
-        <div class="main-container page-header__container">
-            <div class="page-header__logo">
-                <a href="index.html">
-                    <svg class="page-header__logo-image" id="Layer_2" xmlns="http://www.w3.org/2000/svg"
-                         viewBox="0 0 1634 646.35">
+    <header class=" page-header--index">
+        <div class="main-container page-header__container page-header__container--index">
+            <div class="page-header__logo--index">
+                <a>
+                    <svg class="logo-image--index" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1634 646.35">
                         <title>taskforce_logo2-01</title>
                         <g>
                             <g>
@@ -79,83 +82,20 @@ AppAsset::register($this);
                         </g>
                     </svg>
                 </a>
+                <p>Работа там, где ты!</p>
             </div>
-            <div class="header__nav">
-                <ul class="header-nav__list site-list">
-                    <li class="site-list__item">
-                        <a href="/tasks">Задания</a>
-                    </li>
-                    <li class="site-list__item">
-                        <a href="/users">Исполнители</a>
-                    </li>
-                    <li class="site-list__item site-list__item--active">
-                        <a href="#">Создать задание</a>
-                    </li>
-                    <li class="site-list__item">
-                        <a href="#">Мой профиль</a>
-                    </li>
-                </ul>
-            </div>
-            <?php if ( Yii::$app->request->pathInfo !== 'signup/index' ):?>
-            <div class="header__town">
-                <select class="multiple-select input town-select" size="1" name="town[]">
-                    <option value="Moscow">Москва</option>
-                    <option selected value="SPB">Санкт-Петербург</option>
-                    <option value="Krasnodar">Краснодар</option>
-                    <option value="Irkutsk">Иркутск</option>
-                    <option value="Vladivostok">Владивосток</option>
-                </select>
-            </div>
-            <div class="header__lightbulb"></div>
-            <div class="lightbulb__pop-up">
-                <h3>Новые события</h3>
-                <p class="lightbulb__new-task lightbulb__new-task--message">
-                    Новое сообщение в чате
-                    <a href="#" class="link-regular">«Помочь с курсовой»</a>
-                </p>
-                <p class="lightbulb__new-task lightbulb__new-task--executor">
-                    Выбран исполнитель для
-                    <a href="#" class="link-regular">«Помочь с курсовой»</a>
-                </p>
-                <p class="lightbulb__new-task lightbulb__new-task--close">
-                    Завершено задание
-                    <a href="#" class="link-regular">«Помочь с курсовой»</a>
-                </p>
-            </div>
-            <div class="header__account">
-                <a class="header__account-photo">
-                    <img src="<?= Url::base() . '/img/user-photo.png' ?>"
-                         width="43" height="44"
-                         alt="Аватар пользователя">
+            <div class="header__account--index">
+                <a href="#" class="header__account-enter open-modal" data-for="enter-form">
+                    <span>Вход</span></a>
+                или
+                <a href="<?= Url::to(['signup/index']) ?>" class="header__account-registration">
+                    Регистрация
                 </a>
-                <span class="header__account-name">
-                 Василий
-             </span>
             </div>
-            <div class="account__pop-up">
-                <ul class="account__pop-up-list">
-                    <li>
-                        <a href="#">Мои задания</a>
-                    </li>
-                    <li>
-                        <a href="#">Настройки</a>
-                    </li>
-                    <li>
-                        <a href="#">Выход</a>
-                    </li>
-                </ul>
-            </div>
-            <?php endif;?>
         </div>
     </header>
-    <main class="page-main">
-        <div class="main-container page-container">
-            <?= Alert::widget() ?>
-            <?= $content ?>
-
-        </div>
-    </main>
-
+    <?= Alert::widget() ?>
+    <?= $content ?>
     <footer class="page-footer">
         <div class="main-container page-footer__container">
             <div class="page-footer__info">
@@ -191,7 +131,7 @@ AppAsset::register($this);
                 </ul>
             </div>
             <div class="page-footer__copyright">
-                <a>
+                <a href="https://htmlacademy.ru">
                     <img class="copyright-logo"
                          src="<?= Url::base() . '/img/academy-logo.png' ?>"
                          width="185" height="63"
@@ -200,8 +140,43 @@ AppAsset::register($this);
             </div>
         </div>
     </footer>
+    <section class="modal enter-form form-modal" id="enter-form">
+        <h2>Вход на сайт</h2>
 
-    <?php $this->endBody() ?>
+        <?php $form = ActiveForm::begin([
+            'action' => '/landing/login',
+            'fieldConfig' => [
+                'template' => "{label}<br>{input}",
+                'labelOptions' => ['class' => 'form-modal-description'],
+                'inputOptions' => ['class' => 'enter-form-email input input-middle'],
+            ],
+        ]);
+
+        echo $form
+            ->field($this->context->loginForm, 'email')
+            ->label('Email', ['class' => 'form-modal-description'])
+            ->input('email', [
+                'placeholder' => 'username@mail.ru',
+                'autofocus' => true,
+            ]);
+
+        echo $form
+            ->field($this->context->loginForm, 'password')
+            ->label('Пароль')
+            ->input('password');
+
+
+        echo Html::submitButton('Войти', ['class' => 'button']);
+        ActiveForm::end();
+        ?>
+
+
+        <button class="form-modal-close" type="button">Закрыть</button>
+    </section>
+</div>
+<div class="overlay"></div>
+<script src="js/main.js"></script>
+<?php $this->endBody() ?>
 </body>
 </html>
 <?php $this->endPage() ?>

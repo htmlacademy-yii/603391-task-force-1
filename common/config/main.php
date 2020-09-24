@@ -16,6 +16,7 @@ return [
                 'tasks/view/<id:\d+>' => 'tasks/view',
                 'users/view/<id:\d+>' => 'users/view',
                 'users/<sortType:\d+>' => 'users/index',
+                '/' => 'landing/index',
 
                 ]
             ],
