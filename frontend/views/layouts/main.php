@@ -1,15 +1,21 @@
 <?php
 
 /* @var $this \yii\web\View */
+
 /* @var $content string */
 
+
+use frontend\models\User;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use frontend\assets\AppAsset;
 use common\widgets\Alert;
 
+
+$loggedUser = Yii::$app->user->identity;
 AppAsset::register($this);
 ?>
+
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>">
@@ -27,7 +33,7 @@ AppAsset::register($this);
     <header class="page-header">
         <div class="main-container page-header__container">
             <div class="page-header__logo">
-                <a href="index.html">
+                <a href="<?= Url::to(['landing/index']) ?>">
                     <svg class="page-header__logo-image" id="Layer_2" xmlns="http://www.w3.org/2000/svg"
                          viewBox="0 0 1634 646.35">
                         <title>taskforce_logo2-01</title>
@@ -88,6 +94,8 @@ AppAsset::register($this);
                     <li class="site-list__item">
                         <a href="/users">Исполнители</a>
                     </li>
+
+
                     <li class="site-list__item site-list__item--active">
                         <a href="#">Создать задание</a>
                     </li>
@@ -96,65 +104,61 @@ AppAsset::register($this);
                     </li>
                 </ul>
             </div>
-            <?php if ( Yii::$app->request->pathInfo !== 'signup/index' ):?>
-            <div class="header__town">
-                <select class="multiple-select input town-select" size="1" name="town[]">
-                    <option value="Moscow">Москва</option>
-                    <option selected value="SPB">Санкт-Петербург</option>
-                    <option value="Krasnodar">Краснодар</option>
-                    <option value="Irkutsk">Иркутск</option>
-                    <option value="Vladivostok">Владивосток</option>
-                </select>
-            </div>
-            <div class="header__lightbulb"></div>
-            <div class="lightbulb__pop-up">
-                <h3>Новые события</h3>
-                <p class="lightbulb__new-task lightbulb__new-task--message">
-                    Новое сообщение в чате
-                    <a href="#" class="link-regular">«Помочь с курсовой»</a>
-                </p>
-                <p class="lightbulb__new-task lightbulb__new-task--executor">
-                    Выбран исполнитель для
-                    <a href="#" class="link-regular">«Помочь с курсовой»</a>
-                </p>
-                <p class="lightbulb__new-task lightbulb__new-task--close">
-                    Завершено задание
-                    <a href="#" class="link-regular">«Помочь с курсовой»</a>
-                </p>
-            </div>
-            <div class="header__account">
-                <a class="header__account-photo">
-                    <img src="<?= Url::base() . '/img/user-photo.png' ?>"
-                         width="43" height="44"
-                         alt="Аватар пользователя">
-                </a>
-                <span class="header__account-name">
-                 Василий
+            <?php if (Yii::$app->request->pathInfo !== 'signup/index' && $loggedUser): ?>
+                <div class="header__town">
+                    <select class="multiple-select input town-select" size="1" name="town[]">
+                        <option value="Moscow">Москва</option>
+                        <option selected value="SPB">Санкт-Петербург</option>
+                        <option value="Krasnodar">Краснодар</option>
+                        <option value="Irkutsk">Иркутск</option>
+                        <option value="Vladivostok">Владивосток</option>
+                    </select>
+                </div>
+                <div class="header__lightbulb"></div>
+                <div class="lightbulb__pop-up">
+                    <h3>Новые события</h3>
+                    <p class="lightbulb__new-task lightbulb__new-task--message">
+                        Новое сообщение в чате
+                        <a href="#" class="link-regular">«Помочь с курсовой»</a>
+                    </p>
+                    <p class="lightbulb__new-task lightbulb__new-task--executor">
+                        Выбран исполнитель для
+                        <a href="#" class="link-regular">«Помочь с курсовой»</a>
+                    </p>
+                    <p class="lightbulb__new-task lightbulb__new-task--close">
+                        Завершено задание
+                        <a href="#" class="link-regular">«Помочь с курсовой»</a>
+                    </p>
+                </div>
+                <div class="header__account">
+                    <a class="header__account-photo">
+                        <img src="<?= Url::base() . '/img/user-photo.png' ?>"
+                             width="43" height="44"
+                             alt="Аватар пользователя">
+                    </a>
+                    <span class="header__account-name">
+                 <?= $loggedUser->name ?>
              </span>
-            </div>
-            <div class="account__pop-up">
-                <ul class="account__pop-up-list">
-                    <li>
-                        <a href="#">Мои задания</a>
-                    </li>
-                    <li>
-                        <a href="#">Настройки</a>
-                    </li>
-                    <li>
-                        <a href="#">Выход</a>
-                    </li>
-                </ul>
-            </div>
-            <?php endif;?>
+                </div>
+                <div class="account__pop-up">
+                    <ul class="account__pop-up-list">
+                        <li>
+                            <a href="#">Мои задания</a>
+                        </li>
+                        <li>
+                            <a href="#">Настройки</a>
+                        </li>
+                        <li>
+                            <a href="<?= Url::to(['user/logout']) ?>">Выход</a>
+                        </li>
+                    </ul>
+                </div>
+            <?php endif; ?>
         </div>
     </header>
-    <main class="page-main">
-        <div class="main-container page-container">
-            <?= Alert::widget() ?>
-            <?= $content ?>
 
-        </div>
-    </main>
+    <?= Alert::widget() ?>
+    <?= $content ?>
 
     <footer class="page-footer">
         <div class="main-container page-footer__container">

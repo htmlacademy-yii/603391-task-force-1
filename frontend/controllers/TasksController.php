@@ -17,7 +17,7 @@ use yii\data\Pagination;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
-class TasksController extends Controller
+class TasksController extends SecureController
 {
     /**
      * Список заданий в статусе 'Новый', без привязки к адресу

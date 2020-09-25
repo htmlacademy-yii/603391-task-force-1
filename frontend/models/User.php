@@ -2,9 +2,11 @@
 
 namespace frontend\models;
 
-use Yii;
-use yii\db\ActiveQuery;
+
 use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
+use yii\db\ActiveQuery;
+
 
 /**
  * This is the model class for table "user".
@@ -29,8 +31,13 @@ use yii\db\ActiveRecord;
  * @property Notification[] $notifications
  * @property Work[] $works
  */
-class User extends ActiveRecord
+class User extends ActiveRecord implements IdentityInterface
 {
+    /**
+     * @var mixed|string|null
+     */
+    private $city_id;
+
     /**
      * {@inheritdoc}
      */
@@ -67,6 +74,38 @@ class User extends ActiveRecord
             'date_login' => 'Date Login',
         ];
     }
+
+
+    public static function findIdentity($id)
+    {
+        return self::findOne($id);
+    }
+
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        // TODO: Implement findIdentityByAccessToken() method.
+    }
+
+    public function getId()
+    {
+        return $this->getPrimaryKey();
+    }
+
+    public function getAuthKey()
+    {
+        // TODO: Implement getAuthKey() method.
+    }
+
+    public function validateAuthKey($authKey)
+    {
+        // TODO: Implement validateAuthKey() method.
+    }
+
+    public function validatePassword($password)
+    {
+        return \Yii::$app->security->validatePassword($password, $this->password);
+    }
+
 
     /**
      * Gets query for [[Chats]].
@@ -196,4 +235,7 @@ class User extends ActiveRecord
     {
         return new UserQuery(get_called_class());
     }
+
+
+
 }

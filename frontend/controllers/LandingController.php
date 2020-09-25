@@ -3,10 +3,8 @@
 namespace frontend\controllers;
 
 use frontend\models\forms\LoginForm;
-use frontend\models\forms\SignupForm;
 use Yii;
 use yii\web\Controller;
-
 
 
 /**
@@ -18,6 +16,11 @@ class LandingController extends Controller
 
     public function actionIndex(): string
     {
+
+        if (\Yii::$app->user->getId()) {
+            $this->redirect(['tasks/index']);
+        }
+
         $this->layout = 'landing';
         $this->loginForm = new LoginForm();
         return $this->render('index', compact('loginForm'));
@@ -25,17 +28,19 @@ class LandingController extends Controller
 
     public function actionLogin()
     {
-        $this->layout = 'landing';
-        $loginForm = new LoginForm();
-        if (\Yii::$app->request->getIsPost()) {
-            $loginForm->load(Yii::$app->request->post());
 
-            if ($loginForm->validate()) {
-                $user = $loginForm->getUser();
-                Yii::$app->user->login($user);
-                return $this->goHome();
+        $this->loginForm = new LoginForm();
+        if (\Yii::$app->request->getIsPost()) {
+            $this->loginForm->load(Yii::$app->request->post());
+            if ($this->loginForm->validate()) {
+                $user = $this->loginForm->getUser();
+                \Yii::$app->user->login($user);
+                $this->redirect(['tasks/index']);
             }
         }
+
+        $this->redirect(['landing/index']);
+
     }
 
 }

@@ -5,7 +5,6 @@ namespace frontend\models\forms;
 
 
 use frontend\models\User;
-use Yii;
 use yii\base\Model;
 
 class LoginForm extends Model
@@ -36,7 +35,7 @@ class LoginForm extends Model
         }
     }
 
-    protected function getUser()
+    public function getUser()
     {
         if ($this->_user === null) {
             $this->_user = User::findOne(['email' => $this->email]);
