@@ -1,16 +1,13 @@
 <?php
 
 /* @var $this \yii\web\View */
-
 /** @var string $content */
 
 
 use yii\helpers\Html;
-use frontend\assets\AppAsset;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use common\widgets\Alert;
-
 
 ?>
 
@@ -146,9 +143,11 @@ use common\widgets\Alert;
         <?php $form = ActiveForm::begin([
             'action' => '/landing/login',
             'fieldConfig' => [
-                'template' => "{label}<br>{input}",
+                'enableClientValidation' => true,
+                'template' => "{label}<br>{input}<br>{error}",
                 'labelOptions' => ['class' => 'form-modal-description'],
                 'inputOptions' => ['class' => 'enter-form-email input input-middle'],
+                'errorOptions' => ['tag' => 'span'],
             ],
         ]);
 
@@ -165,11 +164,9 @@ use common\widgets\Alert;
             ->label('Пароль')
             ->input('password');
 
-
         echo Html::submitButton('Войти', ['class' => 'button']);
         ActiveForm::end();
         ?>
-
 
         <button class="form-modal-close" type="button">Закрыть</button>
     </section>

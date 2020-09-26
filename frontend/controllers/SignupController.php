@@ -16,6 +16,10 @@ class SignupController extends Controller
 {
     public function beforeAction($action)
     {
+        if (Yii::$app->user->identity) {
+            $this->redirect('tasks/index');
+        };
+
         $this->enableCsrfValidation = false;
         return true;
     }
@@ -28,7 +32,7 @@ class SignupController extends Controller
             $model->load(\Yii::$app->request->post());
 
             if ($model->validate() && $model->register()) {
-                 return $this->goHome();
+                return $this->goHome();
             }
         }
 

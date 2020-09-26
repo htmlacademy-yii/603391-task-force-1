@@ -17,7 +17,7 @@ use yii\data\Pagination;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
-class UsersController extends Controller
+class UsersController extends SecureController
 {
     /**
      * @param string $sortType

@@ -176,7 +176,7 @@ class Task extends ActiveRecord
 
 
     /**
-     * Возвращает массив задач со статусом 'Новый' и без привязки к адресу
+     * Find task with NEW status
      * @param array $request
      * @return Query
      * @throws TaskForceException
@@ -207,7 +207,7 @@ class Task extends ActiveRecord
         }
 
         if (strlen($request['TasksFilterForm']['searchName']) > 0) {
-            $query->andWhere(['LIKE','t.name',  $request['TasksFilterForm']['searchName'], false]);
+            $query->andWhere(['LIKE', 't.name', $request['TasksFilterForm']['searchName'], false]);
         }
 
         if ($request['TasksFilterForm']['withoutExecutor']) {
@@ -218,18 +218,17 @@ class Task extends ActiveRecord
             $query->andWhere('t.lat IS NULL AND t.lng IS NULL');
         }
 
-        if (isset($request['TasksFilterForm']['timeInterval'])) {
+        if (isset($request['TasksFilterForm']['timeInterval'])
+            && $request['TasksFilterForm']['timeInterval'] !== TasksFilterForm::FILTER_ALL_TIME) {
             $datetime = TasksFilterForm::timeBeforeInterval($request['TasksFilterForm']['timeInterval']);
             $query->andWhere("t.date_add > STR_TO_DATE('$datetime','%Y-%m-%d %H:%i:%s')");
         }
 
         return $query->orderBy(['date_add' => SORT_DESC]);
-
     }
 
-
     /**
-     * Найти задчу по ID
+     * Find Task By ID
      * @param int $id
      * @return array
      * @throws TaskForceException
