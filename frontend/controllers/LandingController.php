@@ -14,9 +14,11 @@ class LandingController extends Controller
 {
     public $loginForm;
 
+    /**
+     * @return string
+     */
     public function actionIndex(): string
     {
-
         if (\Yii::$app->user->getId()) {
             $this->redirect(['tasks/index']);
         }
@@ -26,9 +28,11 @@ class LandingController extends Controller
         return $this->render('index', compact('loginForm'));
     }
 
-    public function actionLogin()
+    /**
+     * @return string
+     */
+    public function actionLogin(): string
     {
-
         $this->loginForm = new LoginForm();
         if (\Yii::$app->request->getIsPost()) {
             $this->loginForm->load(Yii::$app->request->post());
@@ -40,7 +44,6 @@ class LandingController extends Controller
         }
 
         $this->redirect(['landing/index']);
-
     }
 
 }

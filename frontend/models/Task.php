@@ -59,7 +59,7 @@ class Task extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'description', 'category_id', 'status_id', 'address', 'lat', 'lng', 'budget', 'expire', 'date_add', 'customer_id'], 'required'],
+            [['name', 'description', 'category_id', 'status_id', 'budget', 'expire', 'date_add', 'customer_id'], 'required'],
             [['description'], 'string'],
             [['category_id', 'status_id', 'budget', 'executor_id', 'customer_id'], 'integer'],
             [['lat', 'lng'], 'number'],

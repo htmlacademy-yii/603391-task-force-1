@@ -1,9 +1,11 @@
 <?php
 /* @var $this yii\web\View */
+
 /** @var TasksFilterForm $modelTasksFilter */
 /** @var CategoriesFilterForm $modelCategoriesFilter */
 /** @var array $modelTask */
 /** @var array $modelsResponse */
+
 /** @var array $modelTaskUser */
 
 
@@ -39,13 +41,18 @@ $this->title = 'TaskForce - Задачи';
                     </div>
                     <div class="content-view__attach">
                         <h3 class="content-view__h3">Вложения</h3>
-                        <?php /** @var array $modelsFiles */
+                        <?php
+                        /** @var array $modelsFiles */
                         if (count($modelsFiles) == 0) {
                             echo 'отсутствуют';
                         }
                         foreach ($modelsFiles as $key => $file):?>
-                            <a href="<?= $file['task_id'] . '_' . $file['filename'] ?>"><?= $file['filename'] ?></a>
-                        <?php endforeach; ?>
+                            <a href="<?= $file['filename'] ?>" title="<?= $file['filename'] ?>">
+                                <?= (strlen($file['filename']) > 30)
+                                    ? (substr($file['filename'], 0, 30) . '...')
+                                    : $file['filename'] ?></a>
+                        <?php
+                        endforeach; ?>
                     </div>
                     <div class="content-view__location">
                         <h3 class="content-view__h3">Расположение</h3>
@@ -78,13 +85,16 @@ $this->title = 'TaskForce - Задачи';
                 <?php
                 if (!empty($modelsResponse)): ?>
                     <h2>Отклики <span>(<?= count($modelsResponse) ?>)</span></h2>
-                <?php else: ?>
+                <?php
+                else: ?>
                     <h2>Нет откликов</h2>
-                <?php endif; ?>
+                <?php
+                endif; ?>
 
                 <div class="content-view__feedback-wrapper">
 
-                    <?php foreach ($modelsResponse as $key => $response): ?>
+                    <?php
+                    foreach ($modelsResponse as $key => $response): ?>
                         <div class="content-view__feedback-card">
                             <div class="feedback-card__top">
                                 <a href="<?= Url::to(['users/view', 'id' => $response['profile_id']]) ?>">
@@ -95,7 +105,9 @@ $this->title = 'TaskForce - Задачи';
                                     <?= str_repeat('<span class="star-disabled"></span>', 5 - $response['rate']); ?>
                                     <b><?= $response['rate'] ?></b>
                                 </div>
-                                <span class="new-task__time"><?= DeclinationNums::getTimeAfter((string)$response['created_at']) ?> назад</span>
+                                <span class="new-task__time"><?= DeclinationNums::getTimeAfter(
+                                        (string)$response['created_at']
+                                    ) ?> назад</span>
                             </div>
                             <div class="feedback-card__content">
                                 <p>
@@ -110,12 +122,14 @@ $this->title = 'TaskForce - Задачи';
                                    type="button">Отказать</a>
                             </div>
                         </div>
-                    <?php endforeach; ?>
+                    <?php
+                    endforeach; ?>
                 </div>
             </div>
         </section>
 
-        <?php if (!empty($modelTaskUser) ): ?>
+        <?php
+        if (!empty($modelTaskUser)): ?>
 
             <section class="connect-desk">
                 <div class="connect-desk__profile-mini">
@@ -164,7 +178,8 @@ $this->title = 'TaskForce - Задачи';
                     </form>
                 </div>
             </section>
-        <?php endif; ?>
+        <?php
+        endif; ?>
     </div>
 </main>
 <section class="modal response-form form-modal" id="response-form">

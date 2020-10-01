@@ -26,7 +26,6 @@ class UsersController extends SecureController
      */
     public function actionIndex($sortType = ''): string
     {
-
         $filterRequest = [];
         $modelCategoriesFilter = new CategoriesFilterForm();
         $modelCategoriesFilter->init();
@@ -34,7 +33,9 @@ class UsersController extends SecureController
 
         if (Yii::$app->request->getIsPost()) {
             $modelUsersFilter->load(Yii::$app->request->post());
-            $modelCategoriesFilter->updateProperties((Yii::$app->request->post())['CategoriesFilterForm']['categories']);
+            $modelCategoriesFilter->updateProperties(
+                (Yii::$app->request->post())['CategoriesFilterForm']['categories']
+            );
 
             $filterRequest = (Yii::$app->request->post());
 
@@ -46,8 +47,14 @@ class UsersController extends SecureController
 
         $modelsUsers = Profile::findNewExecutors($filterRequest, $sortType);
 
-        $pagination = new Pagination(['totalCount' => $modelsUsers->count(), 'pageSize' => 5, 'forcePageParam' => false,
-            'pageSizeParam' => false]);
+        $pagination = new Pagination(
+            [
+                'totalCount' => $modelsUsers->count(),
+                'pageSize' => 5,
+                'forcePageParam' => false,
+                'pageSizeParam' => false
+            ]
+        );
 
         $modelsUsers = $modelsUsers->offset($pagination->offset)->limit($pagination->limit)->all();
 
@@ -60,13 +67,20 @@ class UsersController extends SecureController
             }
         }
 
-        return $this->render('index', compact('modelsUsers', 'sortType',
-            'modelUsersFilter', 'modelCategoriesFilter', 'pagination'));
-
+        return $this->render(
+            'index',
+            compact(
+                'modelsUsers',
+                'sortType',
+                'modelUsersFilter',
+                'modelCategoriesFilter',
+                'pagination'
+            )
+        );
     }
 
     /**
-     * Просмотр пользователя c $id
+     * User view by $id
      *
      * @param int $id
      * @return mixed
@@ -75,7 +89,6 @@ class UsersController extends SecureController
      */
     public function actionView(int $id): string
     {
-
         $modelUser = Profile::findProfileByUserId($id);
 
         if ($modelUser['role'] !== \TaskForce\Task::ROLE_EXECUTOR) {
@@ -89,8 +102,16 @@ class UsersController extends SecureController
         $works = Work::findWorkFilesByUserId($id);
 
 
-        return $this->render('view', compact('modelUser', 'modelsOpinions',
-            'specializations', 'countOpinions', 'works'));
+        return $this->render(
+            'view',
+            compact(
+                'modelUser',
+                'modelsOpinions',
+                'specializations',
+                'countOpinions',
+                'works'
+            )
+        );
     }
 
 }

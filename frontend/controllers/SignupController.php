@@ -6,14 +6,17 @@ namespace frontend\controllers;
 
 use frontend\models\City;
 use frontend\models\forms\SignupForm;
-use frontend\models\User;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
-use yii\widgets\ActiveForm;
+
 
 class SignupController extends Controller
 {
+    /**
+     * @param \yii\base\Action $action
+     * @return bool
+     */
     public function beforeAction($action)
     {
         if (Yii::$app->user->identity) {
@@ -25,6 +28,10 @@ class SignupController extends Controller
     }
 
 
+    /**
+     * @return string|\yii\web\Response
+     * @throws \yii\base\Exception
+     */
     public function actionIndex()
     {
         $model = new SignupForm();
@@ -37,10 +44,7 @@ class SignupController extends Controller
         }
 
         $cities = ArrayHelper::map(City::find()->asArray()->all(), 'id', 'city');
-        $this->enableCsrfValidation = false;
         return $this->render('index', compact('model', 'cities'));
-
-
     }
 
 

@@ -17,6 +17,7 @@ use yii\db\ActiveQuery;
  * @property string $password
  * @property string $date_add
  * @property string $date_login
+ * @property int $city_id;
  *
  * @property Chat[] $chats
  * @property Chat[] $chats0
@@ -31,12 +32,9 @@ use yii\db\ActiveQuery;
  * @property Notification[] $notifications
  * @property Work[] $works
  */
+
 class User extends ActiveRecord implements IdentityInterface
 {
-    /**
-     * @var mixed|string|null
-     */
-    private $city_id;
 
     /**
      * {@inheritdoc}

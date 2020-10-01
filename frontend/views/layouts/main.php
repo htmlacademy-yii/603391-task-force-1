@@ -1,7 +1,6 @@
 <?php
 
 /* @var $this \yii\web\View */
-
 /* @var $content string */
 
 
@@ -97,7 +96,7 @@ AppAsset::register($this);
 
 
                     <li class="site-list__item site-list__item--active">
-                        <a href="#">Создать задание</a>
+                        <a href="/task">Создать задание</a>
                     </li>
                     <li class="site-list__item">
                         <a href="#">Мой профиль</a>

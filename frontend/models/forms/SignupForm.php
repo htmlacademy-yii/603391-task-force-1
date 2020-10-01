@@ -3,11 +3,9 @@
 namespace frontend\models\forms;
 
 use frontend\models\City;
-use frontend\models\Profile;
 use frontend\models\User;
 use Yii;
 use yii\base\Model;
-use yii\db\ActiveRecord;
 
 class SignupForm extends Model
 {

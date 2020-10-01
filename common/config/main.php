@@ -13,11 +13,11 @@ return [
             'rules' => [
                 'users' => 'users/index',
                 'tasks' => 'tasks/index',
+                'task' => '/task/create',
                 'tasks/view/<id:\d+>' => 'tasks/view',
                 'users/view/<id:\d+>' => 'users/view',
                 'users/<sortType:\d+>' => 'users/index',
                 '/' => 'landing/index',
-
                 ]
             ],
         'cache' => [

@@ -14,13 +14,12 @@ use TaskForce\Helpers\DeclinationNums;
 use yii;
 use frontend\models\Task;
 use yii\data\Pagination;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
 class TasksController extends SecureController
 {
     /**
-     * Список заданий в статусе 'Новый', без привязки к адресу
+     * Task list
      *
      * @return string
      * @throws TaskForceException
@@ -56,7 +55,7 @@ class TasksController extends SecureController
     }
 
     /**
-     * Просмотр задания c id
+     * Show task by ID
      *
      * @param int $id
      * @return string
@@ -72,7 +71,7 @@ class TasksController extends SecureController
         }
 
         $modelsResponse = Response::findResponsesByTaskId($id);
-        $currentUser = 'customer'; // изменить после создания авторизации
+        $currentUser = 'customer';
         $userId = ($currentUser == 'customer') ? $modelTask['executor_id'] : $modelTask['customer_id'];
         $modelsFiles = File::findFilesByTaskID($id);
 

@@ -231,11 +231,24 @@ class Profile extends ActiveRecord
 
 
     /**
-     * Дополнить данными
      * @param int $id
      * @return array|null
      */
     public static function findProfileByUserId(int $id): ?array
+    {
+        return self::find()
+            ->select('p.*, p.birthday, p.avatar, p.rate, u.email, u.date_login, u.name, u.date_add')
+            ->from('profile p')
+            ->join('LEFT JOIN', 'user as u', 'p.user_id = u.id')
+            ->where(['p.user_id' => $id])
+            ->asArray()->one();
+    }
+
+    /**
+     * @param int $id
+     * @return array|null
+     */
+    public static function findProfileById(int $id): ?array
     {
         return self::find()
             ->select('p.*, p.birthday, p.avatar, p.rate, u.email, u.date_login, u.name, u.date_add')
