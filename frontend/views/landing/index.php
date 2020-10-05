@@ -10,7 +10,9 @@ use yii\helpers\Url;
 $this->title = 'TaskForce';
 
 $this->registerCssFile('/css/style.css');
-$this->registerCssFile('/css/normalize.css'); ?>
+$this->registerCssFile('/css/normalize.css');
+
+?>
 <main>
     <div class="landing-container">
         <div class="landing-top">

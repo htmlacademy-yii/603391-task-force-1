@@ -11,10 +11,11 @@
 
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\TasksFilterForm;
-use TaskForce\Helpers\DeclinationNums;
+use TaskForce\Helpers\Declination;
 use yii\helpers\Url;
 
 $this->title = 'TaskForce - Задачи';
+$currentUserId = Yii::$app->user->getId();
 
 ?>
 <main class="page-main">
@@ -28,7 +29,8 @@ $this->title = 'TaskForce - Задачи';
                             <h1><?=
                                 $modelTask['name'] ?></h1>
                             <span>Размещено в категории
-                                    <a href="#" class="link-regular"><?= $modelTask['cat_name'] ?></a>
+                                    <a href="<?= Url::to(['tasks/index/', 'category' => $modelTask['category_id']]) ?>"
+                                       class="link-regular"><?= $modelTask['cat_name'] ?></a>
                                     <?= $modelTask['afterTime'] ?> назад</span>
                         </div>
                         <b class="new-task__price new-task__price--<?= $modelTask['icon'] ?> content-view-price"><?= $modelTask['budget'] ?>
@@ -86,9 +88,6 @@ $this->title = 'TaskForce - Задачи';
                 if (!empty($modelsResponse)): ?>
                     <h2>Отклики <span>(<?= count($modelsResponse) ?>)</span></h2>
                 <?php
-                else: ?>
-                    <h2>Нет откликов</h2>
-                <?php
                 endif; ?>
 
                 <div class="content-view__feedback-wrapper">
@@ -105,7 +104,7 @@ $this->title = 'TaskForce - Задачи';
                                     <?= str_repeat('<span class="star-disabled"></span>', 5 - $response['rate']); ?>
                                     <b><?= $response['rate'] ?></b>
                                 </div>
-                                <span class="new-task__time"><?= DeclinationNums::getTimeAfter(
+                                <span class="new-task__time"><?= Declination::getTimeAfter(
                                         (string)$response['created_at']
                                     ) ?> назад</span>
                             </div>
@@ -115,12 +114,17 @@ $this->title = 'TaskForce - Задачи';
                                 </p>
                                 <span><?= $response['price'] ?> ₽</span>
                             </div>
-                            <div class="feedback-card__actions">
-                                <a class="button__small-color request-button button"
-                                   type="button">Подтвердить</a>
-                                <a class="button__small-color refusal-button button"
-                                   type="button">Отказать</a>
-                            </div>
+                            <?php
+
+                            if ($currentUserRole === \TaskForce\Task::ROLE_CUSTOMER
+                                && ((int)$modelTask['customer_id']) == $currentUserId) :?>
+                                <div class="feedback-card__actions">
+                                    <a class="button__small-color request-button button"
+                                       type="button">Подтвердить</a>
+                                    <a class="button__small-color refusal-button button"
+                                       type="button">Отказать</a>
+                                </div>
+                            <? endif;?>
                         </div>
                     <?php
                     endforeach; ?>
@@ -134,10 +138,10 @@ $this->title = 'TaskForce - Задачи';
             <section class="connect-desk">
                 <div class="connect-desk__profile-mini">
                     <div class="profile-mini__wrapper">
-                        <h3><?= ($current_user = 'customer') ? 'Исполнтель' : 'Заказчик' ?></h3>
+                        <h3><?= ($modelTaskUser['role'] === TaskForce\Task::ROLE_EXECUTOR) ? 'Исполнтель' : 'Заказчик' ?></h3>
                         <div class="profile-mini__top">
                             <img src="../../img/<?= $modelTaskUser['avatar'] ?>" width="62" height="62"
-                                 alt="Аватар <?= ($current_user = 'customer') ? 'исполнтеля' : 'заказчика' ?>">
+                                 alt="Аватар <?= ($modelTaskUser['role'] === TaskForce\Task::ROLE_EXECUTOR)  ? 'исполнтеля' : 'заказчика' ?>">
                             <div class="profile-mini__name five-stars__rate">
                                 <p><?= $modelTaskUser['name'] ?></p>
                                 <?= str_repeat('<span></span>', $modelTaskUser['rate']); ?>
@@ -146,7 +150,7 @@ $this->title = 'TaskForce - Задачи';
                             </div>
                         </div>
                         <p class="info-customer"><span><?= $modelTaskUser['countTask'] ?> заданий</span>
-                            <span class="last-"><?= DeclinationNums::getTimeAfter($modelTaskUser['date_add']) ?> на сайте</span>
+                            <span class="last-"><?= Declination::getTimeAfter($modelTaskUser['date_add']) ?> на сайте</span>
                         </p>
                         <a href="<?= Url::to(['users/view', 'id' => $modelTaskUser['user_id']]) ?>"
                            class="link-regular">Смотреть профиль</a>

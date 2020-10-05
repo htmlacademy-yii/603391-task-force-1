@@ -11,7 +11,7 @@
 
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\TasksFilterForm;
-use TaskForce\Helpers\DeclinationNums;
+use TaskForce\Helpers\Declination;
 
 $this->title = 'TaskForce - Исполнитель';
 
@@ -24,7 +24,7 @@ $this->title = 'TaskForce - Исполнитель';
                     <img src="../../img/<?= $modelUser['avatar'] ?>" width="120" height="120" alt="Аватар пользователя">
                     <div class="content-view__headline">
                         <h1><?= $modelUser['name'] ?></h1>
-                        <p>Россия, Санкт-Петербург, <?= DeclinationNums::getTimeAfter((string)$modelUser['birthday']) ?></p>
+                        <p>Россия, Санкт-Петербург, <?= Declination::getTimeAfter((string)$modelUser['birthday']) ?></p>
                         <div class="profile-mini__name five-stars__rate">
                             <?= str_repeat('<span></span>', $modelUser['rate']); ?>
                             <?= str_repeat('<span class="star-disabled"></span>', 5 - $modelUser['rate']); ?>
@@ -32,16 +32,16 @@ $this->title = 'TaskForce - Исполнитель';
                         </div>
                         <b class="done-task">Выполнил <?php
                             echo $modelUser['countTask'];
-                            $words = new DeclinationNums('заказ', 'заказа', 'заказов');
+                            $words = new Declination('заказ', 'заказа', 'заказов');
                             echo $words->getWord($modelUser['countTask'], $words) ?></b>
                         <b class="done-review">Получил <?php
                             echo $countOpinions;
-                            $words = new DeclinationNums( 'отзыв', 'отзыва', 'отзывов');
+                            $words = new Declination('отзыв', 'отзыва', 'отзывов');
                             echo $words->getWord($modelUser['countTask'], $words);
                                  ?></b>
                     </div>
                     <div class="content-view__headline user__card-bookmark user__card-bookmark--current">
-                        <span>Был на сайте <?= DeclinationNums::getTimeAfter($modelUser['date_login']) ?> назад</span>
+                        <span>Был на сайте <?= Declination::getTimeAfter($modelUser['date_login']) ?> назад</span>
                         <a href="#"><?= $modelUser['favorite'] ?><b></b></a>
                     </div>
                 </div>

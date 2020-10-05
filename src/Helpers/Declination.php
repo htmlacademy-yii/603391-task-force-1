@@ -8,7 +8,7 @@ use DateTime;
 use http\Exception;
 use TaskForce\Exception\TaskForceException;
 
-class DeclinationNums
+class Declination
 {
 
     public $firstForm = '';
@@ -41,7 +41,7 @@ class DeclinationNums
 
     /**
      * @param int $value
-     * @param DeclinationNums $form
+     * @param Declination $form
      * @return string
      */
     public function getWord(int $value, self $form): string

@@ -5,7 +5,7 @@ namespace frontend\models;
 
 use frontend\models\forms\TasksFilterForm;
 use TaskForce\Exception\TaskForceException;
-use TaskForce\Helpers\DeclinationNums;
+use TaskForce\Helpers\Declination;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Query;
@@ -245,7 +245,7 @@ class Task extends ActiveRecord
         $model = $query->one();
 
         if (!empty($model)) {
-            $model['afterTime'] = DeclinationNums::getTimeAfter((string)$model['date_add']);
+            $model['afterTime'] = Declination::getTimeAfter((string)$model['date_add']);
         } else {
             $model = null;
         };

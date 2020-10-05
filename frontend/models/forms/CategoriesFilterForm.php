@@ -31,6 +31,12 @@ class CategoriesFilterForm extends Model
         return null;
     }
 
+    public function getCategoriesState(): array
+    {
+
+        return $this->categories;
+    }
+
     public function __set($name, $value): void
     {
         if (array_key_exists($name, $this->categories)) {
@@ -50,6 +56,14 @@ class CategoriesFilterForm extends Model
                 $this->categories[$name] = $value;
             }
         }
+    }
+
+    public function setOneCategory(int $id): void
+    {
+        foreach ($this->categoriesId as $key => $element) {
+            $this->categories[$key] = false;
+        }
+        $this->categories[$id] = true;
     }
 
 

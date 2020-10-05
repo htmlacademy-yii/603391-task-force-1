@@ -1,6 +1,7 @@
 <?php
 
 /* @var $this \yii\web\View */
+
 /** @var string $content */
 
 
@@ -11,19 +12,23 @@ use common\widgets\Alert;
 
 ?>
 
-<?php $this->beginPage() ?>
+<?php
+$this->beginPage() ?>
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>">
 <head>
     <meta charset="<?= Yii::$app->charset ?>">
-    <?php $this->registerCsrfMetaTags() ?>
+    <?php
+    $this->registerCsrfMetaTags() ?>
 
 
     <title><?= Html::encode($this->title) ?></title>
-    <?php $this->head() ?>
+    <?php
+    $this->head() ?>
 </head>
 <body class="landing">
-<?php $this->beginBody() ?>
+<?php
+$this->beginBody() ?>
 <div class="table-layout">
     <header class=" page-header--index">
         <div class="main-container page-header__container page-header__container--index">
@@ -140,24 +145,31 @@ use common\widgets\Alert;
     <section class="modal enter-form form-modal" id="enter-form">
         <h2>Вход на сайт</h2>
 
-        <?php $form = ActiveForm::begin([
-            'action' => '/landing/login',
-            'fieldConfig' => [
-                'enableClientValidation' => true,
-                'template' => "{label}<br>{input}<br>{error}",
-                'labelOptions' => ['class' => 'form-modal-description'],
-                'inputOptions' => ['class' => 'enter-form-email input input-middle'],
-                'errorOptions' => ['tag' => 'span'],
-            ],
-        ]);
+        <?php
+        $form = ActiveForm::begin(
+            [
+                'action' => 'landing/login',
+
+                'fieldConfig' => [
+                    'enableClientValidation' => true,
+                    'template' => "<p>{label}{error}{input}</p>",
+                    'labelOptions' => ['class' => 'form-modal-description'],
+                    'inputOptions' => ['class' => 'enter-form-email input input-middle'],
+                    'errorOptions' => ['tag' => 'font', 'color' => 'red'],
+                ],
+            ]
+        );
 
         echo $form
             ->field($this->context->loginForm, 'email')
-            ->label('Email', ['class' => 'form-modal-description'])
-            ->input('email', [
-                'placeholder' => 'username@mail.ru',
-                'autofocus' => true,
-            ]);
+            ->label('Email')
+            ->input(
+                'email',
+                [
+                    'placeholder' => 'username@mail.ru',
+                    'autofocus' => true,
+                ]
+            );
 
         echo $form
             ->field($this->context->loginForm, 'password')
@@ -171,9 +183,25 @@ use common\widgets\Alert;
         <button class="form-modal-close" type="button">Закрыть</button>
     </section>
 </div>
+<?php
+if (Yii::$app->session->hasFlash('login-error')): ?>
+    <section class="modal enter-form form-modal landing-task" style="display: block">
+        <p>
+        <h3>
+            <?php
+            echo Yii::$app->session->getFlash('login-error'); ?>
+        </h3>
+        </p>
+        <button class="form-modal-close" type="button">Закрыть</button>
+    </section>
+<?
+endif; ?>
+
 <div class="overlay"></div>
 <script src="js/main.js"></script>
-<?php $this->endBody() ?>
+<?php
+$this->endBody() ?>
 </body>
 </html>
-<?php $this->endPage() ?>
+<?php
+$this->endPage() ?>

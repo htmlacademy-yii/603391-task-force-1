@@ -15,7 +15,12 @@ class TasksFilterForm extends Model
     public const FILTER_DAY = 'day';
     public const FILTER_WEEK = 'week';
     public const FILTER_MONTH = 'month';
-    public const FILTER_ALL_TIME = 'all'; // для тестирования
+    public const FILTER_ALL_TIME = 'all';
+
+    public const FILTER_DAY_NAME = 'За день';
+    public const FILTER_WEEK_NAME = 'За неделю';
+    public const FILTER_MONTH_NAME = 'За месяц';
+    public const FILTER_ALL_TIME_NAME = 'За все время';
 
     public $withoutExecutor = false;
     public $remoteWork = false;
@@ -25,10 +30,10 @@ class TasksFilterForm extends Model
     public static function getIntervalList()
     {
         return [
-            self::FILTER_DAY => 'За день',
-            self::FILTER_WEEK => 'За неделю',
-            self::FILTER_MONTH => 'За месяц',
-            self::FILTER_ALL_TIME => 'За все время',
+            self::FILTER_DAY => self::FILTER_DAY_NAME,
+            self::FILTER_WEEK => self::FILTER_WEEK_NAME,
+            self::FILTER_MONTH => self::FILTER_MONTH_NAME,
+            self::FILTER_ALL_TIME => self::FILTER_ALL_TIME_NAME,
         ];
     }
 

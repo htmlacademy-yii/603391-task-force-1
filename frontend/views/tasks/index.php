@@ -17,22 +17,19 @@ use yii\widgets\ActiveForm;
 use yii\widgets\LinkPager;
 
 $this->title = 'TaskForce - Задания';
-
 ?>
 <main class="page-main">
     <div class="main-container page-container">
         <section class="new-task">
             <div class="new-task__wrapper">
-
-
                 <h1>Новые задания</h1>
                 <?php foreach ($modelsTasks as $task): ?>
                     <div class="new-task__card">
                         <div class="new-task__title">
-                            <a href="<?= Url::to(['tasks/view', 'id' => $task['id']]) ?>" class="link-regular">
+                            <a href="<?= Url::to(['task/view', 'id' => $task['id']]) ?>" class="link-regular">
                                 <h2><?= $task['name'] ?></h2></a>
                             <a class="new-task__type link-regular"
-                               href="<?= Url::to(['tasks/view', 'id' => $task['id']]) ?>">
+                               href="<?= Url::to(['tasks/index/', 'category' => $task['category_id']]) ?>">
                                 <p><?= $task['cat_name'] ?></p></a>
                         </div>
                         <div class="new-task__icon new-task__icon--<?= $task['icon'] ?>"></div>
@@ -117,9 +114,11 @@ $this->title = 'TaskForce - Задания';
                     echo $form->field($modelTasksFilter, 'timeInterval', [
                         'template' => '{label}{input}',
                         'labelOptions' => ['tag' => false],
-                    ])->label($modelTasksFilter->attributeLabels()['timeInterval'], ['for' => 'timeInterval', 'class' => 'search-task__name'])
+                    ])->label($modelTasksFilter->attributeLabels()['timeInterval'],
+                              ['for' => 'timeInterval', 'class' => 'search-task__name'])
                         ->dropDownList($modelTasksFilter::getIntervalList()
-                            , ['class' => "multiple-select input", 'id' => 'sa']);
+                            , ['class' => "multiple-select input", 'id' => 'sa',
+                                'value' =>  TasksFilterForm::FILTER_ALL_TIME ]);
 
                     echo $form->field($modelTasksFilter, 'searchName', ['template' => '{label}{input}'])
                         ->input('search',

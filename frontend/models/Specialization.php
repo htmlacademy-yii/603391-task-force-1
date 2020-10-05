@@ -72,7 +72,7 @@ class Specialization extends ActiveRecord
      */
     public static function findSpecializationByUserId(int $userId)
     {
-        return self::find()->select('c.name')->from('specialization s')
+        return self::find()->select('c.name, c.id')->from('specialization s')
             ->join('LEFT JOIN', 'profile as p', 's.profile_id = p.id')
             ->join('LEFT JOIN', 'category as c', 's.category_id = c.id')
             ->where(['p.id' => $userId])->asArray()->all();

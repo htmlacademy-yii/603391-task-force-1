@@ -61,7 +61,7 @@ $this->title = 'TaskForce - Исполнители';
                         <?php
                         if (isset($user['categories'])) {
                             foreach ($user['categories'] as $key => $item): ?>
-                                <a href="#" class="link-regular"><?= $item['name'] ?></a>
+                                <a href="<?= Url::to(['users/index/', 'category' => $item['id']]) ?>" class="link-regular"><?= $item['name'] ?></a>
                             <?php endforeach;
                         } ?>
                     </div>

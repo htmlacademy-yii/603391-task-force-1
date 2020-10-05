@@ -4,17 +4,14 @@
 namespace frontend\controllers;
 
 
-use frontend\models\File;
+
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\TasksFilterForm;
-use frontend\models\Profile;
-use frontend\models\Response;
 use TaskForce\Exception\TaskForceException;
-use TaskForce\Helpers\DeclinationNums;
+use TaskForce\Helpers\Declination;
 use yii;
 use frontend\models\Task;
 use yii\data\Pagination;
-use yii\web\NotFoundHttpException;
 
 class TasksController extends SecureController
 {
@@ -38,6 +35,14 @@ class TasksController extends SecureController
             $filterRequest = (Yii::$app->request->post());
         }
 
+        if (Yii::$app->request->getIsGet()) {
+            $ids = Yii::$app->request->get();
+            if   (isset($ids['category'])) {
+                $modelCategoriesFilter->setOneCategory($ids['category']);
+                $filterRequest['CategoriesFilterForm']['categories'] = $modelCategoriesFilter->getCategoriesState();
+            }
+        }
+
         $modelsTasks = Task::findNewTask($filterRequest);
 
         $pagination = new Pagination(['totalCount' => $modelsTasks->count(), 'pageSize' => 5, 'forcePageParam' => false,
@@ -47,43 +52,13 @@ class TasksController extends SecureController
 
         if (isset($modelsTasks)) {
             foreach ($modelsTasks as $key => $element) {
-                $modelsTasks[$key]['afterTime'] = DeclinationNums::getTimeAfter($element['date_add']);
+                $modelsTasks[$key]['afterTime'] = Declination::getTimeAfter($element['date_add']);
             }
         }
 
         return $this->render('index', compact('modelsTasks', 'modelTasksFilter', 'modelCategoriesFilter', 'pagination'));
     }
 
-    /**
-     * Show task by ID
-     *
-     * @param int $id
-     * @return string
-     * @throws TaskForceException
-     * @throws NotFoundHttpException
-     */
-    public function actionView(int $id): string
-    {
-        $modelTask = Task::findTaskById($id);
 
-        if (!$modelTask) {
-            throw new NotFoundHttpException("Задание с ID $id не найдено");
-        }
-
-        $modelsResponse = Response::findResponsesByTaskId($id);
-        $currentUser = 'customer';
-        $userId = ($currentUser == 'customer') ? $modelTask['executor_id'] : $modelTask['customer_id'];
-        $modelsFiles = File::findFilesByTaskID($id);
-
-        $modelTaskUser = [];
-        if ($modelTask['executor_id']) {
-            $modelTaskUser = Profile::findProfileByUserId($userId);
-            $modelTaskUser['countTask'] = Task::findCountTasksByUserId($userId);
-        }
-
-        return $this->render('view', compact('modelTask', 'modelsFiles', 'modelsResponse',
-            'modelTaskUser', 'currentUser'));
-
-    }
 
 }

@@ -14,10 +14,7 @@ class LandingController extends Controller
 {
     public $loginForm;
 
-    /**
-     * @return string
-     */
-    public function actionIndex(): string
+    public function actionIndex()
     {
         if (\Yii::$app->user->getId()) {
             $this->redirect(['tasks/index']);
@@ -28,10 +25,8 @@ class LandingController extends Controller
         return $this->render('index', compact('loginForm'));
     }
 
-    /**
-     * @return string
-     */
-    public function actionLogin(): string
+
+    public function actionLogin()
     {
         $this->loginForm = new LoginForm();
         if (\Yii::$app->request->getIsPost()) {
@@ -40,6 +35,8 @@ class LandingController extends Controller
                 $user = $this->loginForm->getUser();
                 \Yii::$app->user->login($user);
                 $this->redirect(['tasks/index']);
+            } else {
+                Yii::$app->session->setFlash('login-error', "Не верный логин или пароль.");
             }
         }
 
