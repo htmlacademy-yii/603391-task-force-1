@@ -6,6 +6,7 @@ namespace frontend\controllers;
 
 use frontend\models\City;
 use frontend\models\forms\SignupForm;
+use TaskForce\Exception\TaskForceException;
 use Yii;
 use yii\base\Action;
 use yii\base\Exception;
@@ -33,6 +34,7 @@ class SignupController extends Controller
     /**
      * @return string|Response
      * @throws Exception
+     * @throws TaskForceException
      */
     public function actionIndex()
     {

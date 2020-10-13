@@ -16,7 +16,6 @@ use yii\db\Query;
  * @property int $id
  * @property string $address
  * @property string $birthday
- * @property int $city_id
  * @property string|null $about
  * @property int $user_id
  * @property string|null $phone
@@ -25,8 +24,9 @@ use yii\db\Query;
  * @property string $avatar
  * @property int $rate
  * @property string $role
+ * @property string $show
  *
- * @property City $city
+ *
  * @property User $user
  */
 class Profile extends ActiveRecord
@@ -45,13 +45,12 @@ class Profile extends ActiveRecord
     public function rules()
     {
         return [
-            [['address', 'birthday', 'city_id', 'user_id', 'avatar'], 'required'],
+            [['user_id'], 'required'],
             [['birthday'], 'safe'],
-            [['city_id', 'user_id', 'rate'], 'integer'],
+            [['user_id', 'rate', 'show'], 'integer'],
             [['about', 'role'], 'string'],
             [['address', 'skype', 'messenger', 'avatar'], 'string', 'max' => 255],
             [['phone'], 'string', 'max' => 11],
-            [['city_id'], 'exist', 'skipOnError' => true, 'targetClass' => City::class, 'targetAttribute' => ['city_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
@@ -65,7 +64,6 @@ class Profile extends ActiveRecord
             'id' => 'ID',
             'address' => 'Address',
             'birthday' => 'Birthday',
-            'city_id' => 'City ID',
             'about' => 'About',
             'user_id' => 'User ID',
             'phone' => 'Phone',
@@ -77,15 +75,6 @@ class Profile extends ActiveRecord
         ];
     }
 
-    /**
-     * Gets query for [[City]].
-     *
-     * @return ActiveQuery|CityQuery
-     */
-    public function getCity()
-    {
-        return $this->hasOne(City::class, ['id' => 'city_id']);
-    }
 
     /**
      * Gets query for [[User]].

@@ -5,6 +5,7 @@ namespace frontend\controllers;
 
 
 use DateTime;
+use Exception;
 use frontend\models\Category;
 use frontend\models\File;
 use frontend\models\forms\CompleteTaskForm;
