@@ -7,21 +7,23 @@ namespace frontend\controllers;
 use frontend\models\City;
 use frontend\models\forms\SignupForm;
 use Yii;
-use yii\helpers\ArrayHelper;
+use yii\base\Action;
+use yii\base\Exception;
 use yii\web\Controller;
+use yii\web\Response;
 
 
 class SignupController extends Controller
 {
     /**
-     * @param \yii\base\Action $action
+     * @param Action $action
      * @return bool
      */
     public function beforeAction($action)
     {
         if (Yii::$app->user->identity) {
             $this->redirect('tasks/index');
-        };
+        }
 
         $this->enableCsrfValidation = false;
         return true;
@@ -29,21 +31,21 @@ class SignupController extends Controller
 
 
     /**
-     * @return string|\yii\web\Response
-     * @throws \yii\base\Exception
+     * @return string|Response
+     * @throws Exception
      */
     public function actionIndex()
     {
         $model = new SignupForm();
         if (Yii::$app->request->isPost) {
-            $model->load(\Yii::$app->request->post());
+            $model->load(Yii::$app->request->post());
 
             if ($model->validate() && $model->register()) {
                 return $this->goHome();
             }
         }
 
-        $cities = ArrayHelper::map(City::find()->asArray()->all(), 'id', 'city');
+        $cities = City::findAllCities();
         return $this->render('index', compact('model', 'cities'));
     }
 

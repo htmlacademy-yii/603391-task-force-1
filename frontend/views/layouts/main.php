@@ -4,7 +4,6 @@
 /* @var $content string */
 
 
-use frontend\models\User;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use frontend\assets\AppAsset;
@@ -14,7 +13,7 @@ use common\widgets\Alert;
 $loggedUser = Yii::$app->user->identity;
 AppAsset::register($this);
 ?>
-
+<div class="table-layout">
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>">
@@ -28,6 +27,7 @@ AppAsset::register($this);
 </head>
 <body>
 <?php $this->beginBody() ?>
+
 <div class="table-layout">
     <header class="page-header">
         <div class="main-container page-header__container">
@@ -203,6 +203,8 @@ AppAsset::register($this);
             </div>
         </div>
     </footer>
+</div>
+    <div class="overlay"></div>
 
     <?php $this->endBody() ?>
 </body>

@@ -6,9 +6,11 @@ use TaskForce\Task;
 
 class AssignAction extends AbstractAction
 {
+    private const TITLE = 'Assign';
+
     public static function getTitle(): string
     {
-        return 'Assign';
+        return self::TITLE;
     }
 
     public static function getName(): string
@@ -16,9 +18,9 @@ class AssignAction extends AbstractAction
         return self::class;
     }
 
-    public static function isAllowed(string $role, string $status): bool
+    public static function isAllowed(bool $isOwner, string $status, string $role): bool
     {
-        return ($role === Task::ROLE_CUSTOMER && $status === Task::STATUS_NEW);
+        return ($isOwner && $role === Task::ROLE_CUSTOMER && $status === Task::STATUS_NEW);
     }
 
 }

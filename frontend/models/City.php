@@ -3,6 +3,9 @@
 namespace frontend\models;
 
 use Yii;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "city".
@@ -14,7 +17,7 @@ use Yii;
  *
  * @property Profile[] $profiles
  */
-class City extends \yii\db\ActiveRecord
+class City extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -52,7 +55,7 @@ class City extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Profiles]].
      *
-     * @return \yii\db\ActiveQuery|ProfileQuery
+     * @return ActiveQuery|ProfileQuery
      */
     public function getProfiles()
     {
@@ -67,4 +70,15 @@ class City extends \yii\db\ActiveRecord
     {
         return new CityQuery(get_called_class());
     }
+
+    /**
+     * Return array cities
+     * @return array.
+     */
+    public static function findAllCities(): array
+    {
+        return ArrayHelper::map(City::find()->asArray()->all(), 'id', 'city');
+    }
+
+
 }

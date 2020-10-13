@@ -28,27 +28,26 @@ $this->registerJs($js, $position = yii\web\View::POS_END, $key = null);
                         'inputOptions' => ['class' => 'input textarea  col-xs-12'],
                         'errorOptions' => ['tag' => 'span'],
                         'hintOptions' => ['tag' => 'span'],
-
                     ],
                     'options' => [
-                        'class' => 'create__task-form form-create',
+                        'class' => 'create__task-form form-create  col-xs-12',
                         'enctype' => 'multipart/form-data'
-
                     ]
                 ]);
 
                 echo $form
-                    ->field($createTaskForm, 'name')
+                    ->field($createTaskForm, 'name',  ['options' => ['tag' => false]])
                     ->label('Мне нужно')
                     ->textarea([
                         'rows' => 1,
                         'placeholder' => 'Повесить полку',
                         'autofocus' => true,
+
                     ])
                     ->hint('Кратко опишите суть работы');
 
                 echo $form
-                    ->field($createTaskForm, 'description')
+                    ->field($createTaskForm, 'description', ['options' => ['tag' => false]])
                     ->label('Подробности задания')
                     ->textarea([
                         'rows' => 7,
@@ -58,7 +57,7 @@ $this->registerJs($js, $position = yii\web\View::POS_END, $key = null);
 
 
                 echo $form
-                    ->field($createTaskForm, 'categoryId')
+                    ->field($createTaskForm, 'categoryId', ['options' => ['tag' => false]])
                     ->label('Категория')
                     ->dropDownList($categories, [
                         'class' => 'multiple-select input multiple-select-big col-xs-12',
@@ -70,7 +69,8 @@ $this->registerJs($js, $position = yii\web\View::POS_END, $key = null);
                 <span>Загрузите файлы, которые помогут исполнителю лучше выполнить или оценить работу</span>
 
 
-                    <?=  $form->field($createTaskForm, 'files[]',  [ 'options' =>['tag' => 'div', 'class'=>'create__file'], //'template' => '{label}{hint}{input}'
+                    <?=  $form->field($createTaskForm, 'files[]',
+                                      [ 'options' =>['tag' => 'div', 'class'=>'create__file'],
                     ])
                                        ->fileInput(['class' => 'dropzone',
                                            'multiple' => 'true',

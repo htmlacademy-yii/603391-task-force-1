@@ -99,7 +99,6 @@ class UsersController extends SecureController
     public function actionView(int $id): string
     {
         $modelUser = Profile::findProfileByUserId($id);
-
         if ($modelUser['role'] !== \TaskForce\Task::ROLE_EXECUTOR) {
             throw new NotFoundHttpException('Профиль исполнителя не найден.');
         }

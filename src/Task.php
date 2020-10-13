@@ -2,8 +2,10 @@
 
 namespace TaskForce;
 
+use frontend\models\Profile;
 use TaskForce\Actions;
 use TaskForce\Exception\TaskForceException;
+use Yii;
 
 
 class Task
@@ -24,7 +26,7 @@ class Task
 
     public const STATUS_NEW = 'New';
     public const STATUS_CANCEL = 'Cancel';
-    public const STATUS_IN_WORK = 'In_work';
+    public const STATUS_IN_WORK = 'In work';
     public const STATUS_COMPLETE = 'Complete';
     public const STATUS_FAILED = 'Failed';
 
@@ -56,32 +58,49 @@ class Task
         $this->status = $status;
     }
 
+    /**
+     * @return array|string[]
+     */
     public static function getAllStatuses(): array
     {
         return self::STATUSES;
     }
 
+    /**
+     * @return array|string[]
+     */
     public static function getAllActions(): array
     {
         return self::ACTIONS;
     }
 
+    /**
+     * @param int $id
+     * @return string
+     * @throws TaskForceException
+     */
     public function getCurrentRole(int $id): string
     {
-        if ($id === $this->executorID) {
-            return self::ROLE_EXECUTOR;
-        };
-        if ($id === $this->customerID) {
-            return self::ROLE_CUSTOMER;
+        $role = Profile::findProfileByUserId($id)['role'];
+        if (!$role) {
+            throw new TaskForceException('Can not get current role');
         }
-        throw new TaskForceException('Can not get current role');
+
+        return $role;
     }
 
+    /**
+     * @param int $currentUserId
+     * @return array
+     * @throws TaskForceException
+     */
     public function getAvailableActions(int $currentUserId): array
     {
         $availableActions = [];
+        $isOwner = ($currentUserId ===  $this->customerID);
+        $role = $this->getCurrentRole($currentUserId);
         foreach (self::ACTIONS as $action) {
-            if ($action::isAllowed($this->getCurrentRole($currentUserId), $this->status)) {
+            if ($action::isAllowed($isOwner, $this->status, $role)) {
                 array_push($availableActions, $action::getName());
             }
         }
@@ -103,7 +122,9 @@ class Task
             throw new TaskForceException('Unknown role ' . $role);
         }
 
-        if ($action::isAllowed($role, $this->status)) {
+        $currentUserId = Yii::$app->user->getId();
+        $isOwner = ($currentUserId === $this->customerID);
+        if ($action::isAllowed($isOwner, $this->status, $role)) {
             return self::ACTION_TO_STATUS[$action];
         };
         throw new TaskForceException('Can not get next status ');

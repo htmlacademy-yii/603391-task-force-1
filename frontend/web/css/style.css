@@ -801,7 +801,7 @@ footer {
 .response-button {
   background-color: #ffaa00; }
 
-.refusal-button {
+.refusal-button, .refuse-button, .cancel-button {
   background-color: #ff3d71; }
 
 .connection-button {

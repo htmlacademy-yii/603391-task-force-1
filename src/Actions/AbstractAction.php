@@ -8,5 +8,5 @@ abstract class AbstractAction
 
     abstract public static function getName(): string;
 
-    abstract public static function isAllowed(string $role, string $status): bool;
+    abstract public static function isAllowed(bool $isOwner, string $status, string $role): bool;
 }
