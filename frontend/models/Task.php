@@ -37,6 +37,8 @@ use yii\db\Query;
  */
 class Task extends ActiveRecord
 {
+    use ExceptionOnFindFail;
+
      /**
      * {@inheritdoc}
      */
@@ -243,13 +245,11 @@ class Task extends ActiveRecord
      */
     public static function findCountTasksByUserId(int $id): ?int
     {
-
         if (empty($id) && ($id < 1)) {
             throw new TaskForceException('Не задан ID пользователя');
         }
 
         return self::find()->where(['id' => $id])->andWhere(['status' => \TaskForce\Task::STATUS_COMPLETE])->count();
-
     }
 
 

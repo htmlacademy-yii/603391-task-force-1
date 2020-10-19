@@ -17,7 +17,6 @@ class CompleteTaskForm extends Model
     ];
 
     public $completion =  null;
-
     public $comment = null;
     public $rating = null;
 
@@ -46,7 +45,4 @@ class CompleteTaskForm extends Model
             'rating' => 'Оценка'
         ];
     }
-
-
-
 }

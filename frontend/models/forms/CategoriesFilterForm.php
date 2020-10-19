@@ -28,12 +28,12 @@ class CategoriesFilterForm extends Model
         if (array_key_exists($name, $this->categories)) {
             return $this->categories[$name];
         }
+
         return null;
     }
 
     public function getCategoriesState(): array
     {
-
         return $this->categories;
     }
 

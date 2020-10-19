@@ -1,8 +1,6 @@
 <?php
 
-
 namespace TaskForce;
-
 
 class SortingUsers
 {
@@ -11,5 +9,4 @@ class SortingUsers
     public const SORT_BY_POPULARITY = 'Популярности';
 
     public const SORTS = [self::SORT_BY_RATING, self::SORT_BY_COUNT_TASK, self::SORT_BY_POPULARITY];
-
 }

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace frontend\controllers;
 
 use frontend\models\Opinion;
@@ -30,7 +29,6 @@ class UsersController extends SecureController
         $modelCategoriesFilter->init();
         $modelUsersFilter = new UsersFilterForm();
 
-
         if (Yii::$app->request->getIsGet()) {
             $ids = Yii::$app->request->get();
             if   (isset($ids['category'])) {
@@ -38,7 +36,6 @@ class UsersController extends SecureController
                 $filterRequest['CategoriesFilterForm']['categories']=$modelCategoriesFilter->getCategoriesState();
             }
         }
-
 
         if (Yii::$app->request->getIsPost()) {
             $modelUsersFilter->load(Yii::$app->request->post());
@@ -108,7 +105,6 @@ class UsersController extends SecureController
         $countOpinions = Opinion::findCountOpinionsByUserId($id);
         $specializations = Specialization::findSpecializationByUserId($id);
         $works = Work::findWorkFilesByUserId($id);
-
 
         return $this->render(
             'view',

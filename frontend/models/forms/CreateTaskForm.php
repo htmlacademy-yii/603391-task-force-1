@@ -34,7 +34,6 @@ class CreateTaskForm extends Model
         ];
     }
 
-
     /**
      * {@inheritdoc}
      */
@@ -59,10 +58,8 @@ class CreateTaskForm extends Model
             ],
             ['files', 'safe'],
             ['budget', 'integer', 'min' => 0, 'message' => 'Поле должно быть целым положительным числом.'],
-            ['dateEnd', 'checkDate'],
+            ['dateEnd', 'checkDateIsNotPast'],
             ['dateEnd', 'date', 'format' => 'yyyy-mm-dd'],
-
-
         ];
     }
 
@@ -70,10 +67,10 @@ class CreateTaskForm extends Model
      * Check data validator
      * @param $attribute
      */
-    public function checkDate($attribute): void
+    public function checkDateIsNotPast($attribute): void
     {
-        $isOldDate = strtotime('now') > strtotime($this->dateEnd);
-        if ($isOldDate) {
+        $isPastDate = strtotime('now') > strtotime($this->dateEnd);
+        if ($isPastDate) {
             $this->addError($attribute, 'Дата не может быть меньше текущей.');
         }
     }
@@ -94,7 +91,7 @@ class CreateTaskForm extends Model
         $task->budget = $this->budget;
         $task->expire = ($this->dateEnd === '') ? null : date('Y-m-d H:i:s', strtotime($this->dateEnd));
         $task->date_add = date('Y-m-d H:i:s', time());
-        $task->status_id = Task::STATUS_ID_NEW;
+        $task->status = \TaskForce\Task::STATUS_NEW;
         $task->customer_id = $id;
         $task->save();
 
@@ -145,6 +142,7 @@ class CreateTaskForm extends Model
         } else {
             return null;
         }
+
         return $taskId;
     }
 

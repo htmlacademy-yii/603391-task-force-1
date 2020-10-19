@@ -6,7 +6,6 @@ use frontend\models\forms\LoginForm;
 use Yii;
 use yii\web\Controller;
 
-
 /**
  * Landing controller
  */
@@ -22,9 +21,9 @@ class LandingController extends Controller
 
         $this->layout = 'landing';
         $this->loginForm = new LoginForm();
+
         return $this->render('index', compact('loginForm'));
     }
-
 
     public function actionLogin()
     {

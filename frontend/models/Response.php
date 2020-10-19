@@ -24,6 +24,8 @@ class
 
 Response extends ActiveRecord
 {
+    use ExceptionOnFindFail;
+
     public const STATUS_NEW = 'new';
     public const STATUS_CANCELED = 'canceled';
     public const STATUS_CONFIRMED = 'confirmed';
@@ -94,14 +96,11 @@ Response extends ActiveRecord
      */
     public static function findResponsesByTaskId(int $id): ResponseQuery
     {
-
         return  self::find()->select('r.*, p.user_id, p.avatar, p.rate, u.name')
             ->from('response r')->where(['task_id' => $id])
             ->join('LEFT JOIN', 'user as u', 'r.user_id = u.id')
             ->join('LEFT JOIN', 'profile as p', 'r.user_id = p.user_id');
-
     }
-
 
     /**
      *
@@ -114,7 +113,4 @@ Response extends ActiveRecord
         return  self::find()->select('id')
             ->from('response r')->where(['task_id' => $taskId])->andWhere(['user_id' => $userId])->asArray()->all();
     }
-
-
-
 }

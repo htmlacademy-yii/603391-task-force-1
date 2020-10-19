@@ -1,14 +1,11 @@
 <?php
 
-
 namespace frontend\controllers;
-
 
 use Exception;
 use frontend\models\Response;
 use TaskForce\Exception\TaskForceException;
 use Yii;
-use yii\web\NotFoundHttpException;
 
 class ResponseController extends SecureController
 {
@@ -18,14 +15,11 @@ class ResponseController extends SecureController
      *
      * @param int $id
      * @return string
-     * @throws NotFoundHttpException
+     * @throws TaskForceException
      */
     public function actionConfirm(int $id)
     {
-        $response = Response::findOne($id);
-        if (!$response) {
-            throw new NotFoundHttpException("Отклик с ID #$id не найден");
-        }
+        $response = Response::findOrFail($id, "Отклик с ID #$id не найден");
 
         $task = $response->task;
         $transaction = Yii::$app->db->beginTransaction();
@@ -40,9 +34,8 @@ class ResponseController extends SecureController
             $transaction->commit();
         } catch (Exception $e) {
             $transaction->rollBack();
-            throw new NotFoundHttpException("Не удалось назначить исполнителя отклика с ID #$id");
+            throw new TaskForceException("Не удалось назначить исполнителя отклика с ID #$id");
         }
-
 
         return $this->redirect(['/task/view', 'id' => $task->id]);
     }
@@ -53,15 +46,11 @@ class ResponseController extends SecureController
      *
      * @param int $id
      * @return string
-     * @throws NotFoundHttpException
      * @throws TaskForceException
      */
     public function actionCancel(int $id)
     {
-        $response = Response::findOne($id);
-        if (!$response) {
-            throw new NotFoundHttpException("Отклик с ID #$id не найден");
-        }
+        $response = Response::findOrFail($id, "Отклик с ID #$id не найден");
 
         $task = $response->task;
         $response->status = Response::STATUS_CANCELED;
@@ -73,7 +62,6 @@ class ResponseController extends SecureController
                 "Ошибка отклонения отклика."
             );
         }
-
 
         return $this->redirect(['/task/view', 'id' => $task->id]);
     }

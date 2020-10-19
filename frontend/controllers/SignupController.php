@@ -1,8 +1,6 @@
 <?php
 
-
 namespace frontend\controllers;
-
 
 use frontend\models\City;
 use frontend\models\forms\SignupForm;
@@ -27,6 +25,7 @@ class SignupController extends Controller
         }
 
         $this->enableCsrfValidation = false;
+
         return true;
     }
 
@@ -39,7 +38,7 @@ class SignupController extends Controller
     public function actionIndex()
     {
         $model = new SignupForm();
-        if (Yii::$app->request->isPost) {
+        if (Yii::$app->request->getIsPost()) {
             $model->load(Yii::$app->request->post());
 
             if ($model->validate() && $model->register()) {
@@ -47,7 +46,8 @@ class SignupController extends Controller
             }
         }
 
-        $cities = City::findAllCities();
+        $cities = City::getAll();
+
         return $this->render('index', compact('model', 'cities'));
     }
 

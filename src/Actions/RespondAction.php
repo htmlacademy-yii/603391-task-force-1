@@ -2,6 +2,7 @@
 
 namespace TaskForce\Actions;
 
+use TaskForce\Role;
 use TaskForce\Task;
 
 class RespondAction extends AbstractAction
@@ -21,7 +22,7 @@ class RespondAction extends AbstractAction
     public static function isAllowed(bool $isOwner, string $status, string $role): bool
     {
         return (!$isOwner
-            && $role === Task::ROLE_EXECUTOR
+            && $role === Role::EXECUTOR
             && $status === Task::STATUS_NEW);
     }
 

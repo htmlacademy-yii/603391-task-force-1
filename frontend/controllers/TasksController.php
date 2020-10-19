@@ -1,9 +1,6 @@
 <?php
 
-
 namespace frontend\controllers;
-
-
 
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\TasksFilterForm;

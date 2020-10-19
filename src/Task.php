@@ -10,10 +10,6 @@ use Yii;
 
 class Task
 {
-    public const ROLE_CUSTOMER = 'customer';
-    public const ROLE_EXECUTOR = 'executor';
-
-    public const ROLES = [self::ROLE_CUSTOMER, self::ROLE_EXECUTOR];
 
     public const ACTION_CANCEL = Actions\CancelAction::class;
     public const ACTION_ASSIGN = Actions\AssignAction::class;
@@ -104,6 +100,7 @@ class Task
                 array_push($availableActions, $action::getName());
             }
         }
+
         return $availableActions;
     }
 
@@ -118,16 +115,18 @@ class Task
         if (!in_array($action, self::ACTIONS, true)) {
             throw new TaskForceException('Unknown action' . $action);
         }
-        if (!in_array($role, self::ROLES, true)) {
+        if (!in_array($role, Role::LIST, true)) {
             throw new TaskForceException('Unknown role ' . $role);
         }
 
         $currentUserId = Yii::$app->user->getId();
         $isOwner = ($currentUserId === $this->customerID);
         if ($action::isAllowed($isOwner, $this->status, $role)) {
+
             return self::ACTION_TO_STATUS[$action];
+
         };
-        throw new TaskForceException('Can not get next status ');
+        throw new TaskForceException('Can not get next status.');
     }
 }
 

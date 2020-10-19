@@ -1,8 +1,6 @@
 <?php
 
-
 namespace frontend\controllers;
-
 
 use DateTime;
 use Exception;
@@ -22,13 +20,13 @@ use TaskForce\Exception\FileException;
 use TaskForce\Exception\TaskForceException;
 use Yii;
 use yii\helpers\ArrayHelper;
+use yii\web\ForbiddenHttpException;
 use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
 
 class TaskController extends SecureController
 {
-    private const HTTP_STATUS_403 = 403;
 
     /**
      * @return string
@@ -41,8 +39,8 @@ class TaskController extends SecureController
         $role = Profile::findProfileByUserId($id)['role'];
 
 
-        if ($role !== \TaskForce\Task::ROLE_CUSTOMER) {
-            throw new HttpException(self::HTTP_STATUS_403, 'Access denied.');
+        if ($role !== \TaskForce\Profile::ROLE_CUSTOMER) {
+            throw new ForbiddenHttpException('Access denied.');
         }
 
         $categories = ArrayHelper::map(Category::find()->asArray()->all(), 'id', 'name');
@@ -52,17 +50,17 @@ class TaskController extends SecureController
             $createTaskForm->load($request);
             $createTaskForm->files = UploadedFile::getInstances($createTaskForm, 'files');
 
-            if (!$createTaskForm->validate()) {
-                return $this->render('create', compact('createTaskForm', 'categories'));
-            }
-            $taskID = $createTaskForm->saveData($id);
+            if ($createTaskForm->validate()) {
+                $taskID = $createTaskForm->saveData($id);
 
-            if ($taskID) {
-                Yii::$app->session->setFlash('success', 'Задача создана');
-                $this->redirect('/task/view/' . $taskID);
+                if ($taskID) {
+                    Yii::$app->session->setFlash('success', 'Задача создана');
+                    $this->redirect('/task/view/' . $taskID);
+                } else {
+                     $createTaskForm->addError('', 'Задача не создана, попробуйте позже.');
+                }
             }
         }
-
 
         return $this->render('create', compact('createTaskForm', 'categories'));
     }
@@ -117,7 +115,6 @@ class TaskController extends SecureController
             $modelTaskUser['countTask'] = Task::findCountTasksByUserId($taskAssistUserId);
         }
 
-
         return $this->render(
             'view',
             compact(
@@ -143,11 +140,7 @@ class TaskController extends SecureController
      */
     public function actionResponse(int $id)
     {
-        $task = Task::findOne($id);
-
-        if (!$id) {
-            throw new NotFoundHttpException("Task with ID #$id not found.");
-        }
+        $task = Task::findOrFail($id,"Task with ID #$id not found.");
 
         $userId = Yii::$app->user->getId();
         $existResponse = Response::findResponsesByTaskIdUserId($id, $userId);
@@ -162,7 +155,7 @@ class TaskController extends SecureController
 
         $responseTaskForm = new ResponseTaskForm();
         if (Yii::$app->request->isPost) {
-            $responseTaskForm->load(\Yii::$app->request->post());
+            $responseTaskForm->load(Yii::$app->request->post());
 
             if ($responseTaskForm->validate() && $isAllow) {
                 $responseTaskForm->createResponse($id, $userId);
@@ -180,12 +173,8 @@ class TaskController extends SecureController
      */
     public function actionRefuse(int $id)
     {
-        $task = Task::findOne($id);
+        $task = Task::findOrFail($id, "Task with ID #$id not found.");
         $taskId = (int)$task->id;
-
-        if (!$taskId) {
-            throw new NotFoundHttpException("Task with ID #$id not found.");
-        }
 
         $userId = Yii::$app->user->getId();
 
@@ -201,7 +190,6 @@ class TaskController extends SecureController
             throw new HttpException(403, 'Denied');
         }
 
-
         return $this->redirect(['task/view', 'id' => $taskId]);
     }
 
@@ -214,16 +202,14 @@ class TaskController extends SecureController
      */
     public function actionCancel(int $id)
     {
-        $task = Task::findOne($id);
-        if (!$id) {
-            throw new NotFoundHttpException("Task with ID #$id not found.");
-        }
+        $task = Task::findOrFail($id, "Task with ID #$id not found.");
+
         $userId = Yii::$app->user->getId();
         $customerId = $task->customer_id;
         $role = Profile::findProfileByUserId($userId)['role'];
         $isAllow = CancelAction::isAllowed(($customerId === $userId), $task->status, $role);
 
-        if ($isAllow && Yii::$app->request->isPost) {
+        if ($isAllow && Yii::$app->request->getIsPost()) {
             $task->status = \TaskForce\Task::ACTION_CANCEL;
             $task->save();
             Yii::$app->session->setFlash('success', 'Задача отклонена');
@@ -232,7 +218,7 @@ class TaskController extends SecureController
             throw new HttpException(403, 'Denied');
         }
 
-        $this->redirect(['task/view', 'id' => $id]);
+        return $this->redirect(['task/view', 'id' => $id]);
     }
 
     /**
@@ -244,17 +230,14 @@ class TaskController extends SecureController
      */
     public function actionComplete(int $id)
     {
-        $task = Task::findOne($id);
-        if (!$id) {
-            throw new NotFoundHttpException("Task with ID #$id not found.");
-        }
+        $task = Task::findOrFail($id, "Task with ID #$id not found.");
 
         $userId = Yii::$app->user->getId();
         $role = Profile::findProfileByUserId($id)['role'];
         $isAllow = CompleteAction::isAllowed(($task->customer_id === $userId), $task->status, $role);
 
         $completeTaskForm = new CompleteTaskForm();
-        if (Yii::$app->request->isPost) {
+        if (Yii::$app->request->getIsPost()) {
             $completeTaskForm->load(\Yii::$app->request->post());
 
             if ($completeTaskForm->validate() && $isAllow) {

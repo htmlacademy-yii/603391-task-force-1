@@ -75,7 +75,7 @@ class City extends ActiveRecord
      * Return array cities
      * @return array.
      */
-    public static function findAllCities(): array
+    public static function getAll(): array
     {
         return ArrayHelper::map(City::find()->asArray()->all(), 'id', 'city');
     }
