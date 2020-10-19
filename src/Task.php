@@ -98,7 +98,6 @@ class Task
     {
         $availableActions = [];
         $isOwner = ($currentUserId ===  $this->customerID);
-        var_dump($currentUserId);
         $role = $this->getCurrentRole($currentUserId);
         foreach (self::ACTIONS as $action) {
             if ($action::isAllowed($isOwner, $this->status, $role)) {

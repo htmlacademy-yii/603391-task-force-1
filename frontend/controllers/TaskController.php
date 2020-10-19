@@ -87,12 +87,15 @@ class TaskController extends SecureController
         if (!$modelTask) {
             throw new NotFoundHttpException("Задание с ID $id не найдено");
         }
+
+
         $taskOwnerId = $modelTask['customer_id'];
         $taskExecutorId = $modelTask['executor_id'];
         $task = new \TaskForce\Task(
             (int)$modelTask['executor_id'], (int)$modelTask['customer_id'], new DateTime($modelTask['expire']),
             $modelTask['status']
         );
+
 
         $availableActions = $task->getAvailableActions($currentUserId);
 
@@ -113,6 +116,7 @@ class TaskController extends SecureController
             $modelTaskUser = Profile::findProfileByUserId($taskAssistUserId);
             $modelTaskUser['countTask'] = Task::findCountTasksByUserId($taskAssistUserId);
         }
+
 
         return $this->render(
             'view',

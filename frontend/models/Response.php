@@ -94,6 +94,7 @@ Response extends ActiveRecord
      */
     public static function findResponsesByTaskId(int $id): ResponseQuery
     {
+
         return  self::find()->select('r.*, p.user_id, p.avatar, p.rate, u.name')
             ->from('response r')->where(['task_id' => $id])
             ->join('LEFT JOIN', 'user as u', 'r.user_id = u.id')
