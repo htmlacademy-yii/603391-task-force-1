@@ -1,20 +1,17 @@
 <?php
 
-
 namespace TaskForce\Helpers;
 
-
 use DateTime;
-use http\Exception;
+use Exception;
 use TaskForce\Exception\TaskForceException;
 
 class Declination
 {
 
-    public $firstForm = '';
-    public $secondForm = '';
-    public $thirdForm = '';
-
+    public string $firstForm = '';
+    public string $secondForm = '';
+    public string $thirdForm = '';
 
     public function __construct(string $first, string $second, string $third)
     {
@@ -32,7 +29,7 @@ class Declination
      * @param $n
      * @return int
      */
-    public static function caseType(int $n): int
+    public static function caseType(?int $n): int
     {
         $form = ($n % 10 >= 2 && $n % 10 <= 4 && ($n % 100 < 10 || $n % 100 >= 20) ? 1 : 2);
         return ($n % 10 == 1 && $n % 100 != 11) ? 0 : $form;
@@ -40,11 +37,10 @@ class Declination
 
 
     /**
-     * @param int $value
-     * @param Declination $form
+     * @param int|null $value
      * @return string
      */
-    public function getWord(int $value, self $form): string
+    public function getWord(?int $value = 0): string
     {
         $caseWords = $this->getWordsList();
         return ' ' . $caseWords[self::caseType($value)];
@@ -52,17 +48,17 @@ class Declination
 
 
     /**
-     * @param string $time
+     * @param string|null $time
      * @return string
      * @throws TaskForceException
      */
-    public static function getTimeAfter(string $time): string
+    public static function getTimeAfter(?string $time): string
     {
         $now = new DateTime();
 
         try {
             $sourceTime = new DateTime($time);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new TaskForceException($e);
         }
         $dateInterval = $now->diff($sourceTime);

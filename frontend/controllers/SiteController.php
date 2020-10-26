@@ -8,6 +8,9 @@ namespace frontend\controllers;
 class SiteController extends SecureController
 {
 
+    /**
+     * @return array|string[][]
+     */
     public function actions()
     {
         return [

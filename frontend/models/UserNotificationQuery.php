@@ -2,18 +2,15 @@
 
 namespace frontend\models;
 
+use yii\db\ActiveQuery;
+
 /**
  * This is the ActiveQuery class for [[UserNotification]].
  *
  * @see UserNotification
  */
-class UserNotificationQuery extends \yii\db\ActiveQuery
+class UserNotificationQuery extends ActiveQuery
 {
-    /*public function active()
-    {
-        return $this->andWhere('[[status]]=1');
-    }*/
-
     /**
      * {@inheritdoc}
      * @return UserNotification[]|array

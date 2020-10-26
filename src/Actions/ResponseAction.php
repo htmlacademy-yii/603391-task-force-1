@@ -2,12 +2,12 @@
 
 namespace TaskForce\Actions;
 
-use TaskForce\Role;
+use TaskForce\Constant\UserRole;
 use TaskForce\Task;
 
-class RespondAction extends AbstractAction
+class ResponseAction extends AbstractAction
 {
-    private const TITLE = 'Respond';
+    private const TITLE = 'Response';
 
     public static function getTitle(): string
     {
@@ -22,7 +22,7 @@ class RespondAction extends AbstractAction
     public static function isAllowed(bool $isOwner, string $status, string $role): bool
     {
         return (!$isOwner
-            && $role === Role::EXECUTOR
+            && $role === UserRole::EXECUTOR
             && $status === Task::STATUS_NEW);
     }
 

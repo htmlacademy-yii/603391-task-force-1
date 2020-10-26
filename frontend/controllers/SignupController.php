@@ -6,16 +6,13 @@ use frontend\models\City;
 use frontend\models\forms\SignupForm;
 use TaskForce\Exception\TaskForceException;
 use Yii;
-use yii\base\Action;
-use yii\base\Exception;
 use yii\web\Controller;
 use yii\web\Response;
-
 
 class SignupController extends Controller
 {
     /**
-     * @param Action $action
+     * @param  $action
      * @return bool
      */
     public function beforeAction($action)
@@ -24,15 +21,11 @@ class SignupController extends Controller
             $this->redirect('tasks/index');
         }
 
-        $this->enableCsrfValidation = false;
-
         return true;
     }
 
-
     /**
      * @return string|Response
-     * @throws Exception
      * @throws TaskForceException
      */
     public function actionIndex()
@@ -42,14 +35,14 @@ class SignupController extends Controller
             $model->load(Yii::$app->request->post());
 
             if ($model->validate() && $model->register()) {
+                Yii::$app->session->setFlash('success', 'Пользователь зарегистрирован.');
                 return $this->goHome();
             }
         }
 
-        $cities = City::getAll();
+        $cities = City::getList();
 
         return $this->render('index', compact('model', 'cities'));
     }
-
 
 }

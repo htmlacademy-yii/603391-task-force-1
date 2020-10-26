@@ -8,10 +8,15 @@ use frontend\models\Category;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
 
+/**
+ *
+ * @property-write int $oneCategory
+ * @property-read array $categoriesState
+ */
 class CategoriesFilterForm extends Model
 {
-    private $categories;
-    private $categoriesId;
+    private ?array $categories = null;
+    private ?array $categoriesId = null;
 
     public function init()
     {

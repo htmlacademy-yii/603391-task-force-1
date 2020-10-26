@@ -12,9 +12,9 @@ use TaskForce\Provider\IProvider;
 class SqlToCsvConverter
 {
 
-    public $serviceProvider;
-    public $serviceExporter;
-    public $model;
+    public IProvider $serviceProvider;
+    public IExporter $serviceExporter;
+    public Model $model;
 
     /**
      * @param IProvider $srv

@@ -18,10 +18,13 @@ use frontend\models\forms\ResponseTaskForm;
 use frontend\models\forms\TasksFilterForm;
 use frontend\models\Response;
 use frontend\models\Task;
+use TaskForce\Constant\UserRole;
 use TaskForce\Helpers\Declination;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
+
+
 
 $this->title = 'TaskForce - Задачи';
 $currentUserId = Yii::$app->user->getId();
@@ -86,8 +89,8 @@ $this->registerJSFile('/js/main.js');
 
                     <?php
                     foreach ($availableActions as $key => $action) {
-                        switch ($action::getTitle()) {
-                            case \TaskForce\Actions\RespondAction::getTitle():
+                        switch ($action) {
+                            case \TaskForce\Actions\ResponseAction::getTitle():
                                 echo '<button class="button button__big-color response-button open-modal"
                                 type="button" data-for="response-form">Откликнуться</button>';
                                 break;
@@ -123,10 +126,11 @@ $this->registerJSFile('/js/main.js');
                     foreach ($modelsResponse as $key => $response): ?>
                         <div class="content-view__feedback-card">
                             <div class="feedback-card__top">
-                                <a href="<?= Url::to(['users/view', 'id' => $response['profile_id']]) ?>">
+                                <a href="<?= Url::to(['users/view', 'id' => $response['user_id']]) ?>">
                                     <img src="../../img/<?= $response['avatar'] ?>" width="55" height="55"></a>
                                 <div class="feedback-card__top--name">
-                                    <p><a href="#" class="link-regular"><?= $response['name'] ?></a></p>
+                                    <p><a href="<?= Url::to(['users/view', 'id' => $response['user_id']]) ?>"
+                                          class="link-regular"><?= $response['name'] ?></a></p>
                                     <?= str_repeat('<span></span>', $response['rate']); ?>
                                     <?= str_repeat('<span class="star-disabled"></span>', 5 - $response['rate']); ?>
                                     <b><?= $response['rate'] ?></b>
@@ -143,12 +147,11 @@ $this->registerJSFile('/js/main.js');
                             </div>
                             <?php
 
-                            if ($currentUserRole === \TaskForce\Task::ROLE_CUSTOMER
+
+                            if (Yii::$app->user->identity->role === UserRole::CUSTOMER
                                 && ((int)$modelTask['customer_id']) === $currentUserId
-                                && ($response['status'] === Response::STATUS_NEW)
-                                && ((int)$modelTask['status_id'] === Task::STATUS_ID_NEW)
-
-
+                                && ($response['status'] === TaskForce\Response::STATUS_NEW)
+                                && ($modelTask['status'] ===  TaskForce\Task::STATUS_NEW)
                             ):?>
                                 <div class="feedback-card__actions">
 
@@ -189,7 +192,7 @@ $this->registerJSFile('/js/main.js');
 
                         <h3><?php
                             $showExecutor = ((int)$modelTask['customer_id'] === $currentUserId
-                                && $modelTask['customer_id'] !== null);
+                                && $modelTask['executor_id'] !== null);
 
                             echo ($showExecutor) ? 'Исполнтель' : 'Заказчик' ?></h3>
                         <div class="profile-mini__top">

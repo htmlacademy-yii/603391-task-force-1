@@ -33,11 +33,11 @@ $this->title = 'TaskForce - Исполнитель';
                         <b class="done-task">Выполнил <?php
                             echo $modelUser['countTask'];
                             $words = new Declination('заказ', 'заказа', 'заказов');
-                            echo $words->getWord($modelUser['countTask'], $words) ?></b>
+                            echo $words->getWord($modelUser['countTask']) ?></b>
                         <b class="done-review">Получил <?php
                             echo $countOpinions;
                             $words = new Declination('отзыв', 'отзыва', 'отзывов');
-                            echo $words->getWord($modelUser['countTask'], $words);
+                            echo $words->getWord($modelUser['countTask']);
                                  ?></b>
                     </div>
                     <div class="content-view__headline user__card-bookmark user__card-bookmark--current">

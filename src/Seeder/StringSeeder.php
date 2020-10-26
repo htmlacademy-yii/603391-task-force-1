@@ -7,7 +7,7 @@ namespace TaskForce\Seeder;
 class StringSeeder extends Seeder
 {
 
-    private $string;
+    private string $string;
 
     public function __construct(string $value)
     {

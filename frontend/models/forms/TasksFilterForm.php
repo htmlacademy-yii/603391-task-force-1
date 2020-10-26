@@ -22,10 +22,10 @@ class TasksFilterForm extends Model
     public const FILTER_MONTH_NAME = 'За месяц';
     public const FILTER_ALL_TIME_NAME = 'За все время';
 
-    public $withoutExecutor = false;
-    public $remoteWork = false;
-    public $timeInterval = false;
-    public $searchName = false;
+    public bool $withoutExecutor = false;
+    public bool $remoteWork = false;
+    public bool $timeInterval = false;
+    public bool $searchName = false;
 
     public static function getIntervalList()
     {

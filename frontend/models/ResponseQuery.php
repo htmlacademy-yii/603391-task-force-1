@@ -2,12 +2,14 @@
 
 namespace frontend\models;
 
+use yii\db\ActiveQuery;
+
 /**
  * This is the ActiveQuery class for [[Response]].
  *
  * @see Response
  */
-class ResponseQuery extends \yii\db\ActiveQuery
+class ResponseQuery extends ActiveQuery
 {
     /**
      * {@inheritdoc}

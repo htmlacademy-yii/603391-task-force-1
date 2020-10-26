@@ -20,7 +20,7 @@ $this->title = 'TaskForce - Регистрация аккаунта';
                     'enableClientValidation' => true,
                     'fieldConfig' => [
                         'template' => "{label}</br>{input}</br>{hint}{error}",
-                        'inputOptions' => ['class' => 'input textarea col-xs-12'],
+                        'inputOptions' => ['class' => 'input textarea input-wide'],
                         'labelOptions'=> [ 'errorCssClass' => 'input-danger'],
                         'errorOptions'=> ['tag' => 'span'],
                         'hintOptions' => ['tag' => 'span'],
@@ -55,7 +55,7 @@ $this->title = 'TaskForce - Регистрация аккаунта';
                     ->field($model, 'cityId')
                     ->label('Город проживания')
                     ->dropDownList($cities, [
-                        'class' => 'multiple-select input town-select registration-town col-xs-12',
+                        'class' => 'multiple-select input town-select registration-town input-wide',
                         'size' => 1
                     ])
                     ->hint('Укажите город, чтобы находить подходящие задачи');

@@ -11,8 +11,11 @@ use yii\web\Controller;
  */
 class LandingController extends Controller
 {
-    public $loginForm;
+    public LoginForm $loginForm;
 
+    /**
+     * @return string
+     */
     public function actionIndex()
     {
         if (Yii::$app->user->getId()) {
@@ -25,7 +28,11 @@ class LandingController extends Controller
         return $this->render('index', compact('loginForm'));
     }
 
-    public function actionLogin()
+
+    /**
+     * Action Login
+     */
+    public function actionLogin(): void
     {
         $this->loginForm = new LoginForm();
         if (Yii::$app->request->getIsPost()) {

@@ -4,19 +4,20 @@ namespace frontend\models\forms;
 
 use frontend\models\City;
 use frontend\models\Profile;
-use frontend\models\Response;
 use frontend\models\User;
 use TaskForce\Exception\TaskForceException;
-use TaskForce\Task;
+use TaskForce\Constant\UserRole;
 use Yii;
 use yii\base\Model;
 
 class SignupForm extends Model
 {
-    public $email = '';
-    public $username = '';
-    public $cityId = '';
-    public $password = '';
+    public const NOT_FILLED = 'Поле не заполнено.';
+
+    public string $email = '';
+    public string $username = '';
+    public string $cityId = '';
+    public string $password = '';
 
 
     /**
@@ -26,12 +27,12 @@ class SignupForm extends Model
     {
         return [
             ['email', 'trim'],
-            ['email', 'required', 'message' => 'Поле не заполнено.'],
+            ['email', 'required', 'message' => NOT_FILLED],
             ['email', 'email', 'message' => 'Неверный адрес.'],
             ['email', 'unique', 'targetClass' => User::class, 'message' => 'Данный email уже занят.'],
             ['username', 'trim'],
-            ['username', 'required', 'message' => 'Поле не заполнено.'],
-            ['cityId', 'required', 'message' => 'Поле не заполнено.'],
+            ['username', 'required', 'message' => NOT_FILLED],
+            ['cityId', 'required', 'message' => NOT_FILLED],
             [
                 'cityId',
                 'exist',
@@ -40,14 +41,13 @@ class SignupForm extends Model
                 'message' => 'Введен неверный город'
             ],
             ['password', 'string', 'min' => 8, 'tooShort' => 'Пароль должен быть не менее 8 символов.'],
-            ['password', 'required', 'message' => 'Поле не заполнено.'],
+            ['password', 'required', 'message' => NOT_FILLED],
         ];
     }
 
     /**
      *  Registration users by form data
      * @return bool
-     * @throws \yii\base\Exception
      * @throws TaskForceException
      */
 
@@ -56,31 +56,26 @@ class SignupForm extends Model
         if (!$this->validate()) {
             return null;
         }
-        $transaction = \Yii::$app->db->beginTransaction();
+        $transaction = Yii::$app->db->beginTransaction();
         try {
             $user = new User();
             $user->email = $this->email;
             $user->name = $this->username;
             $user->city_id = $this->cityId;
             $user->password = Yii::$app->getSecurity()->generatePasswordHash($this->password);
+            $user->role = UserRole::CUSTOMER;
             $user->save();
-            $userId = $user->id;
-
 
             $profile = new Profile();
-            $profile->user_id = $userId;
-            $profile->role = Task::ROLE_CUSTOMER;
-
+            $profile->user_id = $user->id;
             $profile->save();
 
             $transaction->commit();
-            
+
         } catch (\Exception $e) {
             $transaction->rollBack();
-            throw new TaskForceException("Error registration user with ID #$userId. ". $e->getMessage());
-            return false;
+            throw new TaskForceException("Ошибка регистрации пользователя. ". $e->getMessage());
         }
-
 
         return true;
     }

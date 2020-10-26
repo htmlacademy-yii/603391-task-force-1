@@ -13,13 +13,13 @@ use yii\helpers\FileHelper;
 
 class CreateTaskForm extends Model
 {
-    public $name = '';
-    public $description = '';
-    public $categoryId = '';
-    public $files = [];
-    public $location = '';
-    public $budget = 0;
-    public $dateEnd = '';
+    public string $name = '';
+    public string $description = '';
+    public string $categoryId = '';
+    public array $files = [];
+    public string $location = '';
+    public int $budget = 0;
+    public string $dateEnd = '';
 
     public function attributeLabels()
     {
@@ -58,31 +58,30 @@ class CreateTaskForm extends Model
             ],
             ['files', 'safe'],
             ['budget', 'integer', 'min' => 0, 'message' => 'Поле должно быть целым положительным числом.'],
-            ['dateEnd', 'checkDateIsNotPast'],
             ['dateEnd', 'date', 'format' => 'yyyy-mm-dd'],
+            ['dateEnd', 'isDateInFuture'],
         ];
     }
 
     /**
-     * Check data validator
+     * data validator
      * @param $attribute
      */
-    public function checkDateIsNotPast($attribute): void
+    public function isDateInFuture($attribute): void
     {
-        $isPastDate = strtotime('now') > strtotime($this->dateEnd);
+        $isPastDate = strtotime('now') > strtotime($this->$attribute);
         if ($isPastDate) {
             $this->addError($attribute, 'Дата не может быть меньше текущей.');
         }
     }
 
-
     /**
      *  Registration users by form data
-     * @param int $id
+     * @param int $customerId
      * @return int|null
      */
 
-    public function saveFields(int $id): ?int
+    public function saveFields(int $customerId): ?int
     {
         $task = new Task();
         $task->name = $this->name;
@@ -92,7 +91,7 @@ class CreateTaskForm extends Model
         $task->expire = ($this->dateEnd === '') ? null : date('Y-m-d H:i:s', strtotime($this->dateEnd));
         $task->date_add = date('Y-m-d H:i:s', time());
         $task->status = \TaskForce\Task::STATUS_NEW;
-        $task->customer_id = $id;
+        $task->customer_id = $customerId;
         $task->save();
 
         return $task->id;
@@ -113,7 +112,7 @@ class CreateTaskForm extends Model
         }
 
         foreach ($this->files as $file) {
-            $file->saveAs($dirName . '/' . $file->name);
+            $file->saveAs($dirName . '/' . $file->name );
 
             $taskFileName = new File();
             $taskFileName->filename = $file->name;

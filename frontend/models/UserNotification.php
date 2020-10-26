@@ -3,6 +3,8 @@
 namespace frontend\models;
 
 use Yii;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "user_notification".
@@ -13,7 +15,7 @@ use Yii;
  * @property Notification $notification
  * @property User $user
  */
-class UserNotification extends \yii\db\ActiveRecord
+class UserNotification extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -51,7 +53,7 @@ class UserNotification extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Notification]].
      *
-     * @return \yii\db\ActiveQuery|NotifiQuery
+     * @return ActiveQuery|NotifiQuery
      */
     public function getNotification()
     {
@@ -61,7 +63,7 @@ class UserNotification extends \yii\db\ActiveRecord
     /**
      * Gets query for [[User]].
      *
-     * @return \yii\db\ActiveQuery|UserQuery
+     * @return ActiveQuery|UserQuery
      */
     public function getUser()
     {

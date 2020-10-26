@@ -2520,3 +2520,7 @@ footer {
   display: none !important;
 }
 /*# sourceMappingURL=style.css.map */
+
+.input-wide {
+  width: 100%;
+}

@@ -5,7 +5,9 @@ namespace frontend\controllers;
 use frontend\models\Opinion;
 use frontend\models\Specialization;
 use frontend\models\Task;
+use frontend\models\User;
 use frontend\models\Work;
+use TaskForce\Constant\UserRole;
 use TaskForce\Exception\TaskForceException;
 use TaskForce\Helpers\Declination;
 use Yii;
@@ -51,7 +53,7 @@ class UsersController extends SecureController
             }
         }
 
-        $modelsUsers = Profile::findNewExecutors($filterRequest, $sortType);
+        $modelsUsers = User::findNewExecutors($filterRequest, $sortType);
 
         $pagination = new Pagination(
             [
@@ -66,7 +68,7 @@ class UsersController extends SecureController
 
         if (!empty($modelsUsers)) {
             foreach ($modelsUsers as $key => $element) {
-                $modelsUsers[$key]['categories'] = Specialization::findSpecializationByUserId($element['id']);
+                $modelsUsers[$key]['categories'] = Specialization::findItemsByUserId($element['id']);
                 $modelsUsers[$key]['countTasks'] = Task::findCountTasksByUserId($element['id']);
                 $modelsUsers[$key]['countReplies'] = Opinion::findCountOpinionsByUserId($element['id']);
                 $modelsUsers[$key]['afterTime'] = Declination::getTimeAfter($element['date_login']);
@@ -96,14 +98,14 @@ class UsersController extends SecureController
     public function actionView(int $id): string
     {
         $modelUser = Profile::findProfileByUserId($id);
-        if ($modelUser['role'] !== \TaskForce\Task::ROLE_EXECUTOR) {
-            throw new NotFoundHttpException('Профиль исполнителя не найден.');
+        if ($modelUser['role'] !== UserRole::EXECUTOR) {
+            throw new NotFoundHttpException('Executor profile not found.');
         }
 
         $modelUser['countTask'] = Task::findCountTasksByUserId($id);
         $modelsOpinions = Opinion::findOpinionsByUserId($id);
         $countOpinions = Opinion::findCountOpinionsByUserId($id);
-        $specializations = Specialization::findSpecializationByUserId($id);
+        $specializations = Specialization::findItemsByUserId($id);
         $works = Work::findWorkFilesByUserId($id);
 
         return $this->render(

@@ -2,14 +2,16 @@
 
 namespace frontend\models\forms;
 
+use Exception;
 use frontend\models\Response;
 use TaskForce\Exception\TaskForceException;
+use Yii;
 use yii\base\Model;
 
 class ResponseTaskForm extends Model
 {
-    public $payment = '';
-    public $comment = '';
+    public string $payment = '';
+    public string $comment = '';
 
     /**
      * {@inheritdoc}
@@ -33,16 +35,16 @@ class ResponseTaskForm extends Model
     public function createResponse($taskId, $userId)
     {
         $response = new Response();
-        $transaction = \Yii::$app->db->beginTransaction();
+        $transaction = Yii::$app->db->beginTransaction();
         try {
             $response->description = $this->comment;
             $response->price = $this->payment;
             $response->task_id = $taskId;
-            $response->status = Response::STATUS_NEW;
+            $response->status = \TaskForce\Response::STATUS_NEW;
             $response->user_id = $userId;
             $response->insert();
             $transaction->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $transaction->rollBack();
             throw new TaskForceException(
                 "Ошибка создания отклика пользователя ID #$userId для задачи c ID #$taskId"

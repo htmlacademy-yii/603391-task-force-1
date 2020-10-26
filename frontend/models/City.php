@@ -59,7 +59,7 @@ class City extends ActiveRecord
      */
     public function getProfiles()
     {
-        return $this->hasMany(Profile::className(), ['city_id' => 'id']);
+        return $this->hasMany(Profile::class, ['city_id' => 'id']);
     }
 
     /**
@@ -75,7 +75,7 @@ class City extends ActiveRecord
      * Return array cities
      * @return array.
      */
-    public static function getAll(): array
+    public static function getList(): array
     {
         return ArrayHelper::map(City::find()->asArray()->all(), 'id', 'city');
     }

@@ -61,6 +61,7 @@ class Task extends ActiveRecord
             [['name'], 'string', 'max' => 128],
             [['address'], 'string', 'max' => 255],
             [['status'], 'string', 'max' => 20],
+            [['status'], 'in', 'range' => \TaskForce\Task::STATUSES],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'id']],
             [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['customer_id' => 'id']],
             [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['executor_id' => 'id']],
@@ -218,7 +219,7 @@ class Task extends ActiveRecord
      * @return array
      * @throws TaskForceException
      */
-    public static function findTaskByID(int $id = null): ?array
+    public static function findTaskTitleInfoByID(int $id = null): ?array
     {
         $query = new Query();
 
@@ -229,11 +230,14 @@ class Task extends ActiveRecord
 
         $model = $query->one();
 
-        if (!empty($model)) {
+        if ($model) {
             $model['afterTime'] = Declination::getTimeAfter((string)$model['date_add']);
-        } else {
-            $model = null;
-        };
+        }
+
+        if (!$model) {
+            throw new NotFoundHttpException("Задание с ID $id не найдено");
+        }
+
 
         return $model;
     }
@@ -245,12 +249,10 @@ class Task extends ActiveRecord
      */
     public static function findCountTasksByUserId(int $id): ?int
     {
-        if (empty($id) && ($id < 1)) {
+        if ($id && ($id < 1)) {
             throw new TaskForceException('Не задан ID пользователя');
         }
 
         return self::find()->where(['id' => $id])->andWhere(['status' => \TaskForce\Task::STATUS_COMPLETE])->count();
     }
-
-
 }

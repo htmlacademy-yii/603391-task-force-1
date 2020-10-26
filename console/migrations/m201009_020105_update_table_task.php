@@ -15,11 +15,9 @@ class m201009_020105_update_table_task extends Migration
         $this->dropForeignKey('FK_task_status', 'task');
         $this->dropTable('status');
         $this->dropColumn('task', 'status_id');
-
-        $sql = 'ALTER TABLE `task` ADD COLUMN `status`
-                ENUM(\'New\',\'Cancel\',\'In work\',\'Complete\',\'Failed\')
-                NOT NULL DEFAULT \'New\' AFTER `address`;';
-        $this->execute($sql);
+        $this->addColumn('task','status',
+                         "ENUM('New', 'Cancel', 'In work', 'Complete', 'Failed')
+                          NOT NULL DEFAULT 'New' AFTER `address`");
     }
 
     /**

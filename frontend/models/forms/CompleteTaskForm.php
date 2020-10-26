@@ -8,17 +8,17 @@ use yii\base\Model;
 class CompleteTaskForm extends Model
 {
 
-    const VALUE_YES = 'yes';
-    const VALUE_DIFFICULTIES = 'difficulties';
+    public const VALUE_YES = 'yes';
+    public const VALUE_DIFFICULTIES = 'difficult';
 
-    const VALUES = [
-        self::VALUE_YES => 'да',
+    public const VALUES = [
+        self::VALUE_YES => 'Да',
         self::VALUE_DIFFICULTIES => 'Возникли проблемы'
     ];
 
-    public $completion =  null;
-    public $comment = null;
-    public $rating = null;
+    public ?string $completion = null;
+    public ?string $comment = null;
+    public ?int $rating = null;
 
 
 

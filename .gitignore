@@ -41,7 +41,7 @@ phpunit.phar
 /backend/web/index.php
 /backend/web/index-test.php
 /backend/web/robots.txt
-/frontend/web/assets/
+/frontend/web/assets/*
 
 .DS_Stores
 .idea
@@ -53,4 +53,3 @@ phpunit.phar
 Thumbs.db
 vendor
 read.me
-.htaccess

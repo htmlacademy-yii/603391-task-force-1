@@ -2,6 +2,7 @@
 
 namespace frontend\models;
 
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -49,7 +50,7 @@ class Specialization extends ActiveRecord
     /**
      * Gets query for [[Category]].
      *
-     * @return \yii\db\ActiveQuery|CategoryQuery
+     * @return ActiveQuery|CategoryQuery
      */
     public function getCategory()
     {
@@ -70,7 +71,7 @@ class Specialization extends ActiveRecord
      * @param int $userId
      * @return array|Specialization[]
      */
-    public static function findSpecializationByUserId(int $userId)
+    public static function findItemsByUserId(int $userId)
     {
         return self::find()->select('c.name, c.id')->from('specialization s')
             ->join('LEFT JOIN', 'profile as p', 's.profile_id = p.id')

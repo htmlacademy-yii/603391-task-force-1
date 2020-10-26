@@ -2,23 +2,33 @@
 
 namespace TaskForce;
 
-use frontend\models\Profile;
+use frontend\models\forms\CompleteTaskForm;
+use frontend\models\Opinion;
 use TaskForce\Actions;
+use TaskForce\Constant\UserRole;
 use TaskForce\Exception\TaskForceException;
+use Throwable;
 use Yii;
 
-
+/**
+ * Class Task
+ * @package TaskForce
+ */
 class Task
 {
-
     public const ACTION_CANCEL = Actions\CancelAction::class;
     public const ACTION_ASSIGN = Actions\AssignAction::class;
     public const ACTION_COMPLETE = Actions\CompleteAction::class;
     public const ACTION_REFUSE = Actions\RefuseAction::class;
-    public const ACTION_RESPOND = Actions\RespondAction::class;
+    public const ACTION_RESPOND = Actions\ResponseAction::class;
 
-    public const ACTIONS = [self::ACTION_CANCEL, self::ACTION_ASSIGN, self::ACTION_COMPLETE, self::ACTION_REFUSE,
-        self::ACTION_RESPOND];
+    public const ACTIONS = [
+        self::ACTION_CANCEL,
+        self::ACTION_ASSIGN,
+        self::ACTION_COMPLETE,
+        self::ACTION_REFUSE,
+        self::ACTION_RESPOND
+    ];
 
     public const STATUS_NEW = 'New';
     public const STATUS_CANCEL = 'Cancel';
@@ -34,24 +44,25 @@ class Task
         self::ACTION_REFUSE => self::STATUS_FAILED
     ];
 
-    public const STATUSES = [self::STATUS_NEW, self::STATUS_CANCEL, self::STATUS_IN_WORK, self::STATUS_COMPLETE,
-        self::STATUS_FAILED];
+    public const STATUSES = [
+        self::STATUS_NEW,
+        self::STATUS_CANCEL,
+        self::STATUS_IN_WORK,
+        self::STATUS_COMPLETE,
+        self::STATUS_FAILED
+    ];
 
-    private $executorID;
-    private $customerID;
-    private $deadLine;
-    private $status;
+    public \frontend\models\Task $model;
+    private ?int $executorId;
+    private ?int $customerId;
+    private string $status;
 
-    public function __construct(int $executorID, int $customerID, \DateTime $deadLine, string $status = self::STATUS_NEW)
+    public function __construct(int $taskId)
     {
-        if (!in_array($status, self::STATUSES, true)) {
-            throw new TaskForceException('Unknown status ' . $status);
-        }
-
-        $this->executorID = $executorID;
-        $this->customerID = $customerID;
-        $this->deadLine = $deadLine;
-        $this->status = $status;
+        $this->model = \frontend\models\Task::findOrFail($taskId, "Task with ID #$taskId not found.");
+        $this->executorId = $this->model->executor_id;
+        $this->customerId = $this->model->customer_id;
+        $this->status = $this->model->status;
     }
 
     /**
@@ -71,33 +82,18 @@ class Task
     }
 
     /**
-     * @param int $id
-     * @return string
-     * @throws TaskForceException
-     */
-    public function getCurrentRole(int $id): string
-    {
-        $role = Profile::findProfileByUserId($id)['role'];
-        if (!$role) {
-            throw new TaskForceException('Can not get current role');
-        }
-
-        return $role;
-    }
-
-    /**
-     * @param int $currentUserId
      * @return array
-     * @throws TaskForceException
      */
-    public function getAvailableActions(int $currentUserId): array
+    public function getAvailableActions(): array
     {
         $availableActions = [];
-        $isOwner = ($currentUserId ===  $this->customerID);
-        $role = $this->getCurrentRole($currentUserId);
+        $userId = Yii::$app->user->identity->getId();
+        $isOwner = ($userId === $this->customerId);
+        $currentRole = Yii::$app->user->identity->role;
+
         foreach (self::ACTIONS as $action) {
-            if ($action::isAllowed($isOwner, $this->status, $role)) {
-                array_push($availableActions, $action::getName());
+            if ($action::isAllowed($isOwner, $this->status, $currentRole)) {
+                array_push($availableActions, $action::getTitle());
             }
         }
 
@@ -115,18 +111,74 @@ class Task
         if (!in_array($action, self::ACTIONS, true)) {
             throw new TaskForceException('Unknown action' . $action);
         }
-        if (!in_array($role, Role::LIST, true)) {
+        if (!in_array($role, UserRole::LIST, true)) {
             throw new TaskForceException('Unknown role ' . $role);
         }
 
         $currentUserId = Yii::$app->user->getId();
-        $isOwner = ($currentUserId === $this->customerID);
+        $isOwner = ($currentUserId === $this->customerId);
         if ($action::isAllowed($isOwner, $this->status, $role)) {
-
             return self::ACTION_TO_STATUS[$action];
-
-        };
+        }
         throw new TaskForceException('Can not get next status.');
     }
+
+    /**
+     * @param string $action
+     * @return bool
+     * @throws TaskForceException
+     */
+    public function applyAction(string $action): bool
+    {
+        if (!in_array($action, self::ACTIONS, true)) {
+            throw new TaskForceException('Unknown action' . $action);
+        }
+
+        $currentUserId = Yii::$app->user->getId();
+        $isOwner = ($currentUserId === $this->customerId);
+        $currentRole = Yii::$app->user->identity->role;
+
+        if ($action::isAllowed($isOwner, $this->status, $currentRole)) {
+            $this->model->status = self::ACTION_TO_STATUS[$action];
+
+            if ($this->model->save()) {
+                return true;
+            }
+        }
+        throw new TaskForceException("Can not apply $action.");
+    }
+
+    /**
+     * @return int
+     */
+    public function getAssistUserId(): int
+    {
+        return (Yii::$app->user->identity->getId() == $this->model->customer_id && $this->model->executor_id)
+            ? $this->model->executor_id : $this->model->customer_id;
+    }
+
+    /**
+     * @param CompleteTaskForm $completeTaskForm
+     * @return bool
+     * @throws TaskForceException
+     */
+    public function createOpinion(CompleteTaskForm $completeTaskForm): bool
+    {
+        $opinion = new Opinion();
+        $opinion->task_id = $this->model->id;
+        $opinion->owner_id = $this->model->customer_id;
+        $opinion->executor_id = $this->model->executor_id;
+        $opinion->rate = $completeTaskForm->rating;
+        $opinion->description = $completeTaskForm->comment;
+        $opinion->done = ($completeTaskForm->completion === $completeTaskForm::VALUE_YES);
+
+        try {
+            $opinion->insert();
+        } catch (Throwable $e) {
+            throw new TaskForceException('Ошибка создания отзыва. ' . $e->getMessage());
+        }
+        return true;
+    }
+
 }
 

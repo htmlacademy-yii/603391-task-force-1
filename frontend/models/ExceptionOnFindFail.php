@@ -1,8 +1,8 @@
 <?php
 
-
 namespace frontend\models;
 
+use yii\web\NotFoundHttpException;
 
 trait ExceptionOnFindFail
 {

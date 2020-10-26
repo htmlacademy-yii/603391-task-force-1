@@ -15,7 +15,7 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\widgets\LinkPager;
-
+//var_dump(Yii::$app->user->identity);
 $this->title = 'TaskForce - Задания';
 ?>
 <main class="page-main">
@@ -26,7 +26,7 @@ $this->title = 'TaskForce - Задания';
                 <?php foreach ($modelsTasks as $task): ?>
                     <div class="new-task__card">
                         <div class="new-task__title">
-                            <a href="<?= Url::to(['task/view', 'id' => $task['id']]) ?>" class="link-regular">
+                            <a href="<?= Url::to(['tasks/view', 'id' => $task['id']]) ?>" class="link-regular">
                                 <h2><?= $task['name'] ?></h2></a>
                             <a class="new-task__type link-regular"
                                href="<?= Url::to(['tasks/index/', 'category' => $task['category_id']]) ?>">
