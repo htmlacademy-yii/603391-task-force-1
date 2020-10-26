@@ -58,7 +58,7 @@ class Response extends ActiveRecord
             [['description', 'user_id', 'task_id'], 'required'],
             [['task_id', 'user_id', 'price'], 'integer'],
             [['description', 'status'], 'string'],
-            [['status'], 'in', 'range' => \TaskForce\Response::LIST],
+            [['status'], 'in', 'range' => \TaskForce\ResponseEntity::LIST],
             [
                 ['task_id'],
                 'exist',

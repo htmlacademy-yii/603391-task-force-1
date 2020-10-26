@@ -4,6 +4,7 @@ namespace TaskForce;
 
 use frontend\models\forms\CompleteTaskForm;
 use frontend\models\Opinion;
+use frontend\models\Task;
 use TaskForce\Actions;
 use TaskForce\Constant\UserRole;
 use TaskForce\Exception\TaskForceException;
@@ -14,7 +15,7 @@ use Yii;
  * Class Task
  * @package TaskForce
  */
-class Task
+class TaskEntity
 {
     public const ACTION_CANCEL = Actions\CancelAction::class;
     public const ACTION_ASSIGN = Actions\AssignAction::class;
@@ -52,14 +53,14 @@ class Task
         self::STATUS_FAILED
     ];
 
-    public \frontend\models\Task $model;
+    public Task $model;
     private ?int $executorId;
     private ?int $customerId;
     private string $status;
 
     public function __construct(int $taskId)
     {
-        $this->model = \frontend\models\Task::findOrFail($taskId, "Task with ID #$taskId not found.");
+        $this->model = Task::findOrFail($taskId, "Task with ID #$taskId not found.");
         $this->executorId = $this->model->executor_id;
         $this->customerId = $this->model->customer_id;
         $this->status = $this->model->status;
@@ -174,7 +175,7 @@ class Task
 
         try {
             $opinion->insert();
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             throw new TaskForceException('Ошибка создания отзыва. ' . $e->getMessage());
         }
         return true;

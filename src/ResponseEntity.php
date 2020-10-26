@@ -9,7 +9,7 @@ use TaskForce\Exception\TaskForceException;
 use Yii;
 use yii\db\ActiveRecord;
 
-class Response
+class ResponseEntity
 {
     public const STATUS_NEW = 'new';
     public const STATUS_CONFIRMED = 'confirmed';
@@ -36,7 +36,7 @@ class Response
 
     private function isNewTaskStatus(): bool
     {
-        return ($this->modelTask->status === Task::STATUS_NEW);
+        return ($this->modelTask->status === TaskEntity::STATUS_NEW);
     }
 
     private function isNewStatus(): bool
@@ -55,7 +55,7 @@ class Response
             $transaction = Yii::$app->db->beginTransaction();
 
             $this->modelTask->executor_id = $this->model->user_id;
-            $this->modelTask->status = Task::STATUS_IN_WORK;
+            $this->modelTask->status = TaskEntity::STATUS_IN_WORK;
             $this->model->status = self::STATUS_CONFIRMED;
 
             try {

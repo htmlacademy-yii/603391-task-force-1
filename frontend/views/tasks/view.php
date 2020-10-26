@@ -63,7 +63,7 @@ $this->registerJSFile('/js/main.js');
                             echo 'отсутствуют';
                         }
                         foreach ($modelsFiles as $key => $file):?>
-                            <a href="<?= $file['filename'] ?>" title="<?= $file['filename'] ?>">
+                            <a href="<?= Url::to(['site/file', 'id' => $file['id']]) ?>" title="<?= $file['filename'] ?>">
                                 <?= (strlen($file['filename']) > 30)
                                     ? (substr($file['filename'], 0, 30) . '...')
                                     : $file['filename'] ?></a>
@@ -150,8 +150,8 @@ $this->registerJSFile('/js/main.js');
 
                             if (Yii::$app->user->identity->role === UserRole::CUSTOMER
                                 && ((int)$modelTask['customer_id']) === $currentUserId
-                                && ($response['status'] === TaskForce\Response::STATUS_NEW)
-                                && ($modelTask['status'] ===  TaskForce\Task::STATUS_NEW)
+                                && ($response['status'] === TaskForce\ResponseEntity::STATUS_NEW)
+                                && ($modelTask['status'] ===  TaskForce\TaskEntity::STATUS_NEW)
                             ):?>
                                 <div class="feedback-card__actions">
 

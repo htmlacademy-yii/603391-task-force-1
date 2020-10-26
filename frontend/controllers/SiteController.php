@@ -2,6 +2,8 @@
 
 namespace frontend\controllers;
 
+use frontend\models\File;
+
 /**
  * Site controller
  */
@@ -20,6 +22,13 @@ class SiteController extends SecureController
         ];
     }
 
+    /**
+     * @param int $id
+     */
+    public function actionFile(int $id)
+    {
+        File::forceDownloadTaskFile($id);
+    }
 }
 
 

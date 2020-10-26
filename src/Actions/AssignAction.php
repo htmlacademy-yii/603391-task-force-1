@@ -3,7 +3,7 @@
 namespace TaskForce\Actions;
 
 use TaskForce\Constant\UserRole;
-use TaskForce\Task;
+use TaskForce\TaskEntity;
 
 class AssignAction extends AbstractAction
 {
@@ -21,7 +21,7 @@ class AssignAction extends AbstractAction
 
     public static function isAllowed(bool $isOwner, string $status, string $role): bool
     {
-        return ($isOwner && $role === UserRole::CUSTOMER && $status === Task::STATUS_NEW);
+        return ($isOwner && $role === UserRole::CUSTOMER && $status === TaskEntity::STATUS_NEW);
     }
 
 }

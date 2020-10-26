@@ -12,6 +12,7 @@ use frontend\models\Response;
 use Exception;
 use TaskForce\Exception\TaskForceException;
 use TaskForce\Helpers\Declination;
+use TaskForce\TaskEntity;
 use yii;
 use frontend\models\Task;
 use yii\data\Pagination;
@@ -88,7 +89,7 @@ class TasksController extends SecureController
         $currentUserRole = Yii::$app->user->identity->role;
         $modelTask = Task::findTaskTitleInfoByID($id);
 
-        $task = new \TaskForce\Task($id);
+        $task = new TaskEntity($id);
 
         $availableActions = $task->getAvailableActions();
 

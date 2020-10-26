@@ -61,7 +61,7 @@ class Task extends ActiveRecord
             [['name'], 'string', 'max' => 128],
             [['address'], 'string', 'max' => 255],
             [['status'], 'string', 'max' => 20],
-            [['status'], 'in', 'range' => \TaskForce\Task::STATUSES],
+            [['status'], 'in', 'range' => \TaskForce\TaskEntity::STATUSES],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'id']],
             [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['customer_id' => 'id']],
             [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['executor_id' => 'id']],
@@ -181,7 +181,7 @@ class Task extends ActiveRecord
 
         $query->select(['t.*', 'c.name as cat_name', 'c.icon as icon'])->from('task t')
             ->join('LEFT JOIN', 'category as c', 't.category_id = c.id')
-            ->where(['t.status' => \TaskForce\Task::STATUS_NEW]);
+            ->where(['t.status' => \TaskForce\TaskEntity::STATUS_NEW]);
 
 
         // todo добавить задания из города пользователя, либо из города, выбранного пользователем в текущей сессии.
@@ -253,6 +253,6 @@ class Task extends ActiveRecord
             throw new TaskForceException('Не задан ID пользователя');
         }
 
-        return self::find()->where(['id' => $id])->andWhere(['status' => \TaskForce\Task::STATUS_COMPLETE])->count();
+        return self::find()->where(['id' => $id])->andWhere(['status' => \TaskForce\TaskEntity::STATUS_COMPLETE])->count();
     }
 }

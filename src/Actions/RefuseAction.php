@@ -3,7 +3,7 @@
 namespace TaskForce\Actions;
 
 use TaskForce\Constant\UserRole;
-use TaskForce\Task;
+use TaskForce\TaskEntity;
 
 class RefuseAction extends AbstractAction
 {
@@ -23,7 +23,7 @@ class RefuseAction extends AbstractAction
     {
         return (!$isOwner
             && $role === UserRole::EXECUTOR
-            && $status === Task::STATUS_IN_WORK);
+            && $status === TaskEntity::STATUS_IN_WORK);
     }
 
 }

@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use TaskForce\Exception\TaskForceException;
+use TaskForce\ResponseEntity;
 use yii\web\Response;
 
 class ResponseController extends SecureController
@@ -17,7 +18,7 @@ class ResponseController extends SecureController
      */
     public function actionConfirm(int $id): Response
     {
-        $response = new \TaskForce\Response($id);
+        $response = new ResponseEntity($id);
         $response->confirm();
         $taskId = $response->model->task->id;
 
@@ -33,7 +34,7 @@ class ResponseController extends SecureController
      */
     public function actionCancel(int $id): Response
     {
-        $response = new \TaskForce\Response($id);
+        $response = new ResponseEntity($id);
         $response->cancel();
         $taskId = $response->model->task->id;
 

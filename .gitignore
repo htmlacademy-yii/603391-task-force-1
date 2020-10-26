@@ -44,12 +44,11 @@ phpunit.phar
 /frontend/web/assets/*
 
 .DS_Stores
-.idea
 *.ai
 *.log
 *.pdf
 *.psd
 *.sublime*
-Thumbs.db
 vendor
 read.me
+/frontend/web/uploads/

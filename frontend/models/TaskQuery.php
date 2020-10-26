@@ -7,7 +7,7 @@ use yii\db\ActiveQuery;
 /**
  * This is the ActiveQuery class for [[Task]].
  *
- * @see Task
+ * @see TaskEntity
  */
 class TaskQuery extends ActiveQuery
 {

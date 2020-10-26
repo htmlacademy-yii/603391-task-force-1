@@ -7,7 +7,7 @@ use yii\db\ActiveQuery;
 /**
  * This is the ActiveQuery class for [[Response]].
  *
- * @see Response
+ * @see ResponseEntity
  */
 class ResponseQuery extends ActiveQuery
 {

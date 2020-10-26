@@ -6,6 +6,7 @@ use frontend\models\Category;
 use frontend\models\File;
 use frontend\models\Task;
 use TaskForce\Exception\FileException;
+use TaskForce\TaskEntity;
 use Yii;
 use yii\base\Exception;
 use yii\base\Model;
@@ -90,7 +91,7 @@ class CreateTaskForm extends Model
         $task->budget = $this->budget;
         $task->expire = ($this->dateEnd === '') ? null : date('Y-m-d H:i:s', strtotime($this->dateEnd));
         $task->date_add = date('Y-m-d H:i:s', time());
-        $task->status = \TaskForce\Task::STATUS_NEW;
+        $task->status = TaskEntity::STATUS_NEW;
         $task->customer_id = $customerId;
         $task->save();
 
@@ -112,10 +113,12 @@ class CreateTaskForm extends Model
         }
 
         foreach ($this->files as $file) {
-            $file->saveAs($dirName . '/' . $file->name );
+            $newFilename = substr(md5(microtime() . rand(0, 9999)), 0, 20).'.'.$file->extension;
+            $file->saveAs($dirName . '/' . $newFilename );
 
             $taskFileName = new File();
             $taskFileName->filename = $file->name;
+            $taskFileName->generated_name = $newFilename;
             $taskFileName->task_id = $taskId;
             $taskFileName->save();
         }

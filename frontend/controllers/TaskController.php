@@ -15,7 +15,7 @@ use TaskForce\Actions\ResponseAction;
 use TaskForce\Constant\UserRole;
 use TaskForce\Exception\FileException;
 use TaskForce\Exception\TaskForceException;
-use TaskForce\Task;
+use TaskForce\TaskEntity;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -68,7 +68,7 @@ class TaskController extends Controller
 
                 if ($taskId) {
                     Yii::$app->session->setFlash('success', 'Задача создана');
-                    $this->redirect('/task/view/' . $taskId);
+                    $this->redirect('/tasks/view/' . $taskId);
                 } else {
                     $createTaskForm->addError('', 'Задача не создана, попробуйте позже.');
                 }
@@ -88,7 +88,7 @@ class TaskController extends Controller
      */
     public function actionResponse(int $id)
     {
-        $task = new Task($id);
+        $task = new TaskEntity($id);
 
         $existResponse = Response::findResponsesByTaskIdUserId($id, Yii::$app->user->getId());
         if ($existResponse) {
@@ -117,7 +117,7 @@ class TaskController extends Controller
      */
     public function actionRefuse(int $id)
     {
-        $task = new Task($id);
+        $task = new TaskEntity($id);
         if (Yii::$app->request->getIsPost()
             && $task->applyAction(RefuseAction::class)) {
             Yii::$app->session->setFlash('failure', 'Задача отклонена');
@@ -135,7 +135,7 @@ class TaskController extends Controller
      */
     public function actionCancel(int $id)
     {
-        $task = new Task($id);
+        $task = new TaskEntity($id);
         if (Yii::$app->request->getIsPost()
             && $task->applyAction(CancelAction::class)) {
             Yii::$app->session->setFlash('failure', 'Задача отклонена');
@@ -152,7 +152,7 @@ class TaskController extends Controller
      */
     public function actionComplete(int $id)
     {
-        $task = new Task($id);
+        $task = new TaskEntity($id);
         $completeTaskForm = new CompleteTaskForm();
         if (Yii::$app->request->getIsPost()) {
             $completeTaskForm->load(Yii::$app->request->post());

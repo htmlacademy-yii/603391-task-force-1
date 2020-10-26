@@ -40,7 +40,7 @@ class ResponseTaskForm extends Model
             $response->description = $this->comment;
             $response->price = $this->payment;
             $response->task_id = $taskId;
-            $response->status = \TaskForce\Response::STATUS_NEW;
+            $response->status = \TaskForce\ResponseEntity::STATUS_NEW;
             $response->user_id = $userId;
             $response->insert();
             $transaction->commit();
