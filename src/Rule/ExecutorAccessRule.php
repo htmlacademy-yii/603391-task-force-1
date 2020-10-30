@@ -13,7 +13,6 @@ class ExecutorAccessRule extends AccessRule
 
     public function allows($action, $user, $request)
     {
-
         $role = Yii::$app->user->identity->role;
         $parentRes = parent::allows($action, $user, $request);
 

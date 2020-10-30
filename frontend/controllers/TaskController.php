@@ -27,16 +27,24 @@ class TaskController extends Controller
 {
     public function behaviors()
     {
+        $customerActions = ['create', 'cancel', 'complete'];
+        $executorActions = ['response', 'refuse'];
+
         return [
             'accessCustomer' => [
                 'class' => AccessControl::class,
-                'rules' => ['actions' => ['create', 'cancel', 'complete']],
+                'only' => $customerActions,
+                'rules' => [
+                    ['actions' => $customerActions],
+                ],
                 'ruleConfig' => ['class' => CustomerAccessRule::class],
             ],
             'accessExecutor' => [
                 'class' => AccessControl::class,
-                'only' => ['update'],
-                'rules' => ['actions' => ['response', 'refuse']],
+                'only' => $executorActions,
+                'rules' => [
+                    ['actions' => $executorActions],
+                ],
                 'ruleConfig' => ['class' => ExecutorAccessRule::class],
             ],
         ];

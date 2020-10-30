@@ -192,15 +192,18 @@ class Task extends ActiveRecord
             $query->andWhere($categoryList);
         }
 
-        if (strlen($request['TasksFilterForm']['searchName']) > 0) {
-            $query->andWhere(['LIKE', 't.name', $request['TasksFilterForm']['searchName'], false]);
+        $searchName = $request['TasksFilterForm']['searchName'] ?? '';
+        if (strlen($searchName) > 0) {
+            $query->andWhere(['LIKE', 't.name', $searchName, false]);
         }
 
-        if ($request['TasksFilterForm']['withoutExecutor']) {
+        $withoutExecutor = $request['TasksFilterForm']['withoutExecutor'] ?? false;
+        if ($withoutExecutor) {
             $query->andWhere('t.executor_id IS NULL');
         }
 
-        if ($request['TasksFilterForm']['remoteWork']) {
+        $remoteWork = $request['TasksFilterForm']['remoteWork'] ?? false;
+        if ($remoteWork) {
             $query->andWhere('t.lat IS NULL AND t.lng IS NULL');
         }
 

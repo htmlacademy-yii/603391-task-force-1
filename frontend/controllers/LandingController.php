@@ -23,7 +23,8 @@ class LandingController extends Controller
         }
 
         $this->layout = 'landing';
-        $this->loginForm = new LoginForm();
+        $loginForm = new LoginForm();
+        $this->loginForm = $loginForm;
 
         return $this->render('index', compact('loginForm'));
     }

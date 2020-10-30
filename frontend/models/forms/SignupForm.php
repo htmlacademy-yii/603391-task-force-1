@@ -27,12 +27,12 @@ class SignupForm extends Model
     {
         return [
             ['email', 'trim'],
-            ['email', 'required', 'message' => NOT_FILLED],
+            ['email', 'required', 'message' => self::NOT_FILLED],
             ['email', 'email', 'message' => 'Неверный адрес.'],
             ['email', 'unique', 'targetClass' => User::class, 'message' => 'Данный email уже занят.'],
             ['username', 'trim'],
-            ['username', 'required', 'message' => NOT_FILLED],
-            ['cityId', 'required', 'message' => NOT_FILLED],
+            ['username', 'required', 'message' => self::NOT_FILLED],
+            ['cityId', 'required', 'message' => self::NOT_FILLED],
             [
                 'cityId',
                 'exist',
@@ -41,7 +41,7 @@ class SignupForm extends Model
                 'message' => 'Введен неверный город'
             ],
             ['password', 'string', 'min' => 8, 'tooShort' => 'Пароль должен быть не менее 8 символов.'],
-            ['password', 'required', 'message' => NOT_FILLED],
+            ['password', 'required', 'message' => self::NOT_FILLED],
         ];
     }
 
