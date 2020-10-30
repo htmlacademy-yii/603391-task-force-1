@@ -15,6 +15,8 @@ use TaskForce\Actions\ResponseAction;
 use TaskForce\Constant\UserRole;
 use TaskForce\Exception\FileException;
 use TaskForce\Exception\TaskForceException;
+use TaskForce\Rule\CustomerAccessRule;
+use TaskForce\Rule\ExecutorAccessRule;
 use TaskForce\TaskEntity;
 use Yii;
 use yii\filters\AccessControl;
@@ -26,26 +28,16 @@ class TaskController extends Controller
     public function behaviors()
     {
         return [
-            'access' => [
+            'accessCustomer' => [
                 'class' => AccessControl::class,
-                'rules' => [
-                    [
-                        'actions' => ['create', 'cancel', 'complete'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                        'matchCallback' => function ($rule, $action) {
-                            return (Yii::$app->user->identity->role === UserRole::CUSTOMER);
-                        }
-                    ],
-                    [
-                        'actions' => ['response', 'refuse'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                        'matchCallback' => function ($rule, $action) {
-                            return (Yii::$app->user->identity->role === UserRole::EXECUTOR);
-                        }
-                    ],
-                ],
+                'rules' => ['actions' => ['create', 'cancel', 'complete']],
+                'ruleConfig' => ['class' => CustomerAccessRule::class],
+            ],
+            'accessExecutor' => [
+                'class' => AccessControl::class,
+                'only' => ['update'],
+                'rules' => ['actions' => ['response', 'refuse']],
+                'ruleConfig' => ['class' => ExecutorAccessRule::class],
             ],
         ];
     }
@@ -158,7 +150,6 @@ class TaskController extends Controller
             $completeTaskForm->load(Yii::$app->request->post());
             $completeTaskForm->validate();
             if ($completeTaskForm->validate()) {
-
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
                     $task->applyAction(CompleteAction::class);
