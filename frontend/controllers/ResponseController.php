@@ -4,10 +4,29 @@ namespace frontend\controllers;
 
 use TaskForce\Exception\TaskForceException;
 use TaskForce\ResponseEntity;
+use TaskForce\Rule\CustomerAccessRule;
+use TaskForce\Rule\ExecutorAccessRule;
+use yii\filters\AccessControl;
 use yii\web\Response;
 
 class ResponseController extends SecureController
 {
+    public function behaviors()
+    {
+        $customerActions = ['confirm', 'cancel'];
+
+        return [
+            'accessCustomer' => [
+                'class' => AccessControl::class,
+                'only' => $customerActions,
+                'rules' => [
+                    ['actions' => $customerActions],
+                ],
+                'ruleConfig' => ['class' => CustomerAccessRule::class],
+            ],
+        ];
+    }
+
 
     /**
      * Confirm response
