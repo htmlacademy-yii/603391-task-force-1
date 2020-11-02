@@ -3,6 +3,7 @@
 namespace frontend\models;
 
 use TaskForce\Exception\FileException;
+use Yii;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -38,29 +39,7 @@ class File extends ActiveRecord
         $file = __DIR__ . sprintf('/../web/uploads/%s/%s', $taskFile->task_id, $taskFile->generated_name);
 
         if (file_exists($file)) {
-            // flush the PHP output buffer to avoid overflowing the memory allocated for the script
-            // if this is not done the file will be read into memory completely!
-            if (ob_get_level()) {
-                ob_end_clean();
-            }
-            // make the browser show the save file window
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename=' . $taskFile->filename);
-            header('Content-Transfer-Encoding: binary');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-            header('Content-Length: ' . filesize($file));
-
-            // read the file and send it to the user
-            if ($resource = fopen($file, 'rb')) {
-                while (!feof($resource)) {
-                    print fread($resource, 1024);
-                }
-                fclose($resource);
-            }
-            exit;
+            Yii::$app->response->sendFile($file, $taskFile->filename);
         } else {
             throw new FileException('File not found.');
         }

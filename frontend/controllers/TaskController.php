@@ -12,7 +12,6 @@ use TaskForce\Actions\CancelAction;
 use TaskForce\Actions\CompleteAction;
 use TaskForce\Actions\RefuseAction;
 use TaskForce\Actions\ResponseAction;
-use TaskForce\Constant\UserRole;
 use TaskForce\Exception\FileException;
 use TaskForce\Exception\TaskForceException;
 use TaskForce\Rule\CustomerAccessRule;

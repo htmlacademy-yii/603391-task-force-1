@@ -281,7 +281,7 @@ class User extends ActiveRecord implements IdentityInterface
     public static function applyFilters(array $request, Query $query): ?Query
     {
         if (strlen($request['UsersFilterForm']['searchName']) > 0) {
-            $query->andWhere(sprintf('u.name LIKE \'%s\'', '%' . $request['UsersFilterForm']['searchName'] . '%'));
+            $query->andWhere(['LIKE','u.name',  $request['UsersFilterForm']['searchName']]);
 
             return $query;
         }
@@ -307,7 +307,7 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         // filtering by 'Free Now'
-        if ($request['UsersFilterForm']['freeNow']) {
+        if (isset($request['UsersFilterForm']['freeNow'])) {
             $subQuery1 = (new Query())
                 ->select('id')->from('task t')
                 ->where('t.executor_id = p.user_id');
@@ -315,12 +315,12 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         // filter by 'Online Now'
-        if ($request['UsersFilterForm']['onlineNow']) {
+        if (isset($request['UsersFilterForm']['onlineNow'])) {
             $query->andWhere('u.date_login > DATE_SUB(NOW(), INTERVAL 30 MINUTE)');
         }
 
         // filter by 'Reviews'
-        if ($request['UsersFilterForm']['feedbackExists']) {
+        if (isset($request['UsersFilterForm']['feedbackExists'])) {
             $subQuery2 = (new Query())
                 ->select('id')->from('opinion o')
                 ->where('o.executor_id = p.user_id');
@@ -328,7 +328,7 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         // filter by 'Favorite'
-        if ($request['UsersFilterForm']['isFavorite']) {
+        if (isset($request['UsersFilterForm']['isFavorite'])) {
             $subQuery3 = (new Query())
                 ->select('favorite_id')->from('favorite f')
                 ->where('f.favorite_id = p.user_id');

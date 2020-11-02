@@ -88,15 +88,15 @@ AppAsset::register($this);
             <div class="header__nav">
                 <ul class="header-nav__list site-list">
                     <li class="site-list__item">
-                        <a href="/tasks">Задания</a>
+                        <a href="<?=Url::to(['tasks/index'])?>">Задания</a>
                     </li>
                     <li class="site-list__item">
-                        <a href="/users">Исполнители</a>
+                        <a href="<?=Url::to(['users/index'])?>">Исполнители</a>
                     </li>
 
 
                     <li class="site-list__item site-list__item--active">
-                        <a href="/task">Создать задание</a>
+                        <a href="<?=Url::to(['task/create'])?>">Создать задание</a>
                     </li>
                     <li class="site-list__item">
                         <a href="#">Мой профиль</a>

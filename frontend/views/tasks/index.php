@@ -6,7 +6,6 @@
 /** @var CategoriesFilterForm $modelCategoriesFilter */
 /** @var Pagination $pagination */
 
-
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\Task;
 use frontend\models\forms\TasksFilterForm;
@@ -15,7 +14,7 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\widgets\LinkPager;
-//var_dump(Yii::$app->user->identity);
+
 $this->title = 'TaskForce - Задания';
 ?>
 <main class="page-main">
