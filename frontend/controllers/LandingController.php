@@ -5,8 +5,8 @@ namespace frontend\controllers;
 use frontend\models\forms\LoginForm;
 use frontend\models\Task;
 use TaskForce\Exception\TaskForceException;
+use TaskForce\Helpers\Declination;
 use Yii;
-use yii\filters\AccessControl;
 use yii\web\Controller;
 
 /**
@@ -15,7 +15,6 @@ use yii\web\Controller;
 class LandingController extends Controller
 {
     public LoginForm $loginForm;
-
 
     /**
      * @return string
@@ -30,11 +29,14 @@ class LandingController extends Controller
         $this->layout = 'landing';
         $this->loginForm = new LoginForm();
 
-        $modelsTasks = Task::findNewTask()->limit(5)->all();
-        var_dump($modelsTasks);
+        $modelsTasks = Task::findNewTask()->limit(4)->all();
+        if (isset($modelsTasks)) {
+            foreach ($modelsTasks as $key => $element) {
+                $modelsTasks[$key]['afterTime'] = Declination::getTimeAfter($element['date_add']);
+            }
+        }
 
-
-        return $this->render('index', compact('loginForm'));
+        return $this->render('index', compact('loginForm', 'modelsTasks'));
     }
 
 

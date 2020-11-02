@@ -160,7 +160,6 @@ class Task extends ActiveRecord
         return new TaskQuery(get_called_class());
     }
 
-
     /**
      * Find task with NEW status
      * @param array $request
