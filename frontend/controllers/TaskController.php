@@ -25,6 +25,9 @@ use yii\web\UploadedFile;
 
 class TaskController extends Controller
 {
+    /**
+     * @return array|array[]
+     */
     public function behaviors()
     {
         $customerActions = ['create', 'cancel', 'complete'];

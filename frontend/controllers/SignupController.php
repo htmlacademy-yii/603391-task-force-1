@@ -6,22 +6,29 @@ use frontend\models\City;
 use frontend\models\forms\SignupForm;
 use TaskForce\Exception\TaskForceException;
 use Yii;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
 
 class SignupController extends Controller
 {
-    /**
-     * @param  $action
-     * @return bool
-     */
-    public function beforeAction($action)
-    {
-        if (Yii::$app->user->identity) {
-            $this->redirect('tasks/index');
-        }
 
-        return true;
+    /**
+     * @return array|array[]
+     */
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['?']
+                    ],
+                ]
+            ],
+        ];
     }
 
     /**

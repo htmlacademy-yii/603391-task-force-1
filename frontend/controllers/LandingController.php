@@ -3,7 +3,10 @@
 namespace frontend\controllers;
 
 use frontend\models\forms\LoginForm;
+use frontend\models\Task;
+use TaskForce\Exception\TaskForceException;
 use Yii;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 
 /**
@@ -13,8 +16,10 @@ class LandingController extends Controller
 {
     public LoginForm $loginForm;
 
+
     /**
      * @return string
+     * @throws TaskForceException
      */
     public function actionIndex()
     {
@@ -23,8 +28,11 @@ class LandingController extends Controller
         }
 
         $this->layout = 'landing';
-        $loginForm = new LoginForm();
-        $this->loginForm = $loginForm;
+        $this->loginForm = new LoginForm();
+
+        $modelsTasks = Task::findNewTask()->limit(5)->all();
+        var_dump($modelsTasks);
+
 
         return $this->render('index', compact('loginForm'));
     }

@@ -5,12 +5,14 @@ namespace frontend\controllers;
 use TaskForce\Exception\TaskForceException;
 use TaskForce\ResponseEntity;
 use TaskForce\Rule\CustomerAccessRule;
-use TaskForce\Rule\ExecutorAccessRule;
 use yii\filters\AccessControl;
 use yii\web\Response;
 
 class ResponseController extends SecureController
 {
+    /**
+     * @return array|array[]
+     */
     public function behaviors()
     {
         $customerActions = ['confirm', 'cancel'];

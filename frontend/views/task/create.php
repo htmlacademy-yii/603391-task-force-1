@@ -7,13 +7,15 @@ use frontend\models\forms\CreateTaskForm;
 use  yii\widgets\ActiveForm;
 use yii\helpers\Html;
 
-
-
 $this->registerJSFile('/js/dropzone.js');
+
 $js = <<< JS
   var dropzone = new Dropzone("div.create__file", {url: "/", paramName: "Attach"});
 JS;
 $this->registerJs($js, $position = yii\web\View::POS_END, $key = null);
+
+$yandexApiJs = "https://api-maps.yandex.ru/2.1/?apikey=e666f398-c983-4bde-8f14-e3fec900592a&lang=ru_RU";
+$this->registerJSFile($yandexApiJs,  $options = [$position = yii\web\View::POS_HEAD ], $key = null);
 ?>
 
 <main class="page-main">

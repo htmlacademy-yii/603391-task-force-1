@@ -7,6 +7,9 @@ use yii\web\Controller;
 
 class UserController extends Controller
 {
+    /**
+     * @return \yii\web\Response
+     */
     public function actionLogout()
     {
         Yii::$app->user->logout();
