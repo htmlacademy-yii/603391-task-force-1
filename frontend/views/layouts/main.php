@@ -1,16 +1,16 @@
 <?php
 
-/* @var $this \yii\web\View */
+/* @var $this View */
 /* @var $content string */
-
 
 use yii\helpers\Html;
 use yii\helpers\Url;
 use frontend\assets\AppAsset;
 use common\widgets\Alert;
-
+use yii\web\View;
 
 $loggedUser = Yii::$app->user->identity;
+$userProfile = Yii::$app->user->identity->getProfiles()->asArray()->one();
 AppAsset::register($this);
 ?>
 <div class="table-layout">
@@ -131,7 +131,7 @@ AppAsset::register($this);
                 </div>
                 <div class="header__account">
                     <a class="header__account-photo">
-                        <img src="<?= Url::base() . '/img/user-photo.png' ?>"
+                        <img src="<?php echo Url::base() . "/img/". $userProfile['avatar'] ?>"
                              width="43" height="44"
                              alt="Аватар пользователя">
                     </a>
