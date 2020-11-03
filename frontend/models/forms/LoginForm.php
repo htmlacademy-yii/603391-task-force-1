@@ -7,10 +7,14 @@ namespace frontend\models\forms;
 use frontend\models\User;
 use yii\base\Model;
 
+/**
+ *
+ * @property-read mixed $user
+ */
 class LoginForm extends Model
 {
-    public $email = '';
-    public $password = '';
+    public string $email = '';
+    public string $password = '';
 
     private $_user;
 
@@ -21,6 +25,7 @@ class LoginForm extends Model
     {
         return [
             [['email', 'password'], 'required'],
+            [ 'email','email' ],
             ['password', 'validatePassword'],
         ];
     }

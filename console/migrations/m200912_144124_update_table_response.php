@@ -12,11 +12,9 @@ class m200912_144124_update_table_response extends Migration
      */
     public function safeUp()
     {
-        $sql = 'ALTER TABLE `response` DROP COLUMN `rate`;
-              ALTER TABLE `response` ADD COLUMN `user_id`  INT(11) UNSIGNED NOT NULL AFTER `status`;
-              ALTER TABLE `opinion` ADD COLUMN `task_id`  INT(11) UNSIGNED NOT NULL AFTER `created_at`;
-              ALTER TABLE `profile` ADD COLUMN `show`  INT(11) UNSIGNED NOT NULL AFTER `rate`;';
-        $this->execute($sql);
+        $this->dropColumn('response', 'rate');
+        $this->addColumn('response', 'user_id', $this->integer(11)->unsigned()->notNull()
+            ->after('status'));
     }
 
     /**
@@ -24,23 +22,9 @@ class m200912_144124_update_table_response extends Migration
      */
     public function safeDown()
     {
-        echo "m200912_144124_update_table_response cannot be reverted.\n";
-
-        return false;
+        $this->addColumn('response', 'rate', $this->smallInteger(3)->unsigned()->notNull()
+            ->after('status'));
+        $this->dropColumn('response', 'user_id');
     }
 
-    /*
-    // Use up()/down() to run migration code without a transaction.
-    public function up()
-    {
-
-    }
-
-    public function down()
-    {
-        echo "m200912_144124_update_table_response cannot be reverted.\n";
-
-        return false;
-    }
-    */
 }

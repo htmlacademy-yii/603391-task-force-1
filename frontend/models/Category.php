@@ -2,7 +2,9 @@
 
 namespace frontend\models;
 
-use Yii;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "category".
@@ -14,7 +16,7 @@ use Yii;
  * @property Specialization[] $specializations
  * @property Task[] $tasks
  */
-class Category extends \yii\db\ActiveRecord
+class Category extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -22,6 +24,14 @@ class Category extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return 'category';
+    }
+
+    /**
+     * @return array
+     */
+    public static function all(): array
+    {
+        return ArrayHelper::map(self::find()->asArray()->all(), 'id', 'name');
     }
 
     /**
@@ -51,21 +61,21 @@ class Category extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Specializations]].
      *
-     * @return \yii\db\ActiveQuery|SpecializationQuery
+     * @return ActiveQuery|SpecializationQuery
      */
     public function getSpecializations()
     {
-        return $this->hasMany(Specialization::className(), ['category_id' => 'id']);
+        return $this->hasMany(Specialization::class, ['category_id' => 'id']);
     }
 
     /**
      * Gets query for [[Tasks]].
      *
-     * @return \yii\db\ActiveQuery|TaskQuery
+     * @return ActiveQuery|TaskQuery
      */
     public function getTasks()
     {
-        return $this->hasMany(Task::className(), ['category_id' => 'id']);
+        return $this->hasMany(Task::class, ['category_id' => 'id']);
     }
 
     /**

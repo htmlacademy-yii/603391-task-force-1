@@ -2,18 +2,15 @@
 
 namespace frontend\models;
 
+use yii\db\ActiveQuery;
+
 /**
  * This is the ActiveQuery class for [[Response]].
  *
- * @see Response
+ * @see ResponseEntity
  */
-class ResponseQuery extends \yii\db\ActiveQuery
+class ResponseQuery extends ActiveQuery
 {
-    /*public function active()
-    {
-        return $this->andWhere('[[status]]=1');
-    }*/
-
     /**
      * {@inheritdoc}
      * @return Response[]|array

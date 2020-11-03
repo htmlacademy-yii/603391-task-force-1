@@ -10,11 +10,11 @@ use yii\base\Model;
 class UsersFilterForm extends Model
 {
 
-    public $freeNow = false;
-    public $onlineNow = false;
-    public $feedbackExists = false;
-    public $searchName = false;
-    public $isFavorite = false;
+    public bool $freeNow = false;
+    public bool $onlineNow = false;
+    public bool $feedbackExists = false;
+    public bool $searchName = false;
+    public bool $isFavorite = false;
 
     /**
      * @return array|string[]

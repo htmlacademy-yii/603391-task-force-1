@@ -2,8 +2,7 @@
 
 namespace frontend\controllers;
 
-use yii\web\Controller;
-
+use frontend\models\File;
 
 /**
  * Site controller
@@ -11,6 +10,9 @@ use yii\web\Controller;
 class SiteController extends SecureController
 {
 
+    /**
+     * @return array|string[][]
+     */
     public function actions()
     {
         return [
@@ -20,6 +22,13 @@ class SiteController extends SecureController
         ];
     }
 
+    /**
+     * @param int $id
+     */
+    public function actionFile(int $id)
+    {
+        File::forceDownloadTaskFile($id);
+    }
 }
 
 

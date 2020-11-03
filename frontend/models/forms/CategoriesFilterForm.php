@@ -8,10 +8,15 @@ use frontend\models\Category;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
 
+/**
+ *
+ * @property-write int $oneCategory
+ * @property-read array $categoriesState
+ */
 class CategoriesFilterForm extends Model
 {
-    private $categories;
-    private $categoriesId;
+    private ?array $categories = null;
+    private ?array $categoriesId = null;
 
     public function init()
     {
@@ -28,7 +33,13 @@ class CategoriesFilterForm extends Model
         if (array_key_exists($name, $this->categories)) {
             return $this->categories[$name];
         }
+
         return null;
+    }
+
+    public function getCategoriesState(): array
+    {
+        return $this->categories;
     }
 
     public function __set($name, $value): void
@@ -50,6 +61,14 @@ class CategoriesFilterForm extends Model
                 $this->categories[$name] = $value;
             }
         }
+    }
+
+    public function setOneCategory(int $id): void
+    {
+        foreach ($this->categoriesId as $key => $element) {
+            $this->categories[$key] = false;
+        }
+        $this->categories[$id] = true;
     }
 
 

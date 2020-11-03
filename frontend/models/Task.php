@@ -5,7 +5,7 @@ namespace frontend\models;
 
 use frontend\models\forms\TasksFilterForm;
 use TaskForce\Exception\TaskForceException;
-use TaskForce\Helpers\DeclinationNums;
+use TaskForce\Helpers\Declination;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Query;
@@ -18,7 +18,7 @@ use yii\db\Query;
  * @property string $name
  * @property string $description
  * @property int $category_id
- * @property int $status_id
+ * @property string $status
  * @property string $address
  * @property float $lat
  * @property float $lng
@@ -31,21 +31,15 @@ use yii\db\Query;
  * @property Chat[] $chats
  * @property File[] $files
  * @property Response[] $responses
- * @property Status $status
  * @property Category $category
  * @property User $customer
  * @property User $executor
  */
 class Task extends ActiveRecord
 {
-    public const STATUS_ID_NEW = 1;
-    public const STATUS_ID_CANCEL = 2;
-    public const STATUS_ID_IN_WORK = 3;
-    public const STATUS_ID_COMPLETE = 4;
-    public const STATUS_ID_FAILED = 5;
+    use ExceptionOnFindFail;
 
-
-    /**
+     /**
      * {@inheritdoc}
      */
     public static function tableName()
@@ -59,14 +53,15 @@ class Task extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'description', 'category_id', 'status_id', 'address', 'lat', 'lng', 'budget', 'expire', 'date_add', 'customer_id'], 'required'],
+            [['name', 'description', 'category_id', 'status', 'budget', 'expire', 'date_add', 'customer_id'], 'required'],
             [['description'], 'string'],
-            [['category_id', 'status_id', 'budget', 'executor_id', 'customer_id'], 'integer'],
+            [['category_id', 'budget', 'executor_id', 'customer_id'], 'integer'],
             [['lat', 'lng'], 'number'],
             [['expire', 'date_add'], 'safe'],
             [['name'], 'string', 'max' => 128],
             [['address'], 'string', 'max' => 255],
-            [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => Status::class, 'targetAttribute' => ['status_id' => 'id']],
+            [['status'], 'string', 'max' => 20],
+            [['status'], 'in', 'range' => \TaskForce\TaskEntity::STATUSES],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'id']],
             [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['customer_id' => 'id']],
             [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['executor_id' => 'id']],
@@ -83,7 +78,7 @@ class Task extends ActiveRecord
             'name' => 'Name',
             'description' => 'Description',
             'category_id' => 'Category ID',
-            'status_id' => 'Status ID',
+            'status' => 'Status',
             'address' => 'Address',
             'lat' => 'Lat',
             'lng' => 'Lng',
@@ -125,15 +120,6 @@ class Task extends ActiveRecord
         return $this->hasMany(Response::class, ['task_id' => 'id']);
     }
 
-    /**
-     * Gets query for [[Status]].
-     *
-     * @return ActiveQuery|StatusQuery
-     */
-    public function getStatus()
-    {
-        return $this->hasOne(Status::class, ['id' => 'status_id']);
-    }
 
     /**
      * Gets query for [[Category]].
@@ -174,7 +160,6 @@ class Task extends ActiveRecord
         return new TaskQuery(get_called_class());
     }
 
-
     /**
      * Find task with NEW status
      * @param array $request
@@ -195,7 +180,7 @@ class Task extends ActiveRecord
 
         $query->select(['t.*', 'c.name as cat_name', 'c.icon as icon'])->from('task t')
             ->join('LEFT JOIN', 'category as c', 't.category_id = c.id')
-            ->where('t.status_id = 1');
+            ->where(['t.status' => \TaskForce\TaskEntity::STATUS_NEW]);
 
 
         // todo добавить задания из города пользователя, либо из города, выбранного пользователем в текущей сессии.
@@ -206,15 +191,18 @@ class Task extends ActiveRecord
             $query->andWhere($categoryList);
         }
 
-        if (strlen($request['TasksFilterForm']['searchName']) > 0) {
-            $query->andWhere(['LIKE', 't.name', $request['TasksFilterForm']['searchName'], false]);
+        $searchName = $request['TasksFilterForm']['searchName'] ?? '';
+        if (strlen($searchName) > 0) {
+            $query->andWhere(['LIKE', 't.name', $searchName, false]);
         }
 
-        if ($request['TasksFilterForm']['withoutExecutor']) {
+        $withoutExecutor = $request['TasksFilterForm']['withoutExecutor'] ?? false;
+        if ($withoutExecutor) {
             $query->andWhere('t.executor_id IS NULL');
         }
 
-        if ($request['TasksFilterForm']['remoteWork']) {
+        $remoteWork = $request['TasksFilterForm']['remoteWork'] ?? false;
+        if ($remoteWork) {
             $query->andWhere('t.lat IS NULL AND t.lng IS NULL');
         }
 
@@ -233,7 +221,7 @@ class Task extends ActiveRecord
      * @return array
      * @throws TaskForceException
      */
-    public static function findTaskByID(int $id = null): ?array
+    public static function findTaskTitleInfoByID(int $id = null): ?array
     {
         $query = new Query();
 
@@ -244,11 +232,14 @@ class Task extends ActiveRecord
 
         $model = $query->one();
 
-        if (!empty($model)) {
-            $model['afterTime'] = DeclinationNums::getTimeAfter((string)$model['date_add']);
-        } else {
-            $model = null;
-        };
+        if ($model) {
+            $model['afterTime'] = Declination::getTimeAfter((string)$model['date_add']);
+        }
+
+        if (!$model) {
+            throw new NotFoundHttpException("Задание с ID $id не найдено");
+        }
+
 
         return $model;
     }
@@ -260,14 +251,10 @@ class Task extends ActiveRecord
      */
     public static function findCountTasksByUserId(int $id): ?int
     {
-
-        if (empty($id) && ($id < 1)) {
+        if ($id && ($id < 1)) {
             throw new TaskForceException('Не задан ID пользователя');
         }
 
-        return self::find()->where(['id' => $id])->andWhere(['status_id' => self::STATUS_ID_COMPLETE])->count();
-
+        return self::find()->where(['id' => $id])->andWhere(['status' => \TaskForce\TaskEntity::STATUS_COMPLETE])->count();
     }
-
-
 }

@@ -3,6 +3,7 @@
 namespace frontend\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "notification".
@@ -13,7 +14,7 @@ use Yii;
  * @property UserNotification[] $userNotifications
  * @property User[] $users
  */
-class Notification extends \yii\db\ActiveRecord
+class Notification extends ActiveRecord
 {
     /**
      * {@inheritdoc}

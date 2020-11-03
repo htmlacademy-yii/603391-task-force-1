@@ -2,7 +2,7 @@
 
 namespace frontend\models;
 
-use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "favorite".
@@ -13,7 +13,7 @@ use Yii;
  * @property File $favorite
  * @property User $user
  */
-class Favorite extends \yii\db\ActiveRecord
+class Favorite extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -32,8 +32,8 @@ class Favorite extends \yii\db\ActiveRecord
             [['user_id', 'favorite_id'], 'required'],
             [['user_id', 'favorite_id'], 'integer'],
             [['user_id', 'favorite_id'], 'unique', 'targetAttribute' => ['user_id', 'favorite_id']],
-            [['favorite_id'], 'exist', 'skipOnError' => true, 'targetClass' => File::className(), 'targetAttribute' => ['favorite_id' => 'id']],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['favorite_id'], 'exist', 'skipOnError' => true, 'targetClass' => File::class, 'targetAttribute' => ['favorite_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
@@ -65,7 +65,7 @@ class Favorite extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
     /**

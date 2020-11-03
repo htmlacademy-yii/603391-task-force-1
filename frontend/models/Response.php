@@ -16,11 +16,13 @@ use yii\db\ActiveRecord;
  * @property int $task_id
  * @property int|null $price
  * @property string $status
- *
+ * @property int $user_id
  * @property Task $task
  */
 class Response extends ActiveRecord
 {
+    use ExceptionOnFindFail;
+
     /**
      * {@inheritdoc}
      */
@@ -30,16 +32,47 @@ class Response extends ActiveRecord
     }
 
     /**
+     * @param ActiveRecord $task
+     * @return array
+     */
+    public static function findResponsesByTask(ActiveRecord $task): array
+    {
+        $currentUserId = Yii::$app->user->identity->getId();
+
+        if ($currentUserId === $task->customer_id) {
+            $modelsResponse = self::findResponsesByTaskId($task->id);
+        } else {
+            $modelsResponse = self::findResponsesByTaskId($task->id, $currentUserId);
+        }
+
+        return $modelsResponse;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
             [['created_at'], 'safe'],
-            [['rate', 'description', 'task_id'], 'required'],
-            [['rate', 'task_id', 'price'], 'integer'],
+            [['description', 'user_id', 'task_id'], 'required'],
+            [['task_id', 'user_id', 'price'], 'integer'],
             [['description', 'status'], 'string'],
-            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Task::class, 'targetAttribute' => ['task_id' => 'id']],
+            [['status'], 'in', 'range' => \TaskForce\ResponseEntity::LIST],
+            [
+                ['task_id'],
+                'exist',
+                'skipOnError' => true,
+                'targetClass' => Task::class,
+                'targetAttribute' => ['task_id' => 'id']
+            ],
+            [
+                ['user_id'],
+                'exist',
+                'skipOnError' => true,
+                'targetClass' => User::class,
+                'targetAttribute' => ['user_id' => 'id']
+            ],
         ];
     }
 
@@ -56,6 +89,7 @@ class Response extends ActiveRecord
             'task_id' => 'Task ID',
             'price' => 'Price',
             'status' => 'Status',
+            'user_id' => 'User ID',
         ];
     }
 
@@ -81,15 +115,32 @@ class Response extends ActiveRecord
     /**
      *
      * @param int $id
+     * @param int|null $currentUserID
      * @return array
      */
-    public static function findResponsesByTaskId(int $id): array
+    public static function findResponsesByTaskId(int $id, int $currentUserID = null): array
     {
-        return  self::find()->select('r.*, p.user_id, p.avatar, p.rate, u.name')
-        ->from('response r')->where(['task_id' => $id])
-        ->join('LEFT JOIN', 'user as u', 'r.user_id = u.id')
-        ->join('LEFT JOIN', 'profile as p', 'r.user_id = p.user_id')
-        ->asArray()->all();
+        $query = self::find()->select('r.*, p.user_id, p.avatar, p.rate, u.name')
+            ->from('response r')->where(['task_id' => $id])
+            ->join('LEFT JOIN', 'user as u', 'r.user_id = u.id')
+            ->join('LEFT JOIN', 'profile as p', 'r.user_id = p.user_id');
+
+        if ($currentUserID) {
+            $query->Andwhere(['r.user_id' => $currentUserID]);
+        }
+
+        return $query->asArray()->all();
     }
 
+    /**
+     *
+     * @param int $taskId
+     * @param int $userId
+     * @return array
+     */
+    public static function findResponsesByTaskIdUserId(int $taskId, int $userId): array
+    {
+        return self::find()->select('id')
+            ->from('response r')->where(['task_id' => $taskId])->andWhere(['user_id' => $userId])->asArray()->all();
+    }
 }
