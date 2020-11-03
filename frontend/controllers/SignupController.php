@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use frontend\models\City;
+use frontend\models\forms\LoginForm;
 use frontend\models\forms\SignupForm;
 use TaskForce\Exception\TaskForceException;
 use Yii;
@@ -38,6 +39,7 @@ class SignupController extends Controller
     public function actionIndex()
     {
         $model = new SignupForm();
+
         if (Yii::$app->request->getIsPost()) {
             $model->load(Yii::$app->request->post());
 

@@ -23,10 +23,9 @@ $this->title = 'TaskForce - Регистрация аккаунта';
                         'action' => '/signup/index',
                         'enableClientValidation' => true,
                         'fieldConfig' => [
-                            'template' => "{label}</br>{input}</br>{hint}{error}",
+                            'template' => "</br>{label}</br>{input}</br>{hint}</br>{error}",
                             'inputOptions' => ['class' => 'input textarea input-wide'],
-                            'labelOptions' => ['errorCssClass' => 'input-danger'],
-                            'errorOptions' => ['tag' => 'span'],
+                            'errorOptions' => ['tag' => 'span','class' => 'input-error'],
                             'hintOptions' => ['tag' => 'span'],
                         ],
                         'options' => [

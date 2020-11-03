@@ -2555,4 +2555,13 @@ footer {
 .dz-error-mark {
   display: none !important;
 }
+.input-wide {
+  width: 100%;
+}
+
+span.input-error {
+  color: red;
+}
+
+
 /*# sourceMappingURL=style.css.map */
