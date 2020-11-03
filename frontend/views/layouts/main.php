@@ -10,7 +10,10 @@ use common\widgets\Alert;
 use yii\web\View;
 
 $loggedUser = Yii::$app->user->identity;
-$userProfile = Yii::$app->user->identity->getProfiles()->asArray()->one();
+if ($loggedUser) {
+    $userAvatar = Yii::$app->user->identity->getProfiles()->asArray()->one()['avatar'] ?? 'no-avatar.jpg';
+}
+
 AppAsset::register($this);
 ?>
 <div class="table-layout">
@@ -93,8 +96,6 @@ AppAsset::register($this);
                     <li class="site-list__item">
                         <a href="<?=Url::to(['users/index'])?>">Исполнители</a>
                     </li>
-
-
                     <li class="site-list__item site-list__item--active">
                         <a href="<?=Url::to(['task/create'])?>">Создать задание</a>
                     </li>
@@ -131,7 +132,7 @@ AppAsset::register($this);
                 </div>
                 <div class="header__account">
                     <a class="header__account-photo">
-                        <img src="<?php echo Url::base() . "/img/". $userProfile['avatar'] ?>"
+                        <img src="<?php echo Url::base() . "/img/". $userAvatar ?>"
                              width="43" height="44"
                              alt="Аватар пользователя">
                     </a>

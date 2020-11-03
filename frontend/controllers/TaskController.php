@@ -69,7 +69,6 @@ class TaskController extends Controller
                 $taskId = $createTaskForm->saveData($userId);
 
                 if ($taskId) {
-                    Yii::$app->session->setFlash('success', 'Задача создана');
                     $this->redirect('/tasks/view/' . $taskId);
                 } else {
                     $createTaskForm->addError('', 'Задача не создана, попробуйте позже.');
