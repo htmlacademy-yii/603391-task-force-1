@@ -1,26 +1,27 @@
 <?php
 
-
 namespace frontend\controllers;
-
 
 use frontend\models\File;
 use frontend\models\forms\CategoriesFilterForm;
+use frontend\models\forms\CompleteTaskForm;
+use frontend\models\forms\ResponseTaskForm;
 use frontend\models\forms\TasksFilterForm;
 use frontend\models\Profile;
 use frontend\models\Response;
+use Exception;
 use TaskForce\Exception\TaskForceException;
-use TaskForce\Helpers\DeclinationNums;
+use TaskForce\Helpers\Declination;
+use TaskForce\TaskEntity;
 use yii;
 use frontend\models\Task;
 use yii\data\Pagination;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
+use yii\helpers\ArrayHelper;
 
 class TasksController extends SecureController
 {
     /**
-     * Список заданий в статусе 'Новый', без привязки к адресу
+     * Task list
      *
      * @return string
      * @throws TaskForceException
@@ -34,57 +35,97 @@ class TasksController extends SecureController
 
         if (Yii::$app->request->getIsPost()) {
             $modelTasksFilter->load(Yii::$app->request->post());
-            $modelCategoriesFilter->updateProperties((Yii::$app->request->post())['CategoriesFilterForm']['categories']);
+            $modelCategoriesFilter->updateProperties(
+                (Yii::$app->request->post())['CategoriesFilterForm']['categories']
+            );
 
             $filterRequest = (Yii::$app->request->post());
         }
 
+        if (Yii::$app->request->getIsGet()) {
+            $ids = Yii::$app->request->get();
+            if (isset($ids['category'])) {
+                $modelCategoriesFilter->setOneCategory($ids['category']);
+                $filterRequest['CategoriesFilterForm']['categories'] = $modelCategoriesFilter->getCategoriesState();
+            }
+        }
+
         $modelsTasks = Task::findNewTask($filterRequest);
 
-        $pagination = new Pagination(['totalCount' => $modelsTasks->count(), 'pageSize' => 5, 'forcePageParam' => false,
-            'pageSizeParam' => false]);
+        $pagination = new Pagination(
+            [
+                'totalCount' => $modelsTasks->count(),
+                'pageSize' => 5,
+                'forcePageParam' => false,
+                'pageSizeParam' => false
+            ]
+        );
 
         $modelsTasks = $modelsTasks->offset($pagination->offset)->limit($pagination->limit)->all();
 
         if (isset($modelsTasks)) {
             foreach ($modelsTasks as $key => $element) {
-                $modelsTasks[$key]['afterTime'] = DeclinationNums::getTimeAfter($element['date_add']);
+                $modelsTasks[$key]['afterTime'] = Declination::getTimeAfter($element['date_add']);
             }
         }
 
-        return $this->render('index', compact('modelsTasks', 'modelTasksFilter', 'modelCategoriesFilter', 'pagination'));
+        return $this->render(
+            'index',
+            compact('modelsTasks', 'modelTasksFilter', 'modelCategoriesFilter', 'pagination')
+        );
     }
 
     /**
-     * Просмотр задания c id
      *
      * @param int $id
      * @return string
      * @throws TaskForceException
-     * @throws NotFoundHttpException
+     * @throws Exception
      */
     public function actionView(int $id): string
     {
-        $modelTask = Task::findTaskById($id);
+        $responseTaskForm = new ResponseTaskForm();
+        $completeTaskForm = new CompleteTaskForm();
 
-        if (!$modelTask) {
-            throw new NotFoundHttpException("Задание с ID $id не найдено");
-        }
+        $currentUserRole = Yii::$app->user->identity->role;
+        $modelTask = Task::findTaskTitleInfoByID($id);
 
-        $modelsResponse = Response::findResponsesByTaskId($id);
-        $currentUser = 'customer'; // изменить после создания авторизации
-        $userId = ($currentUser == 'customer') ? $modelTask['executor_id'] : $modelTask['customer_id'];
+        $task = new TaskEntity($id);
+
+        $availableActions = $task->getAvailableActions();
+
+        $modelsResponse = Response::findResponsesByTask($task->model);
+
+        $ids = ArrayHelper::getColumn($modelsResponse, 'user_id');
+        $existsUserResponse = in_array(Yii::$app->user->identity->getId(), $ids);
+
+        $taskAssistUserId = $task->getAssistUserId();
+
         $modelsFiles = File::findFilesByTaskID($id);
 
         $modelTaskUser = [];
-        if ($modelTask['executor_id']) {
-            $modelTaskUser = Profile::findProfileByUserId($userId);
-            $modelTaskUser['countTask'] = Task::findCountTasksByUserId($userId);
+
+
+        if ($taskAssistUserId) {
+            $modelTaskUser = Profile::findProfileByUserId($taskAssistUserId);
+            $modelTaskUser['countTask'] = Task::findCountTasksByUserId($taskAssistUserId);
         }
 
-        return $this->render('view', compact('modelTask', 'modelsFiles', 'modelsResponse',
-            'modelTaskUser', 'currentUser'));
-
+        return $this->render(
+            'view',
+            compact(
+                'modelTask',
+                'modelsFiles',
+                'modelsResponse',
+                'modelTaskUser',
+                'currentUserRole',
+                'availableActions',
+                'responseTaskForm',
+                'completeTaskForm',
+                'existsUserResponse'
+            )
+        );
     }
+
 
 }

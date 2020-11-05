@@ -2,18 +2,15 @@
 
 namespace frontend\models;
 
+use yii\db\ActiveQuery;
+
 /**
  * This is the ActiveQuery class for [[Chat]].
  *
  * @see Chat
  */
-class ChatQuery extends \yii\db\ActiveQuery
+class ChatQuery extends ActiveQuery
 {
-    /*public function active()
-    {
-        return $this->andWhere('[[status]]=1');
-    }*/
-
     /**
      * {@inheritdoc}
      * @return Chat[]|array

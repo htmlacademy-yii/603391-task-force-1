@@ -3,6 +3,8 @@
 namespace frontend\models;
 
 use Yii;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "work".
@@ -13,7 +15,7 @@ use Yii;
  *
  * @property User $user
  */
-class Work extends \yii\db\ActiveRecord
+class Work extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -50,7 +52,7 @@ class Work extends \yii\db\ActiveRecord
     /**
      * Gets query for [[User]].
      *
-     * @return \yii\db\ActiveQuery|UserQuery
+     * @return ActiveQuery|UserQuery
      */
     public function getUser()
     {
@@ -66,7 +68,6 @@ class Work extends \yii\db\ActiveRecord
         return new WorkQuery(get_called_class());
     }
 
-
     /**
      *
      * @param int $id
@@ -76,6 +77,5 @@ class Work extends \yii\db\ActiveRecord
     {
         return self::find()->where(['user_id' => $id])->asArray()->limit(5)->all();
     }
-
 
 }

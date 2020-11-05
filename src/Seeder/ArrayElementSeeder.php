@@ -9,7 +9,7 @@ use Exception;
 class ArrayElementSeeder
 {
 
-    private $data;
+    private array $data;
 
     public function __construct(array $data)
     {

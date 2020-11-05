@@ -6,6 +6,7 @@ namespace TaskForce\Exporter;
 
 interface IExporter
 {
-    function prepare(): void;
-    function saveData(string $template, string $data = ''): void;
+    public function prepare(): void;
+
+    public function saveData(string $template, string $data = ''): void;
 }

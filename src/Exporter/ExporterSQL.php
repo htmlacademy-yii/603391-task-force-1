@@ -15,7 +15,6 @@ class ExporterSQL implements IExporter
         $this->sqlFile = fopen($sqlFile, 'w');
     }
 
-
     /**
      * @throws FileException
      */

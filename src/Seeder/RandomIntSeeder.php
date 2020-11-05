@@ -8,8 +8,8 @@ use Exception;
 
 class RandomIntSeeder extends Seeder
 {
-    private $from;
-    private $to;
+    private int $from;
+    private int $to;
 
     public function __construct(int $from, int $to)
     {

@@ -8,5 +8,6 @@ class Seeder
 {
     public function getData()
     {
+        //Null object
     }
 }

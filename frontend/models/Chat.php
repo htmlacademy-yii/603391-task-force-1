@@ -2,7 +2,8 @@
 
 namespace frontend\models;
 
-use Yii;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "chat".
@@ -18,7 +19,7 @@ use Yii;
  * @property User $consumer
  * @property User $executor
  */
-class Chat extends \yii\db\ActiveRecord
+class Chat extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -38,9 +39,9 @@ class Chat extends \yii\db\ActiveRecord
             [['consumer_id', 'executor_id', 'task_id'], 'integer'],
             [['message'], 'string'],
             [['created_at'], 'safe'],
-            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Task::className(), 'targetAttribute' => ['task_id' => 'id']],
-            [['consumer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['consumer_id' => 'id']],
-            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['executor_id' => 'id']],
+            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Task::class, 'targetAttribute' => ['task_id' => 'id']],
+            [['consumer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['consumer_id' => 'id']],
+            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['executor_id' => 'id']],
         ];
     }
 
@@ -62,31 +63,31 @@ class Chat extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Task]].
      *
-     * @return \yii\db\ActiveQuery|TaskQuery
+     * @return ActiveQuery|TaskQuery
      */
     public function getTask()
     {
-        return $this->hasOne(Task::className(), ['id' => 'task_id']);
+        return $this->hasOne(Task::class, ['id' => 'task_id']);
     }
 
     /**
      * Gets query for [[Consumer]].
      *
-     * @return \yii\db\ActiveQuery|UserQuery
+     * @return ActiveQuery|UserQuery
      */
     public function getConsumer()
     {
-        return $this->hasOne(User::className(), ['id' => 'consumer_id']);
+        return $this->hasOne(User::class, ['id' => 'consumer_id']);
     }
 
     /**
      * Gets query for [[Executor]].
      *
-     * @return \yii\db\ActiveQuery|UserQuery
+     * @return ActiveQuery|UserQuery
      */
     public function getExecutor()
     {
-        return $this->hasOne(User::className(), ['id' => 'executor_id']);
+        return $this->hasOne(User::class, ['id' => 'executor_id']);
     }
 
     /**

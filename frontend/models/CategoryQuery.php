@@ -2,18 +2,15 @@
 
 namespace frontend\models;
 
+use yii\db\ActiveQuery;
+
 /**
  * This is the ActiveQuery class for [[Category]].
  *
  * @see Category
  */
-class CategoryQuery extends \yii\db\ActiveQuery
+class CategoryQuery extends ActiveQuery
 {
-    /*public function active()
-    {
-        return $this->andWhere('[[status]]=1');
-    }*/
-
     /**
      * {@inheritdoc}
      * @return Category[]|array

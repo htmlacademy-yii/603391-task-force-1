@@ -2,18 +2,15 @@
 
 namespace frontend\models;
 
+use yii\db\ActiveQuery;
+
 /**
  * This is the ActiveQuery class for [[Favorite]].
  *
  * @see Favorite
  */
-class FavoriteQuery extends \yii\db\ActiveQuery
+class FavoriteQuery extends ActiveQuery
 {
-    /*public function active()
-    {
-        return $this->andWhere('[[status]]=1');
-    }*/
-
     /**
      * {@inheritdoc}
      * @return Favorite[]|array

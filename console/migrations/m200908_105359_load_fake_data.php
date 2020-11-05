@@ -34,18 +34,4 @@ class m200908_105359_load_fake_data extends Migration
         return false;
     }
 
-    /*
-    // Use up()/down() to run migration code without a transaction.
-    public function up()
-    {
-
-    }
-
-    public function down()
-    {
-        echo "m200908_105359_load_fake_data cannot be reverted.\n";
-
-        return false;
-    }
-    */
 }

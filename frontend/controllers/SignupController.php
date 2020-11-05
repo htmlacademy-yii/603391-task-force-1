@@ -1,47 +1,56 @@
 <?php
 
-
 namespace frontend\controllers;
 
-
 use frontend\models\City;
+use frontend\models\forms\LoginForm;
 use frontend\models\forms\SignupForm;
-use frontend\models\User;
+use TaskForce\Exception\TaskForceException;
 use Yii;
-use yii\helpers\ArrayHelper;
+use yii\filters\AccessControl;
 use yii\web\Controller;
-use yii\widgets\ActiveForm;
+use yii\web\Response;
 
 class SignupController extends Controller
 {
-    public function beforeAction($action)
-    {
-        if (Yii::$app->user->identity) {
-            $this->redirect('tasks/index');
-        };
 
-        $this->enableCsrfValidation = false;
-        return true;
+    /**
+     * @return array|array[]
+     */
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['?']
+                    ],
+                ]
+            ],
+        ];
     }
 
-
+    /**
+     * @return string|Response
+     * @throws TaskForceException
+     */
     public function actionIndex()
     {
         $model = new SignupForm();
-        if (Yii::$app->request->isPost) {
-            $model->load(\Yii::$app->request->post());
+
+        if (Yii::$app->request->getIsPost()) {
+            $model->load(Yii::$app->request->post());
 
             if ($model->validate() && $model->register()) {
                 return $this->goHome();
             }
         }
 
-        $cities = ArrayHelper::map(City::find()->asArray()->all(), 'id', 'city');
-        $this->enableCsrfValidation = false;
+        $cities = City::getList();
+
         return $this->render('index', compact('model', 'cities'));
-
-
     }
-
 
 }

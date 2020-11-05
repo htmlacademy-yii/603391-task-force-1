@@ -2,13 +2,16 @@
 
 namespace TaskForce\Actions;
 
-use TaskForce\Task;
+use TaskForce\Constant\UserRole;
+use TaskForce\TaskEntity;
 
 class CompleteAction extends AbstractAction
 {
+    private const TITLE = 'Complete';
+
     public static function getTitle(): string
     {
-        return 'Complete';
+        return self::TITLE;
     }
 
     public static function getName(): string
@@ -16,9 +19,9 @@ class CompleteAction extends AbstractAction
         return self::class;
     }
 
-    public static function isAllowed(string $role, string $status): bool
+    public static function isAllowed(bool $isOwner, string $status, string $role): bool
     {
-        return ($role === Task::ROLE_CUSTOMER && $status === Task::STATUS_IN_WORK);
+        return ($isOwner && $role === UserRole::CUSTOMER && $status === TaskEntity::STATUS_IN_WORK);
     }
 
 }

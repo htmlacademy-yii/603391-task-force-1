@@ -6,8 +6,11 @@ namespace TaskForce\Provider;
 
 interface IProvider
 {
-     function open(): void;
-     function getHeaderData(): ?array;
-     function getNextLine(): ?iterable;
-     function validateColumns(array $columns): bool;
+    public function open(): void;
+
+    public function getHeaderData(): ?array;
+
+    public function getNextLine(): ?iterable;
+
+    public function validateColumns(array $columns): bool;
 }

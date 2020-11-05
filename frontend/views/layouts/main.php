@@ -1,21 +1,22 @@
 <?php
 
-/* @var $this \yii\web\View */
-
+/* @var $this View */
 /* @var $content string */
 
-
-use frontend\models\User;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use frontend\assets\AppAsset;
 use common\widgets\Alert;
-
+use yii\web\View;
 
 $loggedUser = Yii::$app->user->identity;
+if ($loggedUser) {
+    $userAvatar = Yii::$app->user->identity->getProfiles()->asArray()->one()['avatar'] ?? 'no-avatar.jpg';
+}
+
 AppAsset::register($this);
 ?>
-
+<div class="table-layout">
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>">
@@ -29,6 +30,7 @@ AppAsset::register($this);
 </head>
 <body>
 <?php $this->beginBody() ?>
+
 <div class="table-layout">
     <header class="page-header">
         <div class="main-container page-header__container">
@@ -89,15 +91,13 @@ AppAsset::register($this);
             <div class="header__nav">
                 <ul class="header-nav__list site-list">
                     <li class="site-list__item">
-                        <a href="/tasks">Задания</a>
+                        <a href="<?=Url::to(['tasks/index'])?>">Задания</a>
                     </li>
                     <li class="site-list__item">
-                        <a href="/users">Исполнители</a>
+                        <a href="<?=Url::to(['users/index'])?>">Исполнители</a>
                     </li>
-
-
                     <li class="site-list__item site-list__item--active">
-                        <a href="#">Создать задание</a>
+                        <a href="<?=Url::to(['task/create'])?>">Создать задание</a>
                     </li>
                     <li class="site-list__item">
                         <a href="#">Мой профиль</a>
@@ -132,7 +132,7 @@ AppAsset::register($this);
                 </div>
                 <div class="header__account">
                     <a class="header__account-photo">
-                        <img src="<?= Url::base() . '/img/user-photo.png' ?>"
+                        <img src="<?php echo Url::base() . "/img/". $userAvatar ?>"
                              width="43" height="44"
                              alt="Аватар пользователя">
                     </a>
@@ -204,6 +204,8 @@ AppAsset::register($this);
             </div>
         </div>
     </footer>
+</div>
+    <div class="overlay"></div>
 
     <?php $this->endBody() ?>
 </body>

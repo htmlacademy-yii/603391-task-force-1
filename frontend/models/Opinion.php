@@ -3,21 +3,28 @@
 namespace frontend\models;
 
 use Yii;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "opinion".
  *
  * @property int $id
  * @property string $created_at
+ * @property int $task_id
  * @property int $owner_id
  * @property int $executor_id
  * @property int $rate
  * @property string $description
+ * @property bool $done
  *
+ *
+ * @property User $task
  * @property User $executor
  * @property User $owner
+ *
  */
-class Opinion extends \yii\db\ActiveRecord
+class Opinion extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -34,9 +41,11 @@ class Opinion extends \yii\db\ActiveRecord
     {
         return [
             [['created_at'], 'safe'],
-            [['owner_id', 'executor_id', 'rate', 'description'], 'required'],
-            [['owner_id', 'executor_id', 'rate'], 'integer'],
+            [['owner_id', 'executor_id', 'task_id','rate', 'description', 'done'], 'required'],
+            [['owner_id', 'executor_id','task_id', 'rate'], 'integer'],
             [['description'], 'string'],
+            [['done'], 'boolean'],
+            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Task::class, 'targetAttribute' => ['task_id' => 'id']],
             [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['executor_id' => 'id']],
             [['owner_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['owner_id' => 'id']],
         ];
@@ -49,18 +58,20 @@ class Opinion extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
+            'task_id' => 'Task ID',
             'created_at' => 'Created At',
             'owner_id' => 'Owner ID',
             'executor_id' => 'Executor ID',
             'rate' => 'Rate',
             'description' => 'Description',
+            'done' => 'Done',
         ];
     }
 
     /**
      * Gets query for [[Executor]].
      *
-     * @return \yii\db\ActiveQuery|UserQuery
+     * @return ActiveQuery|UserQuery
      */
     public function getExecutor()
     {
@@ -70,11 +81,21 @@ class Opinion extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Owner]].
      *
-     * @return \yii\db\ActiveQuery|UserQuery
+     * @return ActiveQuery|UserQuery
      */
     public function getOwner()
     {
         return $this->hasOne(User::class, ['id' => 'owner_id']);
+    }
+
+    /**
+     * Gets query for [[Task]].
+     *
+     * @return ActiveQuery|UserQuery
+     */
+    public function getTask()
+    {
+        return $this->hasOne(Task::class, ['id' => 'task_id']);
     }
 
     /**

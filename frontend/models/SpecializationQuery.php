@@ -2,18 +2,15 @@
 
 namespace frontend\models;
 
+use yii\db\ActiveQuery;
+
 /**
  * This is the ActiveQuery class for [[Specialization]].
  *
  * @see Specialization
  */
-class SpecializationQuery extends \yii\db\ActiveQuery
+class SpecializationQuery extends ActiveQuery
 {
-    /*public function active()
-    {
-        return $this->andWhere('[[status]]=1');
-    }*/
-
     /**
      * {@inheritdoc}
      * @return Specialization[]|array

@@ -7,16 +7,31 @@ use yii\db\Migration;
  */
 class m200908_122131_update_table_task extends Migration
 {
+
+
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        $sql='ALTER TABLE `task` MODIFY `address` varchar(255) DEFAULT NULL;
-         ALTER TABLE `task` MODIFY `lat` decimal(10,8) DEFAULT NULL;
-        ALTER TABLE `task` MODIFY `lng` decimal(11,8) DEFAULT NULL;
-        UPDATE `profile` SET avatar = \'man-glasses.jpg\' WHERE avatar = \'no-avatar.jpg\'';
-        $this->execute($sql);
+        $this->alterColumn(
+            'task',
+            'address',
+            $this->string(255)->null()
+        );
+
+        $this->alterColumn(
+            'task',
+            'lat',
+            $this->decimal(10,8)->null()
+        );
+
+        $this->alterColumn(
+            'task',
+            'lng',
+            $this->decimal(11, 8)->null()
+        );
+
     }
 
     /**
@@ -24,23 +39,24 @@ class m200908_122131_update_table_task extends Migration
      */
     public function safeDown()
     {
-        echo "m200908_122131_update_table_task cannot be reverted.\n";
+        $this->alterColumn(
+            'task',
+            'address',
+            $this->string(255)->notNull()
+        );
 
-        return false;
+        $this->alterColumn(
+            'task',
+            'lat',
+            $this->decimal(10,8)->notNull()
+        );
+
+        $this->alterColumn(
+            'task',
+            'lng',
+            $this->decimal(11, 8)->notNull()
+        );
     }
 
-    /*
-    // Use up()/down() to run migration code without a transaction.
-    public function up()
-    {
 
-    }
-
-    public function down()
-    {
-        echo "m200908_122131_update_table_task cannot be reverted.\n";
-
-        return false;
-    }
-    */
 }

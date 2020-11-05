@@ -2,6 +2,7 @@
 
 namespace frontend\models;
 
+use TaskForce\Exception\FileException;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveQuery;
@@ -13,6 +14,7 @@ use yii\db\ActiveRecord;
  * @property int $id
  * @property int $task_id
  * @property string $filename
+ * @property string $generated_name
  *
  * @property Favorite[] $favorites
  * @property User[] $users
@@ -20,6 +22,8 @@ use yii\db\ActiveRecord;
  */
 class File extends ActiveRecord
 {
+    use ExceptionOnFindFail;
+
     /**
      * {@inheritdoc}
      */
@@ -28,16 +32,35 @@ class File extends ActiveRecord
         return 'file';
     }
 
+    public static function forceDownloadTaskFile(int $id): void
+    {
+        $taskFile = self::findOrFail($id, 'The file is not definable.');
+
+        $file = __DIR__ . sprintf('/../web/uploads/%s/%s', $taskFile->task_id, $taskFile->generated_name);
+
+        if (file_exists($file)) {
+            Yii::$app->response->sendFile($file, $taskFile->filename);
+        } else {
+            throw new FileException('File not found.');
+        }
+    }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['task_id', 'filename'], 'required'],
+            [['task_id', 'filename', 'generated_name'], 'required'],
             [['task_id'], 'integer'],
-            [['filename'], 'string', 'max' => 512],
-            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Task::class, 'targetAttribute' => ['task_id' => 'id']],
+            [['filename', 'generated_name'], 'string', 'max' => 512],
+            [
+                ['task_id'],
+                'exist',
+                'skipOnError' => true,
+                'targetClass' => Task::class,
+                'targetAttribute' => ['task_id' => 'id']
+            ],
         ];
     }
 
@@ -50,6 +73,7 @@ class File extends ActiveRecord
             'id' => 'ID',
             'task_id' => 'Task ID',
             'filename' => 'Filename',
+            'generated_name' => 'Generated name',
         ];
     }
 

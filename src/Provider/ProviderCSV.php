@@ -10,11 +10,11 @@ use TaskForce\Exception\TaskForceException;
 class ProviderCSV implements IProvider
 {
 
-    private $csvFile;
-    public $fileObject;
-    public $columns;
-    public $isValidColumns;
-    private $distColumns;
+    private string $csvFile;
+    public SplFileObject $fileObject;
+    public ?array $columns;
+    public bool $isValidColumns;
+    private array $distColumns;
 
     /**
      * ProviderCSV constructor.
