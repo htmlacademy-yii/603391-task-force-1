@@ -168,6 +168,7 @@ class TaskController extends Controller
                     } else {
                         $task->applyAction(FailedAction::class);
                     }
+
                     $task->createOpinion($completeTaskForm);
                     $transaction->commit();
                     $this->goHome();

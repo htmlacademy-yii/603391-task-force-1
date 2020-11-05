@@ -65,6 +65,7 @@ $this->registerJSFile('/js/main.js');
                         foreach ($modelsFiles as $key => $file):?>
                             <a href="<?= Url::to(['site/file', 'id' => $file['id']]) ?>"
                                title="<?= $file['filename'] ?>">
+
                                 <?= (strlen($file['filename']) > 30)
                                     ? (substr($file['filename'], 0, 30) . '...')
                                     : $file['filename'] ?></a>
@@ -107,6 +108,7 @@ $this->registerJSFile('/js/main.js');
                             type="button" data-for="complete-form">Завершить</button>';
                                 break;
                             case CancelAction::getTitle():
+
                                 echo '<button class="button button__big-color refusal-button open-modal"
                             type="button" data-for="cancel-form">Отменить</button>';
                                 break;
@@ -132,6 +134,7 @@ $this->registerJSFile('/js/main.js');
                             <div class="feedback-card__top">
                                 <a href="<?= Url::to(['users/view', 'id' => $response['user_id']]) ?>">
                                     <img src="../../img/<?= $response['avatar'] ?>" width="55" height="55" alt="avatar"></a>
+
                                 <div class="feedback-card__top--name">
                                     <p><a href="<?= Url::to(['users/view', 'id' => $response['user_id']]) ?>"
                                           class="link-regular"><?= $response['name'] ?></a></p>
@@ -156,6 +159,7 @@ $this->registerJSFile('/js/main.js');
                                 && ((int)$modelTask['customer_id']) === $currentUserId
                                 && ($response['status'] === TaskForce\ResponseEntity::STATUS_NEW)
                                 && ($modelTask['status'] === TaskForce\TaskEntity::STATUS_NEW)
+
                             ):?>
                                 <div class="feedback-card__actions">
 

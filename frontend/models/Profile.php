@@ -113,6 +113,7 @@ class Profile extends ActiveRecord
             ->from('profile p')
             ->join('LEFT JOIN', 'user as u', 'p.user_id = u.id')
             ->where(['u.id' => $id])
+
             ->limit(1)
             ->asArray()->one();
     }

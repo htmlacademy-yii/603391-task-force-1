@@ -41,16 +41,15 @@ phpunit.phar
 /backend/web/index.php
 /backend/web/index-test.php
 /backend/web/robots.txt
-/frontend/web/assets/
+/backend/web/.htaccess
+/frontend/web/assets/*
 
 .DS_Stores
-.idea
 *.ai
 *.log
 *.pdf
 *.psd
 *.sublime*
-Thumbs.db
 vendor
 read.me
-.htaccess
+/frontend/web/uploads/

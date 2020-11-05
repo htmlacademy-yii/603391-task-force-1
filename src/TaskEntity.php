@@ -24,6 +24,7 @@ class TaskEntity
     public const ACTION_RESPOND = Actions\ResponseAction::class;
     public const ACTION_FAILED = Actions\FailedAction::class;
 
+
     public const ACTIONS = [
         self::ACTION_CANCEL,
         self::ACTION_ASSIGN,
@@ -45,6 +46,7 @@ class TaskEntity
         self::ACTION_ASSIGN => self::STATUS_IN_WORK,
         self::ACTION_REFUSE => self::STATUS_FAILED,
         self::ACTION_FAILED => self::STATUS_FAILED
+
     ];
 
     public const STATUSES = [
@@ -133,6 +135,7 @@ class TaskEntity
      */
     public function applyAction(string $action): bool
     {
+
         $currentUserId = Yii::$app->user->getId();
         $isOwner = ($currentUserId === $this->customerId);
         $currentRole = Yii::$app->user->identity->role;
