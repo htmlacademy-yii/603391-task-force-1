@@ -9,22 +9,22 @@
 /** @var array $modelTaskUser */
 /** @var ResponseTaskForm $responseTaskForm */
 /** @var CompleteTaskForm $completeTaskForm */
-
+/** @var bool $existsUserResponse */
 /** @var array $availableActions */
 
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\CompleteTaskForm;
 use frontend\models\forms\ResponseTaskForm;
 use frontend\models\forms\TasksFilterForm;
-use frontend\models\Response;
-use frontend\models\Task;
+use TaskForce\Actions\CancelAction;
+use TaskForce\Actions\CompleteAction;
+use TaskForce\Actions\RefuseAction;
+use TaskForce\Actions\ResponseAction;
 use TaskForce\Constant\UserRole;
 use TaskForce\Helpers\Declination;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
-
-
 
 $this->title = 'TaskForce - Задачи';
 $currentUserId = Yii::$app->user->getId();
@@ -63,7 +63,9 @@ $this->registerJSFile('/js/main.js');
                             echo 'отсутствуют';
                         }
                         foreach ($modelsFiles as $key => $file):?>
-                            <a href="<?= Url::to(['site/file', 'id' => $file['id']]) ?>" title="<?= $file['filename'] ?>">
+                            <a href="<?= Url::to(['site/file', 'id' => $file['id']]) ?>"
+                               title="<?= $file['filename'] ?>">
+
                                 <?= (strlen($file['filename']) > 30)
                                     ? (substr($file['filename'], 0, 30) . '...')
                                     : $file['filename'] ?></a>
@@ -90,19 +92,23 @@ $this->registerJSFile('/js/main.js');
                     <?php
                     foreach ($availableActions as $key => $action) {
                         switch ($action) {
-                            case \TaskForce\Actions\ResponseAction::getTitle():
+                            case ResponseAction::getTitle():
+                                if ($existsUserResponse) {
+                                    break;
+                                };
                                 echo '<button class="button button__big-color response-button open-modal"
                                 type="button" data-for="response-form">Откликнуться</button>';
                                 break;
-                            case \TaskForce\Actions\RefuseAction::getTitle():
+                            case RefuseAction::getTitle():
                                 echo '<button class="button button__big-color refusal-button open-modal"
                             type="button" data-for="refuse-form">Отказаться</button>';
                                 break;
-                            case \TaskForce\Actions\CompleteAction::getTitle():
+                            case CompleteAction::getTitle():
                                 echo '<button class="button button__big-color request-button open-modal"
                             type="button" data-for="complete-form">Завершить</button>';
                                 break;
-                            case \TaskForce\Actions\CancelAction::getTitle():
+                            case CancelAction::getTitle():
+
                                 echo '<button class="button button__big-color refusal-button open-modal"
                             type="button" data-for="cancel-form">Отменить</button>';
                                 break;
@@ -127,7 +133,8 @@ $this->registerJSFile('/js/main.js');
                         <div class="content-view__feedback-card">
                             <div class="feedback-card__top">
                                 <a href="<?= Url::to(['users/view', 'id' => $response['user_id']]) ?>">
-                                    <img src="../../img/<?= $response['avatar'] ?>" width="55" height="55"></a>
+                                    <img src="../../img/<?= $response['avatar'] ?>" width="55" height="55" alt="avatar"></a>
+
                                 <div class="feedback-card__top--name">
                                     <p><a href="<?= Url::to(['users/view', 'id' => $response['user_id']]) ?>"
                                           class="link-regular"><?= $response['name'] ?></a></p>
@@ -151,7 +158,8 @@ $this->registerJSFile('/js/main.js');
                             if (Yii::$app->user->identity->role === UserRole::CUSTOMER
                                 && ((int)$modelTask['customer_id']) === $currentUserId
                                 && ($response['status'] === TaskForce\ResponseEntity::STATUS_NEW)
-                                && ($modelTask['status'] ===  TaskForce\TaskEntity::STATUS_NEW)
+                                && ($modelTask['status'] === TaskForce\TaskEntity::STATUS_NEW)
+
                             ):?>
                                 <div class="feedback-card__actions">
 
@@ -210,8 +218,12 @@ $this->registerJSFile('/js/main.js');
                                     $modelTaskUser['date_add']
                                 ) ?> на сайте</span>
                         </p>
-                        <a href="<?= Url::to(['users/view', 'id' => $modelTaskUser['user_id']]) ?>"
-                           class="link-regular">Смотреть профиль</a>
+                        <?php
+                        if ($showExecutor): ?>
+                            <a href="<?= Url::to(['users/view', 'id' => $modelTaskUser['user_id']]) ?>"
+                               class="link-regular">Смотреть профиль</a>
+                        <?php
+                        endif; ?>
                     </div>
                 </div>
                 <div class="connect-desk__chat">

@@ -16,6 +16,8 @@ use TaskForce\TaskEntity;
 use yii;
 use frontend\models\Task;
 use yii\data\Pagination;
+use yii\helpers\ArrayHelper;
+
 
 class TasksController extends SecureController
 {
@@ -95,16 +97,23 @@ class TasksController extends SecureController
 
         $modelsResponse = Response::findResponsesByTask($task->model);
 
+        $ids = ArrayHelper::getColumn($modelsResponse, 'user_id');
+        $existsUserResponse = in_array(Yii::$app->user->identity->getId(), $ids);
         $taskAssistUserId = $task->getAssistUserId();
 
         $modelsFiles = File::findFilesByTaskID($id);
 
         $modelTaskUser = [];
 
+
+
         if ($taskAssistUserId) {
             $modelTaskUser = Profile::findProfileByUserId($taskAssistUserId);
             $modelTaskUser['countTask'] = Task::findCountTasksByUserId($taskAssistUserId);
         }
+
+
+
 
         return $this->render(
             'view',
@@ -116,7 +125,9 @@ class TasksController extends SecureController
                 'currentUserRole',
                 'availableActions',
                 'responseTaskForm',
-                'completeTaskForm'
+                'completeTaskForm',
+                'existsUserResponse'
+
             )
         );
     }

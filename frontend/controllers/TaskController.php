@@ -10,6 +10,7 @@ use frontend\models\forms\ResponseTaskForm;
 use frontend\models\Response;
 use TaskForce\Actions\CancelAction;
 use TaskForce\Actions\CompleteAction;
+use TaskForce\Actions\FailedAction;
 use TaskForce\Actions\RefuseAction;
 use TaskForce\Actions\ResponseAction;
 use TaskForce\Exception\FileException;
@@ -161,7 +162,13 @@ class TaskController extends Controller
             if ($completeTaskForm->validate()) {
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
-                    $task->applyAction(CompleteAction::class);
+                    $completion = ($completeTaskForm->completion === $completeTaskForm::VALUE_YES);
+                    if ($completion) {
+                        $task->applyAction(CompleteAction::class);
+                    } else {
+                        $task->applyAction(FailedAction::class);
+                    }
+
                     $task->createOpinion($completeTaskForm);
                     $transaction->commit();
                     $this->goHome();

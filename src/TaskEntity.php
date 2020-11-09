@@ -22,6 +22,8 @@ class TaskEntity
     public const ACTION_COMPLETE = Actions\CompleteAction::class;
     public const ACTION_REFUSE = Actions\RefuseAction::class;
     public const ACTION_RESPOND = Actions\ResponseAction::class;
+    public const ACTION_FAILED = Actions\FailedAction::class;
+
 
     public const ACTIONS = [
         self::ACTION_CANCEL,
@@ -42,7 +44,9 @@ class TaskEntity
         self::ACTION_COMPLETE => self::STATUS_COMPLETE,
         self::ACTION_RESPOND => self::STATUS_IN_WORK,
         self::ACTION_ASSIGN => self::STATUS_IN_WORK,
-        self::ACTION_REFUSE => self::STATUS_FAILED
+        self::ACTION_REFUSE => self::STATUS_FAILED,
+        self::ACTION_FAILED => self::STATUS_FAILED
+
     ];
 
     public const STATUSES = [
@@ -131,9 +135,6 @@ class TaskEntity
      */
     public function applyAction(string $action): bool
     {
-        if (!in_array($action, self::ACTIONS, true)) {
-            throw new TaskForceException('Unknown action' . $action);
-        }
 
         $currentUserId = Yii::$app->user->getId();
         $isOwner = ($currentUserId === $this->customerId);

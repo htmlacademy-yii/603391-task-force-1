@@ -196,13 +196,12 @@ class Task extends ActiveRecord
             $query->andWhere(['LIKE', 't.name', $searchName, false]);
         }
 
-        $withoutExecutor = $request['TasksFilterForm']['withoutExecutor'] ?? false;
-        if ($withoutExecutor) {
+        if (isset($request['TasksFilterForm']['withoutExecutor'])) {
             $query->andWhere('t.executor_id IS NULL');
         }
 
-        $remoteWork = $request['TasksFilterForm']['remoteWork'] ?? false;
-        if ($remoteWork) {
+        if (isset($request['TasksFilterForm']['remoteWork'])) {
+
             $query->andWhere('t.lat IS NULL AND t.lng IS NULL');
         }
 
