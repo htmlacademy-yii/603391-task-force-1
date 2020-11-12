@@ -4,6 +4,7 @@ namespace frontend\controllers;
 
 use Exception;
 use frontend\models\Category;
+use frontend\models\City;
 use frontend\models\forms\CompleteTaskForm;
 use frontend\models\forms\CreateTaskForm;
 use frontend\models\forms\ResponseTaskForm;
@@ -61,6 +62,7 @@ class TaskController extends Controller
     {
         $userId = Yii::$app->user->getId();
         $createTaskForm = new CreateTaskForm();
+        $cities = City::getList();
 
         if ($request = Yii::$app->request->post()) {
             $createTaskForm->load($request);
@@ -68,6 +70,7 @@ class TaskController extends Controller
 
             if ($createTaskForm->validate()) {
                 $taskId = $createTaskForm->saveData($userId);
+
 
                 if ($taskId) {
                     $this->redirect('/tasks/view/' . $taskId);
@@ -79,14 +82,15 @@ class TaskController extends Controller
 
         $categories = Category::all();
 
-        return $this->render('create', compact('createTaskForm', 'categories'));
+        return $this->render('create', compact('createTaskForm', 'categories', 'cities'));
     }
+
 
     /**
      * @param int $id
      * @return \yii\web\Response
      * @throws TaskForceException
-     * @throws \Throwable
+
      */
     public function actionResponse(int $id)
     {
@@ -168,7 +172,6 @@ class TaskController extends Controller
                     } else {
                         $task->applyAction(FailedAction::class);
                     }
-
                     $task->createOpinion($completeTaskForm);
                     $transaction->commit();
                     $this->goHome();

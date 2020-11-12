@@ -18,6 +18,7 @@ return [
                 'site/file/<id:\d+>' => 'site/file',
                 'users/view/<id:\d+>' => 'users/view',
                 'users/<sortType:\d+>' => 'users/index',
+                'address/location/<search:\d+>' => 'address/location',
                 '/' => 'landing/index',
                 ]
             ],

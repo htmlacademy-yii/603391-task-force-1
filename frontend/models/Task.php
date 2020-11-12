@@ -6,9 +6,11 @@ namespace frontend\models;
 use frontend\models\forms\TasksFilterForm;
 use TaskForce\Exception\TaskForceException;
 use TaskForce\Helpers\Declination;
+use TaskForce\TaskEntity;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Query;
+use yii\web\NotFoundHttpException;
 
 
 /**
@@ -22,6 +24,7 @@ use yii\db\Query;
  * @property string $address
  * @property float $lat
  * @property float $lng
+ * @property string $city_id
  * @property int $budget
  * @property string $expire
  * @property string $date_add
@@ -61,7 +64,8 @@ class Task extends ActiveRecord
             [['name'], 'string', 'max' => 128],
             [['address'], 'string', 'max' => 255],
             [['status'], 'string', 'max' => 20],
-            [['status'], 'in', 'range' => \TaskForce\TaskEntity::STATUSES],
+            [['city_id'], 'integer'],
+            [['status'], 'in', 'range' => TaskEntity::STATUSES],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'id']],
             [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['customer_id' => 'id']],
             [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['executor_id' => 'id']],
@@ -82,6 +86,7 @@ class Task extends ActiveRecord
             'address' => 'Address',
             'lat' => 'Lat',
             'lng' => 'Lng',
+            'city_id' => 'City ID',
             'budget' => 'Budget',
             'expire' => 'Expire',
             'date_add' => 'Date Add',
@@ -129,6 +134,16 @@ class Task extends ActiveRecord
     public function getCategory()
     {
         return $this->hasOne(Category::class, ['id' => 'category_id']);
+    }
+
+    /**
+     * Gets query for [[City]].
+     *
+     * @return ActiveQuery|CategoryQuery
+     */
+    public function getCity()
+    {
+        return $this->hasOne(City::class, ['id' => 'city_id']);
     }
 
     /**
@@ -180,7 +195,7 @@ class Task extends ActiveRecord
 
         $query->select(['t.*', 'c.name as cat_name', 'c.icon as icon'])->from('task t')
             ->join('LEFT JOIN', 'category as c', 't.category_id = c.id')
-            ->where(['t.status' => \TaskForce\TaskEntity::STATUS_NEW]);
+            ->where(['t.status' => TaskEntity::STATUS_NEW]);
 
 
         // todo добавить задания из города пользователя, либо из города, выбранного пользователем в текущей сессии.
@@ -196,12 +211,12 @@ class Task extends ActiveRecord
             $query->andWhere(['LIKE', 't.name', $searchName, false]);
         }
 
+
         if (isset($request['TasksFilterForm']['withoutExecutor'])) {
             $query->andWhere('t.executor_id IS NULL');
         }
 
         if (isset($request['TasksFilterForm']['remoteWork'])) {
-
             $query->andWhere('t.lat IS NULL AND t.lng IS NULL');
         }
 
@@ -216,16 +231,18 @@ class Task extends ActiveRecord
 
     /**
      * Find Task By ID
-     * @param int $id
+     * @param int|null $id
      * @return array
      * @throws TaskForceException
+     * @throws NotFoundHttpException
      */
     public static function findTaskTitleInfoByID(int $id = null): ?array
     {
         $query = new Query();
 
-        $query->select(['t.*', 'c.name as cat_name', 'c.icon as icon'])->from('task t')
+        $query->select(['t.*', 'c.name as cat_name','c1.city', 'c.icon as icon'])->from('task t')
             ->join('LEFT JOIN', 'category as c', 't.category_id = c.id')
+            ->join('LEFT JOIN', 'city as c1', 't.city_id = c1.id')
             ->where(['t.id' => $id])
             ->limit(1);
 
@@ -254,6 +271,6 @@ class Task extends ActiveRecord
             throw new TaskForceException('Не задан ID пользователя');
         }
 
-        return self::find()->where(['id' => $id])->andWhere(['status' => \TaskForce\TaskEntity::STATUS_COMPLETE])->count();
+        return self::find()->where(['id' => $id])->andWhere(['status' => TaskEntity::STATUS_COMPLETE])->count();
     }
 }

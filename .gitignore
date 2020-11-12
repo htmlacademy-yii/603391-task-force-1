@@ -42,7 +42,6 @@ phpunit.phar
 /backend/web/index-test.php
 /backend/web/robots.txt
 /backend/web/.htaccess
-/frontend/web/assets/*
 
 .DS_Stores
 *.ai

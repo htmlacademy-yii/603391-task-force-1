@@ -36,7 +36,7 @@ $this->title = 'TaskForce - Задания';
                             <?= $task['description'] ?>
                         </p>
                         <b class="new-task__price new-task__price--translation"><?= $task['budget'] ?><b> ₽</b></b>
-                        <p class="new-task__place">Санкт-Петербург, Центральный район</p>
+                        <p class="new-task__place"><?= $task['address'] ?></p>
                         <span class="new-task__time"><?= $task['afterTime'] ?>  назад</span>
                     </div>
                 <?php endforeach; ?>

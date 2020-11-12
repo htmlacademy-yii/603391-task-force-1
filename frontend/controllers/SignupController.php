@@ -3,7 +3,6 @@
 namespace frontend\controllers;
 
 use frontend\models\City;
-use frontend\models\forms\LoginForm;
 use frontend\models\forms\SignupForm;
 use TaskForce\Exception\TaskForceException;
 use Yii;

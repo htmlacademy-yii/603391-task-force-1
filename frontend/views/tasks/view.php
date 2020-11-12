@@ -29,7 +29,26 @@ use yii\widgets\ActiveForm;
 $this->title = 'TaskForce - Задачи';
 $currentUserId = Yii::$app->user->getId();
 
+$apiKey = Yii::$app->params['yandex_api_key'];
+$yandexApiJs = "https://api-maps.yandex.ru/2.1/?apikey=$apiKey&lang=ru_RU";
+$this->registerJSFile($yandexApiJs, $options = [$position = yii\web\View::POS_HEAD], $key = null);
+
 $this->registerJSFile('/js/main.js');
+
+$mapJS = <<<'MAPJS'
+    var taskMap;
+    ymaps.ready(function(){
+            // Указывается идентификатор HTML-элемента.
+            var taskMap = new ymaps.Map("map", {
+                center: [%s,%s],
+                zoom: 15,
+            });
+        });
+    ymaps.ready(init);
+MAPJS;
+$mapJS = sprintf($mapJS, $modelTask['lat'], $modelTask['lng']);
+
+$this->registerJS($mapJS);
 
 ?>
 <main class="page-main">
@@ -55,37 +74,38 @@ $this->registerJSFile('/js/main.js');
                         <h3 class="content-view__h3">Общее описание</h3>
                         <p><?= $modelTask['description'] ?></p>
                     </div>
+                    <?php
+                    /** @var array $modelsFiles */
+                    if (count($modelsFiles) > 0):?>
                     <div class="content-view__attach">
                         <h3 class="content-view__h3">Вложения</h3>
                         <?php
-                        /** @var array $modelsFiles */
-                        if (count($modelsFiles) == 0) {
-                            echo 'отсутствуют';
-                        }
                         foreach ($modelsFiles as $key => $file):?>
                             <a href="<?= Url::to(['site/file', 'id' => $file['id']]) ?>"
                                title="<?= $file['filename'] ?>">
-
                                 <?= (strlen($file['filename']) > 30)
                                     ? (substr($file['filename'], 0, 30) . '...')
                                     : $file['filename'] ?></a>
                         <?php
                         endforeach; ?>
                     </div>
+                    <?php endif;
+
+                    if ((int)$modelTask['lat'] !== 0 && (int)$modelTask['lng'] !== 0 ):?>
                     <div class="content-view__location">
                         <h3 class="content-view__h3">Расположение</h3>
                         <div class="content-view__location-wrapper">
-                            <div class="content-view__map">
-                                <a href="#"><img src="../../img/map.jpg" width="361" height="292"
-                                                 alt="Москва, Новый арбат, 23 к. 1"></a>
-                            </div>
+
+                            <div class="content-view__map" id="map" style="width: 361px; height: 292px"></div>
+
                             <div class="content-view__address">
-                                <span class="address__town">Москва</span><br>
+                                <span class="address__town"><?= $modelTask['city'] ?></span><br>
                                 <span><?= $modelTask['address'] ?></span>
-                                <p>Вход под арку, код домофона 1122</p>
+                                <p></p>
                             </div>
                         </div>
                     </div>
+                    <?php endif;?>
                 </div>
                 <div class="content-view__action-buttons">
 
@@ -108,7 +128,6 @@ $this->registerJSFile('/js/main.js');
                             type="button" data-for="complete-form">Завершить</button>';
                                 break;
                             case CancelAction::getTitle():
-
                                 echo '<button class="button button__big-color refusal-button open-modal"
                             type="button" data-for="cancel-form">Отменить</button>';
                                 break;
@@ -134,7 +153,6 @@ $this->registerJSFile('/js/main.js');
                             <div class="feedback-card__top">
                                 <a href="<?= Url::to(['users/view', 'id' => $response['user_id']]) ?>">
                                     <img src="../../img/<?= $response['avatar'] ?>" width="55" height="55" alt="avatar"></a>
-
                                 <div class="feedback-card__top--name">
                                     <p><a href="<?= Url::to(['users/view', 'id' => $response['user_id']]) ?>"
                                           class="link-regular"><?= $response['name'] ?></a></p>
@@ -159,7 +177,6 @@ $this->registerJSFile('/js/main.js');
                                 && ((int)$modelTask['customer_id']) === $currentUserId
                                 && ($response['status'] === TaskForce\ResponseEntity::STATUS_NEW)
                                 && ($modelTask['status'] === TaskForce\TaskEntity::STATUS_NEW)
-
                             ):?>
                                 <div class="feedback-card__actions">
 
@@ -279,7 +296,6 @@ $this->registerJSFile('/js/main.js');
             'text',
             [
                 'class' => 'response-form-payment input input-middle input-money',
-
             ]
         );
 
