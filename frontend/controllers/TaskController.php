@@ -71,7 +71,6 @@ class TaskController extends Controller
             if ($createTaskForm->validate()) {
                 $taskId = $createTaskForm->saveData($userId);
 
-
                 if ($taskId) {
                     $this->redirect('/tasks/view/' . $taskId);
                 } else {

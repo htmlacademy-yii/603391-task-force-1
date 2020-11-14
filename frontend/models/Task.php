@@ -43,7 +43,7 @@ class Task extends ActiveRecord
 {
     use ExceptionOnFindFail;
 
-     /**
+    /**
      * {@inheritdoc}
      */
     public static function tableName()
@@ -57,7 +57,10 @@ class Task extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'description', 'category_id', 'status', 'budget', 'expire', 'date_add', 'customer_id'], 'required'],
+            [
+                ['name', 'description', 'category_id', 'status', 'budget', 'date_add', 'customer_id'],
+                'required'
+            ],
             [['description'], 'string'],
             [['category_id', 'budget', 'executor_id', 'customer_id'], 'integer'],
             [['lat', 'lng'], 'number'],
@@ -67,9 +70,27 @@ class Task extends ActiveRecord
             [['status'], 'string', 'max' => 20],
             [['city_id'], 'integer'],
             [['status'], 'in', 'range' => TaskEntity::STATUSES],
-            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'id']],
-            [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['customer_id' => 'id']],
-            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['executor_id' => 'id']],
+            [
+                ['category_id'],
+                'exist',
+                'skipOnError' => true,
+                'targetClass' => Category::class,
+                'targetAttribute' => ['category_id' => 'id']
+            ],
+            [
+                ['customer_id'],
+                'exist',
+                'skipOnError' => true,
+                'targetClass' => User::class,
+                'targetAttribute' => ['customer_id' => 'id']
+            ],
+            [
+                ['executor_id'],
+                'exist',
+                'skipOnError' => true,
+                'targetClass' => User::class,
+                'targetAttribute' => ['executor_id' => 'id']
+            ],
         ];
     }
 
@@ -200,8 +221,14 @@ class Task extends ActiveRecord
         $query->select(['t.*', 'c.name as cat_name', 'c.icon as icon'])->from('task t')
             ->join('LEFT JOIN', 'category as c', 't.category_id = c.id')
             ->where(['t.status' => TaskEntity::STATUS_NEW])
-            ->andWhere(['or',['t.city_id' => Yii::$app->user->identity->city_id],
-                       ['t.city_id' => $currentCityId], ['t.city_id' => null]]);
+            ->andWhere(
+                [
+                    'or',
+                    ['t.city_id' => Yii::$app->user->identity->city_id],
+                    ['t.city_id' => $currentCityId],
+                    ['t.city_id' => null]
+                ]
+            );
 
         if (!empty($list)) {
             $categoryList = sprintf('c.id in (%s)', implode(",", $list));
@@ -214,13 +241,15 @@ class Task extends ActiveRecord
         }
 
 
-        if (isset($request['TasksFilterForm']['withoutExecutor'])) {
+        if (isset($request['TasksFilterForm']['withoutExecutor'])
+            && $request['TasksFilterForm']['withoutExecutor'] === '1') {
             $query->andWhere('t.executor_id IS NULL');
         }
 
-        if (isset($request['TasksFilterForm']['remoteWork'])) {
-            $query->andWhere('t.lat IS NULL AND t.lng IS NULL');
-        }
+        if (isset($request['TasksFilterForm']['remoteWork'])
+            && $request['TasksFilterForm']['remoteWork'] === '1') {
+        $query->andWhere('t.lat IS NULL AND t.lng IS NULL');
+    }
 
         if (isset($request['TasksFilterForm']['timeInterval'])
             && $request['TasksFilterForm']['timeInterval'] !== TasksFilterForm::FILTER_ALL_TIME) {
@@ -242,7 +271,7 @@ class Task extends ActiveRecord
     {
         $query = new Query();
 
-        $query->select(['t.*', 'c.name as cat_name','c1.city', 'c.icon as icon'])->from('task t')
+        $query->select(['t.*', 'c.name as cat_name', 'c1.city', 'c.icon as icon'])->from('task t')
             ->join('LEFT JOIN', 'category as c', 't.category_id = c.id')
             ->join('LEFT JOIN', 'city as c1', 't.city_id = c1.id')
             ->where(['t.id' => $id])

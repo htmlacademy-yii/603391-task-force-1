@@ -87,7 +87,6 @@ $this->title = 'TaskForce - Задания';
                             ->label($label, [
                                 'for' => $key,
                                 'class' => false,
-                                'tag' => false
                             ]); ?>
                     <?php endforeach; ?>
 

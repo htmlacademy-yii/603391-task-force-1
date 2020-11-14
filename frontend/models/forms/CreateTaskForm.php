@@ -22,14 +22,13 @@ class CreateTaskForm extends Model
     public string $name = '';
     public string $description = '';
     public string $categoryId = '';
-    public array $files = [];
+    public array  $files = [];
     public string $location = '';
     public string $city = '';
     public string $lat = '';
     public string $lng = '';
-    public int $budget = 0;
+    public int    $budget = 0;
     public string $dateEnd = '';
-
 
     public function attributeLabels()
     {
@@ -117,11 +116,10 @@ class CreateTaskForm extends Model
         $task->customer_id = $customerId;
         $task->address = $this->location;
 
-        if ($this->lat && $this->lng && $task->city_id) {
+        if ($this->lat && $this->lng && $this->city !== '') {
             $task->lat = $this->lat;
             $task->lng = $this->lng;
-            $task->city_id  = City::findIdByName($this->city);
-
+            $task->city_id = City::findIdByName($this->city);
         } else {
             $geoCoder = new GeoCoder();
             $coordinates = $geoCoder->getCoordinates($this->location);
@@ -190,5 +188,3 @@ class CreateTaskForm extends Model
     }
 
 }
-
-

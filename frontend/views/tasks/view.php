@@ -41,12 +41,13 @@ $mapJS = <<<'MAPJS'
             // Указывается идентификатор HTML-элемента.
             var taskMap = new ymaps.Map("map", {
                 center: [%s,%s],
-                zoom: 15,
+                zoom: 17,
             });
         });
+
     ymaps.ready(init);
 MAPJS;
-$mapJS = sprintf($mapJS, $modelTask['lat'], $modelTask['lng']);
+$mapJS = sprintf($mapJS, $modelTask['lat'], $modelTask['lng'], $modelTask['lat'], $modelTask['lng']);
 
 $this->registerJS($mapJS);
 

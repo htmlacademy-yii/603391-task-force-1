@@ -3,6 +3,7 @@
 namespace TaskForce;
 
 use Exception;
+use frontend\models\City;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
@@ -11,6 +12,8 @@ use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
 use Yii;
 use yii\helpers\ArrayHelper;
+use yii\helpers\VarDumper;
+use yii\web\NotFoundHttpException;
 
 class GeoCoder
 {
@@ -31,7 +34,7 @@ class GeoCoder
     /**
      * @param string $userRequest
      * @return array|null
-     * @throws GuzzleException
+     * @throws GuzzleException|NotFoundHttpException
      */
     public function findAddressesByRequest(string $userRequest): ?array
     {
@@ -64,7 +67,7 @@ class GeoCoder
     private function convertLocations(array $GeoObjects): ?array
     {
         $locations = [];
-
+        $userCityModel = City::findOrFail(Yii::$app->user->identity->city_id) ;
         foreach ($GeoObjects as $item) {
             $pointData = ArrayHelper::getValue($item, 'GeoObject.Point.pos');
             $coords = explode(" ", $pointData);
@@ -72,9 +75,14 @@ class GeoCoder
             $lng = $coords[0];
             $city= ArrayHelper::getValue($item,
                                   'GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.LocalityName');
+
             $text = ArrayHelper::getValue($item, 'GeoObject.metaDataProperty.GeocoderMetaData.text');
-            array_push($locations, ['text'=>$text,'lat'=> $lat, 'lng'=>$lng, 'city'=>$city]);
+
+            if (stripos($text,$userCityModel['city'])) {
+                array_push($locations, ['text'=>$text,'lat'=> $lat, 'lng'=>$lng, 'city'=>$city]);
+           }
         }
+
 
         return $locations;
     }
@@ -129,7 +137,6 @@ class GeoCoder
 
     public function getCoordinates($location): ?array
     {
-
         return  $this->findAddressesByRequest($location)[0];
     }
 

@@ -25,7 +25,7 @@ $jsAjax = <<< AJAX
  new autoComplete({
     data: {
         src: async () => {
-            const token = "";
+            const token = "this_is_the_API_token_number";
             const query = document.querySelector("#autoComplete").value;
             const source = await fetch(
                 "/address/location?search="+query
@@ -85,7 +85,6 @@ $this->registerJS($jsAjax, $position = yii\web\View::POS_END, $key = null);
 $this->title = 'TaskForce - Создать задание';
 ?>
 
-
 <main class="page-main">
     <div class="main-container page-container">
         <section class="create__task">
@@ -97,12 +96,12 @@ $this->title = 'TaskForce - Создать задание';
                         'id' => 'task-form',
                         'enableClientValidation' => false,
                         'fieldConfig' => [
-                            'inputOptions' => ['class' => 'input textarea  col-xs-12'],
+                            'inputOptions' => ['class' => 'input textarea'],
                             'errorOptions' => ['tag' => 'span'],
                             'hintOptions' => ['tag' => 'span'],
                         ],
                         'options' => [
-                            'class' => 'create__task-form form-create  col-xs-12',
+                            'class' => 'create__task-form form-create',
                             'enctype' => 'multipart/form-data'
                         ]
                     ]
@@ -138,7 +137,7 @@ $this->title = 'TaskForce - Создать задание';
                     ->dropDownList(
                         $categories,
                         [
-                            'class' => 'multiple-select input multiple-select-big col-xs-12',
+                            'class' => 'multiple-select input multiple-select-big',
                             'size' => 1
                         ]
                     )
