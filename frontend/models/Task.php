@@ -7,6 +7,7 @@ use frontend\models\forms\TasksFilterForm;
 use TaskForce\Exception\TaskForceException;
 use TaskForce\Helpers\Declination;
 use TaskForce\TaskEntity;
+use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Query;
@@ -193,13 +194,14 @@ class Task extends ActiveRecord
             }
         }
 
+        $session = Yii::$app->session;
+        $currentCityId = $session['current_city_id'];
+
         $query->select(['t.*', 'c.name as cat_name', 'c.icon as icon'])->from('task t')
             ->join('LEFT JOIN', 'category as c', 't.category_id = c.id')
-            ->where(['t.status' => TaskEntity::STATUS_NEW]);
-
-
-        // todo добавить задания из города пользователя, либо из города, выбранного пользователем в текущей сессии.
-
+            ->where(['t.status' => TaskEntity::STATUS_NEW])
+            ->andWhere(['or',['t.city_id' => Yii::$app->user->identity->city_id],
+                       ['t.city_id' => $currentCityId], ['t.city_id' => null]]);
 
         if (!empty($list)) {
             $categoryList = sprintf('c.id in (%s)', implode(",", $list));
