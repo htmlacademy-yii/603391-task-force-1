@@ -82,6 +82,7 @@ $jsAjax = <<< AJAX
 AJAX;
 $this->registerJS($jsAjax, $position = yii\web\View::POS_END, $key = null);
 
+$this->title = 'TaskForce - Создать задание';
 ?>
 
 

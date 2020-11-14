@@ -15,7 +15,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\widgets\LinkPager;
 
-$this->title = 'TaskForce - Задания';
+$this->title = 'TaskForce - Мои задания';
 ?>
     <main class="page-main">
         <div class="main-container page-container">

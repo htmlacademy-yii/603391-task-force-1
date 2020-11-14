@@ -38,7 +38,6 @@ class UsersController extends SecureController
                 $filterRequest['CategoriesFilterForm']['categories']=$modelCategoriesFilter->getCategoriesState();
             }
         }
-
         if (Yii::$app->request->getIsPost()) {
             $modelUsersFilter->load(Yii::$app->request->post());
             $modelCategoriesFilter->updateProperties(

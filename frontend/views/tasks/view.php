@@ -26,7 +26,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
-$this->title = 'TaskForce - Задачи';
+$this->title = 'TaskForce - Задание';
 $currentUserId = Yii::$app->user->getId();
 
 $apiKey = Yii::$app->params['yandex_api_key'];

@@ -101,7 +101,7 @@ $this->title = 'TaskForce - Задания';
                             ['class' => 'visually-hidden checkbox__input', 'id' => $key],
                             false)->label($value, ['for' => $key, 'class' => false]);
                     }
-                    echo '</fieldset>';
+
 
                     foreach ($modelTasksFilter->checkboxesLabels() as $key => $value) {
                         $form->field($modelTasksFilter, $key, ['template' => '{input}{label}']
@@ -109,7 +109,7 @@ $this->title = 'TaskForce - Задания';
                             ['class' => 'visually-hidden checkbox__input', 'id' => $key],
                             false)->label($value, ['for' => $key, 'class' => false]);
                     }
-
+                    echo '</fieldset>';
                     echo $form->field($modelTasksFilter, 'timeInterval', [
                         'template' => '{label}{input}',
                         'labelOptions' => ['tag' => false],

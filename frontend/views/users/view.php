@@ -14,7 +14,6 @@ use frontend\models\forms\TasksFilterForm;
 use TaskForce\Helpers\Declination;
 
 $this->title = 'TaskForce - Исполнитель';
-
 ?>
 <main class="page-main">
     <div class="main-container page-container">

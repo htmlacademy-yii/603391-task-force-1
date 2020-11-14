@@ -1,7 +1,6 @@
 <?php
 
 /* @var $this yii\web\View */
-
 /** @var SignupForm $model */
 
 use frontend\models\forms\SignupForm;
@@ -9,7 +8,6 @@ use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 
 $this->title = 'TaskForce - Регистрация аккаунта';
-
 ?>
 
 <main class="page-main">

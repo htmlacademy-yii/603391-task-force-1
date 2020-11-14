@@ -3,13 +3,14 @@
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\UsersFilterForm;
 use TaskForce\SortingUsers;
+use yii\data\Pagination;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 use yii\widgets\LinkPager;
 
 /* @var $this yii\web\View */
-/** @var \yii\data\Pagination $pagination */
+/** @var Pagination $pagination */
 /** @var string $sortType */
 /** @var array $modelsUsers */
 /** @var UsersFilterForm $modelUsersFilter */
