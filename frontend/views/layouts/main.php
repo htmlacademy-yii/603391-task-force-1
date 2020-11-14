@@ -3,11 +3,16 @@
 /* @var $this View */
 /* @var $content string */
 
+use frontend\models\City;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use frontend\assets\AppAsset;
 use common\widgets\Alert;
 use yii\web\View;
+
+$selectedCity = '';
+$cities = City::getList();
+
 
 $loggedUser = Yii::$app->user->identity;
 if ($loggedUser) {
@@ -100,18 +105,18 @@ AppAsset::register($this);
                         <a href="<?=Url::to(['task/create'])?>">Создать задание</a>
                     </li>
                     <li class="site-list__item">
-                        <a href="#">Мой профиль</a>
+                        <a href="<?=Url::to(['/profile/index'])?>">Мой профиль</a>
                     </li>
                 </ul>
             </div>
             <?php if (Yii::$app->request->pathInfo !== 'signup/index' && $loggedUser): ?>
                 <div class="header__town">
                     <select class="multiple-select input town-select" size="1" name="town[]">
-                        <option value="Moscow">Москва</option>
-                        <option selected value="SPB">Санкт-Петербург</option>
-                        <option value="Krasnodar">Краснодар</option>
-                        <option value="Irkutsk">Иркутск</option>
-                        <option value="Vladivostok">Владивосток</option>
+                        <?php
+
+                        foreach ($cities as $key => $city):?>
+                          <option <?=($key === $selectedCity)?'selected':''?> value="<?=$key?>"><?=$city?></option>
+                        <?php endforeach;?>
                     </select>
                 </div>
                 <div class="header__lightbulb"></div>
@@ -143,13 +148,13 @@ AppAsset::register($this);
                 <div class="account__pop-up">
                     <ul class="account__pop-up-list">
                         <li>
-                            <a href="#">Мои задания</a>
+                            <a href="<?= Url::to( "/my-list/index")?>">Мои задания</a>
                         </li>
                         <li>
-                            <a href="#">Настройки</a>
+                            <a href="<?= Url::to( "/profile/index")?>">Настройки</a>
                         </li>
                         <li>
-                            <a href="<?= Url::to(['user/logout']) ?>">Выход</a>
+                            <a href="<?= Url::to('user/logout') ?>">Выход</a>
                         </li>
                     </ul>
                 </div>
@@ -178,7 +183,7 @@ AppAsset::register($this);
                         <a href="">Задания</a>
                     </li>
                     <li class="links__item">
-                        <a href="">Мой профиль</a>
+                        <a href="<?= Url::base() . "/profile/index/"?>">Мой профиль</a>
                     </li>
                     <li class="links__item">
                         <a href="">Исполнители</a>

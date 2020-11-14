@@ -1,7 +1,6 @@
 <?php
 
 /* @var $this View */
-
 /** @var string $content */
 
 use yii\helpers\Html;
@@ -15,11 +14,8 @@ $this->beginPage() ?>
 <html lang="<?= Yii::$app->language ?>">
 <head>
     <meta charset="<?= Yii::$app->charset ?>">
-    <?php
-    $this->registerCsrfMetaTags() ?>
-
-
-    <title><?= Html::encode($this->title) ?></title>
+    <?php $this->registerCsrfMetaTags() ?>
+        <title><?= Html::encode($this->title) ?></title>
     <?php
     $this->head() ?>
 </head>
@@ -184,9 +180,9 @@ $this->beginBody() ?>
 if (Yii::$app->session->hasFlash('login-error')): ?>
     <section class="modal enter-form form-modal landing-task" style="display: block">
         <p>
-        <h3>
-            <?php echo Yii::$app->session->getFlash('login-error'); ?>
-        </h3>
+            <h3>
+                <?php echo Yii::$app->session->getFlash('login-error'); ?>
+            </h3>
         </p>
         <button class="form-modal-close" type="button">Закрыть</button>
     </section>
@@ -195,7 +191,7 @@ if (Yii::$app->session->hasFlash('login-error')): ?>
 <div class="overlay">
     <?= Alert::widget() ?>
 </div>
-<script src="js/main.js"></script>
+<script src="/js/main.js"></script>
 <?php $this->endBody() ?>
 </body>
 </html>
