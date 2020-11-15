@@ -37,6 +37,8 @@ class SignupController extends Controller
      */
     public function actionIndex()
     {
+        $this->layout = 'signup';
+
         $model = new SignupForm();
 
         if (Yii::$app->request->getIsPost()) {

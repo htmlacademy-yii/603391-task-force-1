@@ -2520,3 +2520,6 @@ footer {
 .dz-error-mark {
   display: none !important;
 }
+span.input-error {
+  color: red;
+}
