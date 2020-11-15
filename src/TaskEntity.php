@@ -46,7 +46,14 @@ class TaskEntity
         self::ACTION_ASSIGN => self::STATUS_IN_WORK,
         self::ACTION_REFUSE => self::STATUS_FAILED,
         self::ACTION_FAILED => self::STATUS_FAILED
+    ];
 
+    public const STATUS_TO_NAME = [
+        self::STATUS_CANCEL => 'Отменено',
+        self::STATUS_COMPLETE => 'Завершено',
+        self::STATUS_IN_WORK => 'В работе',
+        self::STATUS_NEW => 'Новое',
+        self::STATUS_FAILED => 'Просрочено'
     ];
 
     public const STATUSES = [

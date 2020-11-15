@@ -5,6 +5,7 @@ namespace frontend\models\forms;
 use Exception;
 use frontend\models\Response;
 use TaskForce\Exception\TaskForceException;
+use TaskForce\ResponseEntity;
 use Yii;
 use yii\base\Model;
 
@@ -26,6 +27,7 @@ class ResponseTaskForm extends Model
         ];
     }
 
+
     /**
      * @param $taskId
      * @param $userId
@@ -40,7 +42,7 @@ class ResponseTaskForm extends Model
             $response->description = $this->comment;
             $response->price = $this->payment;
             $response->task_id = $taskId;
-            $response->status = \TaskForce\ResponseEntity::STATUS_NEW;
+            $response->status = ResponseEntity::STATUS_NEW;
             $response->user_id = $userId;
             $response->insert();
             $transaction->commit();

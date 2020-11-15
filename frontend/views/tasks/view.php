@@ -1,7 +1,6 @@
 <?php
 
 /* @var $this yii\web\View */
-
 /** @var TasksFilterForm $modelTasksFilter */
 /** @var CategoriesFilterForm $modelCategoriesFilter */
 /** @var array $modelTask */
@@ -78,35 +77,37 @@ $this->registerJS($mapJS);
                     <?php
                     /** @var array $modelsFiles */
                     if (count($modelsFiles) > 0):?>
-                    <div class="content-view__attach">
-                        <h3 class="content-view__h3">Вложения</h3>
-                        <?php
-                        foreach ($modelsFiles as $key => $file):?>
-                            <a href="<?= Url::to(['site/file', 'id' => $file['id']]) ?>"
-                               title="<?= $file['filename'] ?>">
-                                <?= (strlen($file['filename']) > 30)
-                                    ? (substr($file['filename'], 0, 30) . '...')
-                                    : $file['filename'] ?></a>
-                        <?php
-                        endforeach; ?>
-                    </div>
-                    <?php endif;
+                        <div class="content-view__attach">
+                            <h3 class="content-view__h3">Вложения</h3>
+                            <?php
+                            foreach ($modelsFiles as $key => $file):?>
+                                <a href="<?= Url::to(['site/file', 'id' => $file['id']]) ?>"
+                                   title="<?= $file['filename'] ?>">
+                                    <?= (strlen($file['filename']) > 30)
+                                        ? (substr($file['filename'], 0, 30) . '...')
+                                        : $file['filename'] ?></a>
+                            <?php
+                            endforeach; ?>
+                        </div>
+                    <?php
+                    endif;
 
-                    if ((int)$modelTask['lat'] !== 0 && (int)$modelTask['lng'] !== 0 ):?>
-                    <div class="content-view__location">
-                        <h3 class="content-view__h3">Расположение</h3>
-                        <div class="content-view__location-wrapper">
+                    if ((int)$modelTask['lat'] !== 0 && (int)$modelTask['lng'] !== 0):?>
+                        <div class="content-view__location">
+                            <h3 class="content-view__h3">Расположение</h3>
+                            <div class="content-view__location-wrapper">
 
-                            <div class="content-view__map" id="map" style="width: 361px; height: 292px"></div>
+                                <div class="content-view__map" id="map" style="width: 361px; height: 292px"></div>
 
-                            <div class="content-view__address">
-                                <span class="address__town"><?= $modelTask['city'] ?></span><br>
-                                <span><?= $modelTask['address'] ?></span>
-                                <p></p>
+                                <div class="content-view__address">
+                                    <span class="address__town"><?= $modelTask['city'] ?></span><br>
+                                    <span><?= $modelTask['address'] ?></span>
+                                    <p></p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <?php endif;?>
+                    <?php
+                    endif; ?>
                 </div>
                 <div class="content-view__action-buttons">
 
@@ -227,7 +228,10 @@ $this->registerJS($mapJS);
                             <div class="profile-mini__name five-stars__rate">
                                 <p><?= $modelTaskUser['name'] ?></p>
                                 <?= str_repeat('<span></span>', $modelTaskUser['rate']); ?>
-                                <?= str_repeat('<span class="star-disabled"></span>', 5 - $modelTaskUser['rate']); ?>
+                                <?= str_repeat(
+                                    '<span class="star-disabled"></span>',
+                                    5 - $modelTaskUser['rate']
+                                ); ?>
                                 <b><?= $modelTaskUser['rate'] ?></b>
                             </div>
                         </div>
@@ -244,31 +248,38 @@ $this->registerJS($mapJS);
                         endif; ?>
                     </div>
                 </div>
-                <div class="connect-desk__chat">
-                    <h3>Переписка</h3>
-                    <div class="chat__overflow">
-                        <div class="chat__message chat__message--out">
-                            <p class="chat__message-time">10.05.2019, 14:56</p>
-                            <p class="chat__message-text">Привет. Во сколько сможешь
-                                приступить к работе?</p>
+                <?php
+                if ((((int)$modelTask['customer_id']) === $currentUserId
+                        || ((int)$modelTask['executor_id']) === $currentUserId)
+                    && ($modelTask['executor_id'] !== null)
+                ): ?>
+                    <div class="connect-desk__chat">
+                        <h3>Переписка</h3>
+                        <div class="chat__overflow">
+                            <div class="chat__message chat__message--out">
+                                <p class="chat__message-time">10.05.2019, 14:56</p>
+                                <p class="chat__message-text">Привет. Во сколько сможешь
+                                    приступить к работе?</p>
+                            </div>
+                            <div class="chat__message chat__message--in">
+                                <p class="chat__message-time">10.05.2019, 14:57</p>
+                                <p class="chat__message-text">На задание
+                                    выделены всего сутки, так что через час</p>
+                            </div>
+                            <div class="chat__message chat__message--out">
+                                <p class="chat__message-time">10.05.2019, 14:57</p>
+                                <p class="chat__message-text">Хорошо. Думаю, мы справимся</p>
+                            </div>
                         </div>
-                        <div class="chat__message chat__message--in">
-                            <p class="chat__message-time">10.05.2019, 14:57</p>
-                            <p class="chat__message-text">На задание
-                                выделены всего сутки, так что через час</p>
-                        </div>
-                        <div class="chat__message chat__message--out">
-                            <p class="chat__message-time">10.05.2019, 14:57</p>
-                            <p class="chat__message-text">Хорошо. Думаю, мы справимся</p>
-                        </div>
-                    </div>
-                    <p class="chat__your-message">Ваше сообщение</p>
-                    <form class="chat__form">
+                        <p class="chat__your-message">Ваше сообщение</p>
+                        <form class="chat__form">
                         <textarea class="input textarea textarea-chat" rows="2" name="message-text"
                                   placeholder="Текст сообщения"></textarea>
-                        <button class="button chat__button" type="submit">Отправить</button>
-                    </form>
-                </div>
+                            <button class="button chat__button" type="submit">Отправить</button>
+                        </form>
+                    </div>
+                <?php
+                endif; ?>
             </section>
         <?php
         endif; ?>

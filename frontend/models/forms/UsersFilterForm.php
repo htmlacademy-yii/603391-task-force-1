@@ -1,11 +1,8 @@
 <?php
 
-
 namespace frontend\models\forms;
 
-
 use yii\base\Model;
-
 
 class UsersFilterForm extends Model
 {
@@ -47,8 +44,7 @@ class UsersFilterForm extends Model
     /**
      * @return array|string[]
      */
-    public
-    function fieldsLabels(): array
+    public function fieldsLabels(): array
     {
         return [
             'searchName' => 'Поиск по названию'
@@ -58,8 +54,7 @@ class UsersFilterForm extends Model
     /**
      * @return array|array[]
      */
-    public
-    function rules(): array
+    public function rules(): array
     {
         return [
             [['freeNow', 'onlineNow', 'feedbackExists', 'isFavorite', 'searchName'], 'safe'],

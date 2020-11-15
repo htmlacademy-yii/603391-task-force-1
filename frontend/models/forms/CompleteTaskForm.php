@@ -1,13 +1,11 @@
 <?php
 
-
 namespace frontend\models\forms;
 
 use yii\base\Model;
 
 class CompleteTaskForm extends Model
 {
-
     public const VALUE_YES = 'yes';
     public const VALUE_DIFFICULTIES = 'difficult';
 
@@ -19,8 +17,6 @@ class CompleteTaskForm extends Model
     public ?string $completion = null;
     public ?string $comment = null;
     public ?int $rating = null;
-
-
 
     public function rules()
     {

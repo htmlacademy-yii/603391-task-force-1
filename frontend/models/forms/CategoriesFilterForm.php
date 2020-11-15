@@ -1,8 +1,6 @@
 <?php
 
-
 namespace frontend\models\forms;
-
 
 use frontend\models\Category;
 use yii\base\Model;
@@ -18,14 +16,13 @@ class CategoriesFilterForm extends Model
     private ?array $categories = null;
     private ?array $categoriesId = null;
 
-    public function init()
+    public function init(): void
     {
         $this->categoriesId = ArrayHelper::map(Category::find()->select(['id', 'name'])->all(), 'id', 'name');
 
         foreach ($this->categoriesId as $key => $element) {
             $this->categories[$key] = true;
         }
-
     }
 
     public function __get($name): ?bool

@@ -2,8 +2,8 @@
 
 namespace frontend\models;
 
-
 use frontend\models\forms\TasksFilterForm;
+use TaskForce\Constant\MyTask;
 use TaskForce\Exception\TaskForceException;
 use TaskForce\Helpers\Declination;
 use TaskForce\TaskEntity;
@@ -12,7 +12,6 @@ use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Query;
 use yii\web\NotFoundHttpException;
-
 
 /**
  * This is the model class for table "task".
@@ -37,11 +36,14 @@ use yii\web\NotFoundHttpException;
  * @property Response[] $responses
  * @property Category $category
  * @property User $customer
+ * @property-read ActiveQuery|CategoryQuery $city
  * @property User $executor
  */
 class Task extends ActiveRecord
 {
     use ExceptionOnFindFail;
+
+
 
     /**
      * {@inheritdoc}
@@ -50,6 +52,7 @@ class Task extends ActiveRecord
     {
         return 'task';
     }
+
 
     /**
      * {@inheritdoc}
@@ -248,8 +251,8 @@ class Task extends ActiveRecord
 
         if (isset($request['TasksFilterForm']['remoteWork'])
             && $request['TasksFilterForm']['remoteWork'] === '1') {
-        $query->andWhere('t.lat IS NULL AND t.lng IS NULL');
-    }
+            $query->andWhere('t.lat IS NULL AND t.lng IS NULL');
+        }
 
         if (isset($request['TasksFilterForm']['timeInterval'])
             && $request['TasksFilterForm']['timeInterval'] !== TasksFilterForm::FILTER_ALL_TIME) {
@@ -303,5 +306,18 @@ class Task extends ActiveRecord
         }
 
         return self::find()->where(['id' => $id])->andWhere(['status' => TaskEntity::STATUS_COMPLETE])->count();
+    }
+
+     public static function getTaskByStatus(string $filterRequest)
+    {
+        $userId = Yii::$app->user->identity->getId();
+
+        return self::find()->select(['t.*', 'c.name as cat_name', 'u.name as user_name', 'p.avatar','p.rate'])
+            ->from('task t')
+            ->join('LEFT JOIN', 'category as c', 't.category_id = c.id')
+            ->join('LEFT JOIN', 'user as u', 't.customer_id = u.id')
+            ->join('LEFT JOIN', 'profile as p', 't.customer_id = p.user_id')
+            ->where(['or', ['t.customer_id' => $userId], ['t.executor_id' => $userId]])
+            ->andWhere(['status' => MyTask::STATUS_BY_FILTER[$filterRequest]])->asArray()->all();
     }
 }

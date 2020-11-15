@@ -12,7 +12,6 @@ use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
 use Yii;
 use yii\helpers\ArrayHelper;
-use yii\helpers\VarDumper;
 use yii\web\NotFoundHttpException;
 
 class GeoCoder
@@ -102,11 +101,11 @@ class GeoCoder
         }
     }
 
+
     /**
      * @param string $userRequest
      * @return mixed
      * @throws GuzzleException
-     * @throws Exception
      */
     public function getResponseData(string $userRequest)
     {
