@@ -106,14 +106,14 @@ class Profile extends ActiveRecord
      * @param int $id
      * @return array|null
      */
-    public static function findProfileByUserId(int $id): ?array
+    public static function findByUserId(int $id): ?array
     {
         return self::find()
-            ->select('u.role,p.id as profile_id, p.user_id, p.birthday, p.avatar, p.rate, u.email, u.date_login, u.name, u.date_add')
+            ->select('u.role,p.about, p.id as profile_id, p.user_id, p.birthday,p.phone, p.messenger, p.skype,
+             p.avatar, p.rate, u.email, u.city_id, u.date_login, u.name, u.date_add')
             ->from('profile p')
             ->join('LEFT JOIN', 'user as u', 'p.user_id = u.id')
-            ->where(['u.id' => $id])
-
+            ->where(['p.user_id' => $id])
             ->limit(1)
             ->asArray()->one();
     }

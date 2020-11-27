@@ -8,7 +8,6 @@ use TaskForce\Exception\TaskForceException;
 
 class Declination
 {
-
     public string $firstForm = '';
     public string $secondForm = '';
     public string $thirdForm = '';
@@ -35,7 +34,6 @@ class Declination
         return ($n % 10 == 1 && $n % 100 != 11) ? 0 : $form;
     }
 
-
     /**
      * @param int|null $value
      * @return string
@@ -45,7 +43,6 @@ class Declination
         $caseWords = $this->getWordsList();
         return ' ' . $caseWords[self::caseType($value)];
     }
-
 
     /**
      * @param string|null $time
@@ -78,5 +75,4 @@ class Declination
         }
         return 'менее минуты';
     }
-
 }

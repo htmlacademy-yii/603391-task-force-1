@@ -6,7 +6,6 @@ use TaskForce\TaskEntity;
 
 class MyTask
 {
-
     public const FILTER_COMPLETED = 'completed';
     public const FILTER_NEW = 'new';
     public const FILTER_ACTIVE = 'active';

@@ -15,7 +15,6 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\widgets\LinkPager;
 
-$this->title = 'TaskForce - Профиль пользователя';
 ?>
 
 <main class="page-main">

@@ -24,8 +24,9 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\UploadedFile;
 
-class TaskController extends Controller
+class TaskController extends SecureController
 {
+//    public string $layout = 'main';
     /**
      * @return array|array[]
      */
@@ -67,7 +68,6 @@ class TaskController extends Controller
         if ($request = Yii::$app->request->post()) {
             $createTaskForm->load($request);
             $createTaskForm->files = UploadedFile::getInstances($createTaskForm, 'files');
-
             if ($createTaskForm->validate()) {
                 $taskId = $createTaskForm->saveData($userId);
 
@@ -84,12 +84,10 @@ class TaskController extends Controller
         return $this->render('create', compact('createTaskForm', 'categories', 'cities'));
     }
 
-
     /**
      * @param int $id
      * @return \yii\web\Response
-     * @throws TaskForceException
-
+     * @throws TaskForceException|\Throwable
      */
     public function actionResponse(int $id)
     {
@@ -182,5 +180,4 @@ class TaskController extends Controller
 
         return $this->redirect(['tasks/view', 'id' => $id]);
     }
-
 }

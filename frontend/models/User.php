@@ -261,7 +261,7 @@ class User extends ActiveRecord implements IdentityInterface
 
         $query = new Query();
         $query->from('user u')
-            ->select(['p.about', 'p.avatar','p.rate','u.role','p.id', 'u.name', 'u.date_login'])
+            ->select(['p.about', 'p.avatar','p.rate','u.role','p.id as profile_id','u.id', 'u.name', 'u.date_login'])
             ->join('LEFT JOIN', 'profile as p', 'u.id = p.user_id')
             ->join('LEFT JOIN', ['t' => $countTasks], 'p.user_id = t.executor_id')
             ->where(['u.role' => UserRole::EXECUTOR])->andWhere(['not', ['p.id' => null]]);;

@@ -68,15 +68,15 @@ class Specialization extends ActiveRecord
 
     /**
      *
-     * @param int $userId
+     * @param int $profileId
      * @return array|Specialization[]
      */
-    public static function findItemsByUserId(int $userId)
+    public static function findItemsByProfileId(int $profileId)
     {
         return self::find()->select('c.name, c.id')->from('specialization s')
             ->join('LEFT JOIN', 'profile as p', 's.profile_id = p.id')
             ->join('LEFT JOIN', 'category as c', 's.category_id = c.id')
-            ->where(['p.id' => $userId])->asArray()->all();
+            ->where(['p.id' => $profileId])->asArray()->all();
     }
 
 }

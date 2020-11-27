@@ -2,15 +2,12 @@
 
 namespace frontend\controllers;
 
-use TaskForce\Exception\TaskForceException;
-
 class ProfileController extends SecureController
 {
     /**
      * Profile
      *
      * @return string
-     * @throws TaskForceException
      */
     public function actionIndex(): string
     {
@@ -18,6 +15,4 @@ class ProfileController extends SecureController
             'index',
         );
     }
-
-
 }

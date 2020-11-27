@@ -10,79 +10,12 @@ use yii\helpers\Html;
 
 $apiKey = Yii::$app->params['yandex_api_key'];
 $yandexApiJs = "https://api-maps.yandex.ru/2.1/?apikey=$apiKey&lang=ru_RU";
+$this->registerJSFile($yandexApiJs,  $options = [$position = yii\web\View::POS_HEAD]);
 
-$js = <<< JS
-  var dropzone = new Dropzone("div.create__file", {url: "/", paramName: "Attach"});
-JS;
-$this->registerJs($js, $position = yii\web\View::POS_END, $key = null);
-
-$this->registerJSFile('/js/dropzone.js');
-$this->registerJSFile($yandexApiJs, $options = [$position = yii\web\View::POS_HEAD], $key = null);
 $this->registerJSFile('/js/autoComplete.min.js', $options = [$position = yii\web\View::POS_BEGIN]);
+$this->registerJSFile('/js/autoComplete.init.js', $options = [$position = yii\web\View::POS_END]);
 $this->registerCSSFile('/css/js-plugin.css', $options = [$position = yii\web\View::POS_END]);
 
-$jsAjax = <<< AJAX
- new autoComplete({
-    data: {
-        src: async () => {
-            const token = "this_is_the_API_token_number";
-            const query = document.querySelector("#autoComplete").value;
-            const source = await fetch(
-                "/address/location?search="+query
-            );
-            const data = await source.json();
-            return data;
-        },
-        key: ['text'],
-        cache: false
-    },
-    sort: (a, b) => {                    // Sort rendered results ascendingly | (Optional)
-        if (a.match < b.match) return -1;
-        if (a.match > b.match) return 1;
-        return 0;
-    },
-    placeHolder: "",     // Place Holder text                 | (Optional)
-    selector: "#autoComplete",           // Input field selector              | (Optional)
-    threshold: 3,                        // Min. Chars length to start Engine | (Optional)
-    debounce: 1000,                      // Post duration for engine to start | (Optional)
-    searchEngine: "loose",               // Search Engine type/mode           | (Optional)
-    resultsList: {                       // Rendered results list object      | (Optional)
-        render: true,
-        container: source => {
-            source.setAttribute("id", "location-list");
-            source.setAttribute("class", "input");
-        },
-        destination: document.querySelector("#autoComplete"),
-        position: "afterend",
-        element: "ul"
-    },
-    maxResults: 5,                         // Max. number of rendered results | (Optional)
-    highlight: true,                       // Highlight matching results      | (Optional)
-    resultItem: {                          // Rendered result item            | (Optional)
-        content: (data, source) => {
-            source.innerHTML = data.match;
-            source.setAttribute("class", "input");
-        },
-        element: "li"
-    },
-    noResults: () => {   
-        document.querySelector("#lat").value = '';
-        document.querySelector("#lng").value = '';                 
-        document.querySelector("#city").value = '';                 
-    },
-    onSelection: (feedback) => {
-        console.log(feedback.selection.value);
-        document.querySelector("#autoComplete").value = feedback.selection.value.text;
-        document.querySelector("#lat").value =  feedback.selection.value.lat ;
-        document.querySelector("#lng").value =  feedback.selection.value.lng ;
-        document.querySelector("#city").value =  feedback.selection.value.city ;
-        feedback = null;
-    }
-});
-AJAX;
-$this->registerJS($jsAjax, $position = yii\web\View::POS_END, $key = null);
-
-$this->title = 'TaskForce - Создать задание';
 ?>
 
 <main class="page-main">
@@ -108,7 +41,7 @@ $this->title = 'TaskForce - Создать задание';
                 );
 
                 echo $form
-                    ->field($createTaskForm, 'name', ['options' => ['tag' => false]])
+                    ->field($createTaskForm, 'name', ['options' => ['tag' => false, 'id' => 'name']])
                     ->label('Мне нужно')
                     ->textarea(
                         [
@@ -146,22 +79,16 @@ $this->title = 'TaskForce - Создать задание';
                 <label>Файлы</label>
                 <span>Загрузите файлы, которые помогут исполнителю лучше выполнить или оценить работу</span>
 
-                <?= $form->field(
-                    $createTaskForm,
-                    'files[]',
-                    [
-                        'options' => ['tag' => 'div', 'class' => 'create__file'],
-                    ]
-                )
-                    ->fileInput(
-                        [
-                            'class' => 'dropzone',
-                            'multiple' => 'true',
-                        ]
-                    )
-                    ->label('Добавить новый файл') ?>
 
-                <input type="hidden" name="_csrf-frontend" value="<?= Yii::$app->request->getCsrfToken() ?>"/>
+                <?=  $form->field($createTaskForm, 'files[]',
+                                  [ 'options' =>['tag' => 'div','for' => 'file' ,'class'=>'create__file input'],
+                                  ])
+                    ->fileInput(['class' => 'dropzone visually-hidden',
+                                    'multiple' => 'true',
+                                        'id'=>'file'
+                                ])
+                    ->label('Добавить новый файл')?>
+
 
                 <?= $form
                     ->field(
@@ -180,15 +107,12 @@ $this->title = 'TaskForce - Создать задание';
                         ]
                     )
                     ->hint('Укажите адрес исполнения, если задание требует присутствия'); ?>
-
                 <?= $form->field($createTaskForm, 'city')
                     ->label(false)
                     ->hiddenInput(['value' => '', 'id' => 'city']); ?>
-
-             <?= $form->field($createTaskForm, 'lat')
+                <?= $form->field($createTaskForm, 'lat')
                     ->label(false)
                     ->hiddenInput(['value' => '', 'id' => 'lat']); ?>
-
                 <?= $form->field($createTaskForm, 'lng')
                     ->label(false)
                     ->hiddenInput(['value' => '', 'id' => 'lng']); ?>
@@ -277,7 +201,7 @@ $this->title = 'TaskForce - Создать задание';
             </div>
 
             <?php
-            echo Html::submitButton('Опубликовать', ['class' => 'button', 'form' => 'task-form']); ?>
+            echo Html::submitButton('Опубликовать', ['class' => 'button', 'id' => 'submit-all', 'form' => 'task-form']); ?>
         </section>
     </div>
 </main>

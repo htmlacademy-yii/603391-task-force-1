@@ -43,7 +43,7 @@ class Task extends ActiveRecord
 {
     use ExceptionOnFindFail;
 
-
+    public const NO_AVATAR_JPG = 'no-avatar.jpg';
 
     /**
      * {@inheritdoc}
@@ -52,7 +52,6 @@ class Task extends ActiveRecord
     {
         return 'task';
     }
-
 
     /**
      * {@inheritdoc}
@@ -150,7 +149,6 @@ class Task extends ActiveRecord
         return $this->hasMany(Response::class, ['task_id' => 'id']);
     }
 
-
     /**
      * Gets query for [[Category]].
      *
@@ -219,7 +217,7 @@ class Task extends ActiveRecord
         }
 
         $session = Yii::$app->session;
-        $currentCityId = $session['current_city_id'];
+        $currentCityId = $session['current_city_id'] ?? Yii::$app->user->identity->city_id;
 
         $query->select(['t.*', 'c.name as cat_name', 'c.icon as icon'])->from('task t')
             ->join('LEFT JOIN', 'category as c', 't.category_id = c.id')
@@ -242,7 +240,6 @@ class Task extends ActiveRecord
         if (strlen($searchName) > 0) {
             $query->andWhere(['LIKE', 't.name', $searchName, false]);
         }
-
 
         if (isset($request['TasksFilterForm']['withoutExecutor'])
             && $request['TasksFilterForm']['withoutExecutor'] === '1') {
@@ -289,7 +286,6 @@ class Task extends ActiveRecord
         if (!$model) {
             throw new NotFoundHttpException("Задание с ID $id не найдено");
         }
-
 
         return $model;
     }

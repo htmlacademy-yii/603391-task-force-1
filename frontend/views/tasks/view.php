@@ -11,10 +11,12 @@
 /** @var bool $existsUserResponse */
 /** @var array $availableActions */
 
+use frontend\widgets\StarRating;
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\CompleteTaskForm;
 use frontend\models\forms\ResponseTaskForm;
 use frontend\models\forms\TasksFilterForm;
+use frontend\widgets\YandexMap;
 use TaskForce\Actions\CancelAction;
 use TaskForce\Actions\CompleteAction;
 use TaskForce\Actions\RefuseAction;
@@ -25,31 +27,8 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
-$this->title = 'TaskForce - Задание';
-$currentUserId = Yii::$app->user->getId();
-
-$apiKey = Yii::$app->params['yandex_api_key'];
-$yandexApiJs = "https://api-maps.yandex.ru/2.1/?apikey=$apiKey&lang=ru_RU";
-$this->registerJSFile($yandexApiJs, $options = [$position = yii\web\View::POS_HEAD], $key = null);
-
 $this->registerJSFile('/js/main.js');
-
-$mapJS = <<<'MAPJS'
-    var taskMap;
-    ymaps.ready(function(){
-            // Указывается идентификатор HTML-элемента.
-            var taskMap = new ymaps.Map("map", {
-                center: [%s,%s],
-                zoom: 17,
-            });
-        });
-
-    ymaps.ready(init);
-MAPJS;
-$mapJS = sprintf($mapJS, $modelTask['lat'], $modelTask['lng'], $modelTask['lat'], $modelTask['lng']);
-
-$this->registerJS($mapJS);
-
+$currentUserId = Yii::$app->user->getId();
 ?>
 <main class="page-main">
     <div class="main-container page-container">
@@ -97,7 +76,7 @@ $this->registerJS($mapJS);
                             <h3 class="content-view__h3">Расположение</h3>
                             <div class="content-view__location-wrapper">
 
-                                <div class="content-view__map" id="map" style="width: 361px; height: 292px"></div>
+                                 <?=   YandexMap::widget(['lat'=>$modelTask['lat'],'lng'=>$modelTask['lng']]);?>
 
                                 <div class="content-view__address">
                                     <span class="address__town"><?= $modelTask['city'] ?></span><br>
@@ -154,13 +133,13 @@ $this->registerJS($mapJS);
                         <div class="content-view__feedback-card">
                             <div class="feedback-card__top">
                                 <a href="<?= Url::to(['users/view', 'id' => $response['user_id']]) ?>">
-                                    <img src="../../img/<?= $response['avatar'] ?>" width="55" height="55" alt="avatar"></a>
+                                    <img src="<?= Url::base(
+                                    ) . '/uploads/avatars/' . ($response['avatar'] ?? 'no-avatar.jpg') ?>"
+                                         width="55" height="55" alt="avatar"></a>
                                 <div class="feedback-card__top--name">
                                     <p><a href="<?= Url::to(['users/view', 'id' => $response['user_id']]) ?>"
                                           class="link-regular"><?= $response['name'] ?></a></p>
-                                    <?= str_repeat('<span></span>', $response['rate']); ?>
-                                    <?= str_repeat('<span class="star-disabled"></span>', 5 - $response['rate']); ?>
-                                    <b><?= $response['rate'] ?></b>
+                                    <?= StarRating::widget(['rate' => $response['rate'] ?? 0]) ?>
                                 </div>
                                 <span class="new-task__time"><?= Declination::getTimeAfter(
                                         (string)$response['created_at']
@@ -173,8 +152,6 @@ $this->registerJS($mapJS);
                                 <span><?= $response['price'] ?> ₽</span>
                             </div>
                             <?php
-
-
                             if (Yii::$app->user->identity->role === UserRole::CUSTOMER
                                 && ((int)$modelTask['customer_id']) === $currentUserId
                                 && ($response['status'] === TaskForce\ResponseEntity::STATUS_NEW)
@@ -190,7 +167,6 @@ $this->registerJS($mapJS);
                                         ],
                                         ['class' => 'button__small-color request-button button']
                                     ) ?>
-
                                     <?= Html::a(
                                         'Отказать',
                                         [
@@ -223,16 +199,12 @@ $this->registerJS($mapJS);
 
                             echo ($showExecutor) ? 'Исполнтель' : 'Заказчик' ?></h3>
                         <div class="profile-mini__top">
-                            <img src="../../img/<?= $modelTaskUser['avatar'] ?>" width="62" height="62"
+                            <img src="<?= Url::base() . '/uploads/avatars/' . $modelTaskUser['avatar'] ?>" width="62"
+                                 height="62"
                                  alt="Аватар <?= ($showExecutor) ? 'исполнтеля' : 'заказчика' ?>">
                             <div class="profile-mini__name five-stars__rate">
                                 <p><?= $modelTaskUser['name'] ?></p>
-                                <?= str_repeat('<span></span>', $modelTaskUser['rate']); ?>
-                                <?= str_repeat(
-                                    '<span class="star-disabled"></span>',
-                                    5 - $modelTaskUser['rate']
-                                ); ?>
-                                <b><?= $modelTaskUser['rate'] ?></b>
+                                <?= StarRating::widget(['rate' => $modelTaskUser['rate']]) ?>
                             </div>
                         </div>
                         <p class="info-customer"><span><?= $modelTaskUser['countTask'] ?> заданий</span>

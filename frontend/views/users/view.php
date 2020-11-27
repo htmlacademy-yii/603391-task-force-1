@@ -6,28 +6,27 @@
 /** @var array $works */
 /** @var array $specializations */
 /** @var TasksFilterForm $modelTasksFilter */
-
 /** @var CategoriesFilterForm $modelCategoriesFilter */
 
+use frontend\widgets\StarRating;
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\TasksFilterForm;
 use TaskForce\Helpers\Declination;
+use yii\helpers\Url;
 
-$this->title = 'TaskForce - Исполнитель';
 ?>
 <main class="page-main">
     <div class="main-container page-container">
         <section class="content-view">
             <div class="user__card-wrapper">
                 <div class="user__card">
-                    <img src="../../img/<?= $modelUser['avatar'] ?>" width="120" height="120" alt="Аватар пользователя">
+                    <img src="<?=
+                    Url::base() . '/uploads/avatars/' . $modelUser['avatar'] ?>" width="120" height="120" alt="Аватар пользователя">
                     <div class="content-view__headline">
                         <h1><?= $modelUser['name'] ?></h1>
                         <p>Россия, Санкт-Петербург, <?= Declination::getTimeAfter((string)$modelUser['birthday']) ?></p>
                         <div class="profile-mini__name five-stars__rate">
-                            <?= str_repeat('<span></span>', $modelUser['rate']); ?>
-                            <?= str_repeat('<span class="star-disabled"></span>', 5 - $modelUser['rate']); ?>
-                            <b><?= $modelUser['rate'] ?></b>
+                            <?= StarRating::widget(['rate' => $modelUser['rate']]) ?>
                         </div>
                         <b class="done-task">Выполнил <?php
                             echo $modelUser['countTask'];
@@ -52,9 +51,7 @@ $this->title = 'TaskForce - Исполнитель';
                         <h3 class="content-view__h3">Специализации</h3>
                         <div class="link-specialization">
                             <?= (!$specializations) ? '-' : '' ?>
-                            <?php
-
-                            foreach ($specializations as $key => $specialization): ?>
+                            <?php foreach ($specializations as $key => $specialization): ?>
                                 <a href="#" class="link-regular"><?= $specialization['name'] ?></a>
                             <?php endforeach; ?>
                         </div>
@@ -77,6 +74,7 @@ $this->title = 'TaskForce - Исполнитель';
                     </div>
                 </div>
             </div>
+            <?php if ($countOpinions):?>
             <div class="content-view__feedback">
                 <h2>Отзывы <span>(<?= $countOpinions ?>)</span></h2>
                 <div class="content-view__feedback-wrapper reviews-wrapper">
@@ -104,6 +102,7 @@ $this->title = 'TaskForce - Исполнитель';
                     <?php endforeach; ?>
                 </div>
             </div>
+            <?php endif;?>
         </section>
         <section class="connect-desk">
             <div class="connect-desk__chat">

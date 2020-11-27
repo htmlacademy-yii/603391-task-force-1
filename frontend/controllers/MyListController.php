@@ -21,5 +21,4 @@ class MyListController extends SecureController
             'index', compact('modelTasks','currentFilter')
         );
     }
-
 }

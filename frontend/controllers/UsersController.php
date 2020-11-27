@@ -67,7 +67,7 @@ class UsersController extends SecureController
 
         if (!empty($modelsUsers)) {
             foreach ($modelsUsers as $key => $element) {
-                $modelsUsers[$key]['categories'] = Specialization::findItemsByUserId($element['id']);
+                $modelsUsers[$key]['categories'] = Specialization::findItemsByProfileId($element['profile_id']);
                 $modelsUsers[$key]['countTasks'] = Task::findCountTasksByUserId($element['id']);
                 $modelsUsers[$key]['countReplies'] = Opinion::findCountOpinionsByUserId($element['id']);
                 $modelsUsers[$key]['afterTime'] = Declination::getTimeAfter($element['date_login']);
@@ -96,7 +96,7 @@ class UsersController extends SecureController
      */
     public function actionView(int $id): string
     {
-        $modelUser = Profile::findProfileByUserId($id);
+        $modelUser = Profile::findByUserId($id);
         if ($modelUser['role'] !== UserRole::EXECUTOR) {
             throw new NotFoundHttpException('Executor profile not found.');
         }
@@ -104,7 +104,7 @@ class UsersController extends SecureController
         $modelUser['countTask'] = Task::findCountTasksByUserId($id);
         $modelsOpinions = Opinion::findOpinionsByUserId($id);
         $countOpinions = Opinion::findCountOpinionsByUserId($id);
-        $specializations = Specialization::findItemsByUserId($id);
+        $specializations = Specialization::findItemsByProfileId($id);
         $works = Work::findWorkFilesByUserId($id);
 
         return $this->render(
@@ -118,5 +118,4 @@ class UsersController extends SecureController
             )
         );
     }
-
 }

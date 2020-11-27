@@ -29,8 +29,6 @@ class City extends ActiveRecord
         return 'city';
     }
 
-
-
     /**
      * {@inheritdoc}
      */
@@ -86,6 +84,6 @@ class City extends ActiveRecord
 
     public static function findIdByName(?string $city): ?int
     {
-        return City::find()->select('id')->where(['city'=>$city])->limit(1)->one()['id'] ?? null;
+        return City::find()->select('id')->where(['city' => $city])->limit(1)->one()['id'] ?? null;
     }
 }

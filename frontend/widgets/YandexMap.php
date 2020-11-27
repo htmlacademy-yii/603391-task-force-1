@@ -9,25 +9,37 @@ use yii\web\View;
 
 class YandexMap extends Widget
 {
-    public int $lat;
-    public int $lng;
+    public string $lat;
+    public string $lng;
 
     /**
-     * Registers the needed assets.
+     * @return bool
+     */
+    public function validate(): bool
+    {
+        if ($this->lat !== '' && $this->lng !== '') {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Registers the needed JS.
      * @throws InvalidConfigException
      */
-    public function init()
+    public function init(): bool
     {
         parent::init();
+        if (!$this->validate()) { return false;}
         $view = $this->getView();
         $apiKey = Yii::$app->params['yandex_api_key'];
         $yandexApiJs = "https://api-maps.yandex.ru/2.1/?apikey=$apiKey&lang=ru_RU";
-        $view->registerJSFile($yandexApiJs, $options = [$position = View::POS_HEAD], $key = null);
+        $view->registerJSFile($yandexApiJs, $options = [$position = View::POS_HEAD]);
 
         $mapJS = <<<'MAPJS'
         var taskMap;
         ymaps.ready(function(){
-                // Указывается идентификатор HTML-элемента.
                 var taskMap = new ymaps.Map("map", {
                     center: [%s,%s],
                     zoom: 17,
@@ -37,14 +49,18 @@ class YandexMap extends Widget
         MAPJS;
         $mapJS = sprintf($mapJS, $this->lat, $this->lng);
         $view->registerJS($mapJS);
+
+        return true;
     }
 
     /**
      * Map html block
      * @return string|null
      */
-    public function run(): string
+    public function run(): ?string
     {
+        if (!$this->validate()) { return null;}
+
         return '<div class="content-view__map" id="map" style="width: 361px; height: 292px"></div>';
     }
 }

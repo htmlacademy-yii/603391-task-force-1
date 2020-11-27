@@ -16,6 +16,7 @@ return [
                 'task' => '/task/create',
                 'tasks/view/<id:\d+>' => 'tasks/view',
                 'site/file/<id:\d+>' => 'site/file',
+                'site/city/<cityId:\d+>' => 'site/city',
                 'users/view/<id:\d+>' => 'users/view',
                 'users/<sortType:\d+>' => 'users/index',
                 'my-list/<filter:\d+>' => 'my-list/index',

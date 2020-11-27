@@ -24,7 +24,6 @@ class TaskEntity
     public const ACTION_RESPOND = Actions\ResponseAction::class;
     public const ACTION_FAILED = Actions\FailedAction::class;
 
-
     public const ACTIONS = [
         self::ACTION_CANCEL,
         self::ACTION_ASSIGN,
@@ -186,6 +185,7 @@ class TaskEntity
         } catch (\Throwable $e) {
             throw new TaskForceException('Ошибка создания отзыва. ' . $e->getMessage());
         }
+
         return true;
     }
 

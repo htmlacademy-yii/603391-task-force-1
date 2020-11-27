@@ -7,6 +7,16 @@ use yii\web\Controller;
 
 abstract class SecureController extends Controller
 {
+    public $layout = 'main';
+
+   use HasTitle;
+
+   public function beforeAction($action)
+   {
+       $this->getTitle();
+       return parent::beforeAction($action);
+   }
+
     /**
      * @return array|array[]
      */
@@ -24,5 +34,4 @@ abstract class SecureController extends Controller
             ],
         ];
     }
-
 }

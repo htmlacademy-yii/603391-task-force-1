@@ -2,12 +2,21 @@
 
 /* @var $this yii\web\View */
 /** @var SignupForm $model */
+/** @var array $cities */
 
+use frontend\models\City;
 use frontend\models\forms\SignupForm;
 use yii\helpers\Html;
-use yii\bootstrap\ActiveForm;
+use yii\widgets\ActiveForm;
 
-$this->title = 'TaskForce - Регистрация аккаунта';
+
+$loggedUser = Yii::$app->user->identity;
+$selectedCity = $loggedUser->city_id ?? 0;
+if ($loggedUser) {
+    $userAvatar = $loggedUser->getProfiles()->asArray()->one()['avatar'] ?? 'no-avatar.jpg';
+    $cities = City::getList();
+}
+
 ?>
 
 <main class="page-main">
@@ -23,7 +32,7 @@ $this->title = 'TaskForce - Регистрация аккаунта';
                         'fieldConfig' => [
                             'template' => "</br>{label}</br>{input}</br>{hint}</br>{error}",
                             'inputOptions' => ['class' => 'input textarea input-wide'],
-                            'errorOptions' => ['tag' => 'span','class' => 'input-error'],
+                            'errorOptions' => ['tag' => 'span', 'class' => 'input-error'],
                             'hintOptions' => ['tag' => 'span'],
                         ],
                         'options' => [
@@ -31,7 +40,6 @@ $this->title = 'TaskForce - Регистрация аккаунта';
                         ]
                     ]
                 );
-
 
                 echo $form
                     ->field($model, 'email')
@@ -56,8 +64,6 @@ $this->title = 'TaskForce - Регистрация аккаунта';
                     )
                     ->hint('Введите ваше имя и фамилию');
 
-
-                /** @var array $cities */
                 echo $form
                     ->field($model, 'cityId')
                     ->label('Город проживания')
@@ -79,10 +85,7 @@ $this->title = 'TaskForce - Регистрация аккаунта';
                 echo Html::submitButton('Создать аккаунт', ['class' => 'button button__registration']);
                 ActiveForm::end();
                 ?>
-
-
             </div>
         </section>
-
     </div>
 </main>

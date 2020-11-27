@@ -15,6 +15,7 @@ use yii\web\Controller;
 class LandingController extends Controller
 {
     public LoginForm $loginForm;
+    public $layout = 'landing';
 
     /**
      * @return string
@@ -26,7 +27,6 @@ class LandingController extends Controller
             $this->redirect(['tasks/index']);
         }
 
-        $this->layout = 'landing';
         $this->loginForm = new LoginForm();
 
         $modelsTasks = Task::findNewTask()->limit(4)->all();
@@ -38,7 +38,6 @@ class LandingController extends Controller
 
         return $this->render('index', compact('loginForm', 'modelsTasks'));
     }
-
 
     /**
      * Action Login
@@ -56,10 +55,8 @@ class LandingController extends Controller
                 Yii::$app->session->setFlash('login-error', "Не верный логин или пароль.");
             }
         }
-
         $this->redirect(['landing/index']);
     }
-
 }
 
 

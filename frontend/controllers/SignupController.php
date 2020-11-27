@@ -12,11 +12,20 @@ use yii\web\Response;
 
 class SignupController extends Controller
 {
+    use HasTitle;
+
+    public $layout = 'main';
+
+    public function beforeAction($action)
+    {
+        $this->getTitle();
+        return parent::beforeAction($action);
+    }
 
     /**
      * @return array|array[]
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'access' => [
@@ -37,8 +46,6 @@ class SignupController extends Controller
      */
     public function actionIndex()
     {
-        $this->layout = 'signup';
-
         $model = new SignupForm();
 
         if (Yii::$app->request->getIsPost()) {
@@ -48,10 +55,8 @@ class SignupController extends Controller
                 return $this->goHome();
             }
         }
-
         $cities = City::getList();
 
         return $this->render('index', compact('model', 'cities'));
     }
-
 }

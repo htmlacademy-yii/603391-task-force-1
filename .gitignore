@@ -51,4 +51,3 @@ phpunit.phar
 *.sublime*
 vendor
 read.me
-/frontend/web/uploads/

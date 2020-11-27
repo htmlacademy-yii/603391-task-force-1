@@ -29,7 +29,6 @@ class ResponseController extends SecureController
         ];
     }
 
-
     /**
      * Confirm response
      *
@@ -61,5 +60,4 @@ class ResponseController extends SecureController
 
         return $this->redirect(['/tasks/view', 'id' => $taskId]);
     }
-
 }

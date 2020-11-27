@@ -8,7 +8,7 @@
 use yii\helpers\Html;
 
 $this->title = $name;
-$this->title = 'TaskForce - Ошибка';
+
 ?>
 <div class="site-error">
 

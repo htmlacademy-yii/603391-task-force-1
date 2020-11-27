@@ -1,14 +1,11 @@
 <?php
 
-
 namespace TaskForce\Seeder;
-
 
 use Exception;
 
 class ArrayElementSeeder
 {
-
     private array $data;
 
     public function __construct(array $data)

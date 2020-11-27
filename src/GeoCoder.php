@@ -12,6 +12,7 @@ use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
 use Yii;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Json;
 use yii\web\NotFoundHttpException;
 
 class GeoCoder
@@ -33,7 +34,7 @@ class GeoCoder
     /**
      * @param string $userRequest
      * @return array|null
-     * @throws GuzzleException|NotFoundHttpException
+     * @throws GuzzleException
      */
     public function findAddressesByRequest(string $userRequest): ?array
     {
@@ -101,7 +102,6 @@ class GeoCoder
         }
     }
 
-
     /**
      * @param string $userRequest
      * @return mixed
@@ -128,10 +128,7 @@ class GeoCoder
         }
         $content = $response->getBody()->getContents();
 
-        $response_data = json_decode($content, true);
-        $this->findJsonErrors($apiRequest, $response_data);
-
-        return $response_data;
+        return Json::decode($content);
     }
 
     public function getCoordinates($location): ?array

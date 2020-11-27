@@ -1,8 +1,6 @@
 <?php
 
-
 namespace TaskForce\Seeder;
-
 
 class NullSeeder extends Seeder
 {

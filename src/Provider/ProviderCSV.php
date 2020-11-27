@@ -9,7 +9,6 @@ use TaskForce\Exception\TaskForceException;
 
 class ProviderCSV implements IProvider
 {
-
     private string $csvFile;
     public SplFileObject $fileObject;
     public ?array $columns;
@@ -54,8 +53,6 @@ class ProviderCSV implements IProvider
             throw new FileException("Заданы неверные заголовки столбцов");
         }
         $this->isValidColumns = $this->validateColumns($this->distColumns);
-
-
     }
 
     public function getHeaderData(): ?array
@@ -86,5 +83,4 @@ class ProviderCSV implements IProvider
         }
         return $result;
     }
-
 }

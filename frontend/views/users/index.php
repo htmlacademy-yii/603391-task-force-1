@@ -1,5 +1,6 @@
 <?php
 
+use frontend\widgets\StarRating;
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\UsersFilterForm;
 use TaskForce\SortingUsers;
@@ -17,7 +18,6 @@ use yii\widgets\LinkPager;
 /** @var array $models */
 /** @var CategoriesFilterForm $modelCategoriesFilter */
 
-$this->title = 'TaskForce - Исполнители';
 ?>
 <main class="page-main">
     <div class="main-container page-container">
@@ -39,8 +39,8 @@ $this->title = 'TaskForce - Исполнители';
                 <div class="content-view__feedback-card user__search-wrapper">
                     <div class="feedback-card__top">
                         <div class="user__search-icon">
-                            <a href="<?= Url::to(['users/view', 'id' => $user['id']]) ?>"><img
-                                    src="../img/<?= $user['avatar'] ?>" width="65" height="65" alt=""></a>
+                            <a href="<?= Url::to(['users/view', 'id' => $user['profile_id']]) ?>"><img
+                                    src="<?= Url::base() . '/uploads/avatars/' . $user['avatar'] ?>" width="65" height="65" alt=""></a>
                             <span><?= $user['countTasks'] ?> заданий</span>
                             <span><?= $user['countReplies'] ?> отзывов</span>
                         </div>
@@ -48,10 +48,7 @@ $this->title = 'TaskForce - Исполнители';
                         <div class="feedback-card__top--name user__search-card">
                             <p class="link-name"><a href="<?= Url::to(['users/view', 'id' => $user['id']]) ?>"
                                                     class="link-regular"><?= $user['name'] ?></a></p>
-
-                            <?= str_repeat('<span></span>', $user['rate']); ?>
-                            <?= str_repeat('<span class="star-disabled"></span>', 5 - $user['rate']); ?>
-                            <b><?= $user['rate'] ?></b>
+                            <?= StarRating::widget(['rate' => $user['rate']]) ?>
                             <p class="user__search-content">
                                 <?= $user['about'] ?>
                             </p>

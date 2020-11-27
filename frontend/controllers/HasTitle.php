@@ -2,23 +2,14 @@
 
 namespace frontend\controllers;
 
+use TaskForce\Constant\Page;
+use Yii;
+
 trait HasTitle
 {
-    public function getTitle (string $route): ?string
+    public function getTitle()
     {
-        var_dump(Yii::$app->controller->route);
-
-        return [
-            ''=>'',
-            ''=>'',
-            ''=>'',
-            ''=>'',
-            ''=>'',
-            ''=>'',
-            ''=>'',
-            ''=>'',
-        ][$route];
-
-
+        Yii::$app->view->title = Yii::$app->params['AppName'] . ' - ' . Page::ROUTE_TO_PAGE_NAME
+            [Yii::$app->controller->id . '/' . Yii::$app->controller->action->id];
     }
 }

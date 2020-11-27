@@ -51,7 +51,6 @@ class TasksController extends SecureController
         }
 
         $modelsTasks = Task::findNewTask($filterRequest);
-
         $pagination = new Pagination(
             [
                 'totalCount' => $modelsTasks->count(),
@@ -60,9 +59,7 @@ class TasksController extends SecureController
                 'pageSizeParam' => false
             ]
         );
-
         $modelsTasks = $modelsTasks->offset($pagination->offset)->limit($pagination->limit)->all();
-
         if (isset($modelsTasks)) {
             foreach ($modelsTasks as $key => $element) {
                 $modelsTasks[$key]['afterTime'] = Declination::getTimeAfter($element['date_add']);
@@ -99,7 +96,7 @@ class TasksController extends SecureController
         $modelTaskUser = [];
 
         if ($taskAssistUserId) {
-            $modelTaskUser = Profile::findProfileByUserId($taskAssistUserId);
+            $modelTaskUser = Profile::findByUserId($taskAssistUserId);
             $modelTaskUser['countTask'] = Task::findCountTasksByUserId($taskAssistUserId);
         }
 
@@ -118,6 +115,4 @@ class TasksController extends SecureController
             )
         );
     }
-
-
 }

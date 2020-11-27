@@ -14,8 +14,9 @@ $this->beginPage() ?>
 <html lang="<?= Yii::$app->language ?>">
 <head>
     <meta charset="<?= Yii::$app->charset ?>">
-    <?php $this->registerCsrfMetaTags() ?>
-        <title><?= Html::encode($this->title) ?></title>
+    <?php
+    $this->registerCsrfMetaTags() ?>
+    <title><?= Html::encode($this->title) ?></title>
     <?php
     $this->head() ?>
 </head>
@@ -103,28 +104,6 @@ $this->beginBody() ?>
                     mail@taskforce.com
                 </p>
             </div>
-            <div class="page-footer__links">
-                <ul class="links__list">
-                    <li class="links__item">
-                        <a href="">Задания</a>
-                    </li>
-                    <li class="links__item">
-                        <a href="">Мой профиль</a>
-                    </li>
-                    <li class="links__item">
-                        <a href="">Исполнители</a>
-                    </li>
-                    <li class="links__item">
-                        <a href="">Регистрация</a>
-                    </li>
-                    <li class="links__item">
-                        <a href="">Создать задание</a>
-                    </li>
-                    <li class="links__item">
-                        <a href="">Справка</a>
-                    </li>
-                </ul>
-            </div>
             <div class="page-footer__copyright">
                 <a href="https://htmlacademy.ru">
                     <img class="copyright-logo"
@@ -180,19 +159,23 @@ $this->beginBody() ?>
 if (Yii::$app->session->hasFlash('login-error')): ?>
     <section class="modal enter-form form-modal landing-task" style="display: block">
         <p>
-            <h3>
-                <?php echo Yii::$app->session->getFlash('login-error'); ?>
-            </h3>
+        <h3>
+            <?php
+            echo Yii::$app->session->getFlash('login-error'); ?>
+        </h3>
         </p>
         <button class="form-modal-close" type="button">Закрыть</button>
     </section>
-<? endif; ?>
+<?
+endif; ?>
 
 <div class="overlay">
     <?= Alert::widget() ?>
 </div>
 <script src="/js/main.js"></script>
-<?php $this->endBody() ?>
+<?php
+$this->endBody() ?>
 </body>
 </html>
-<?php $this->endPage() ?>
+<?php
+$this->endPage() ?>

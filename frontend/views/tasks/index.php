@@ -15,7 +15,6 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\widgets\LinkPager;
 
-$this->title = 'TaskForce - Задания';
 ?>
 <main class="page-main">
     <div class="main-container page-container">
@@ -100,7 +99,6 @@ $this->title = 'TaskForce - Задания';
                             ['class' => 'visually-hidden checkbox__input', 'id' => $key],
                             false)->label($value, ['for' => $key, 'class' => false]);
                     }
-
 
                     foreach ($modelTasksFilter->checkboxesLabels() as $key => $value) {
                         $form->field($modelTasksFilter, $key, ['template' => '{input}{label}']
