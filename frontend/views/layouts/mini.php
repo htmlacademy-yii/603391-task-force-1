@@ -2,6 +2,7 @@
 
 /* @var $this View */
 /* @var $content string */
+/* @var $selectedCity string */
 
 use frontend\models\City;
 use yii\helpers\Html;
@@ -10,13 +11,13 @@ use frontend\assets\AppAsset;
 use common\widgets\Alert;
 use yii\web\View;
 
-
 $cities = City::getList();
-
+$session = Yii::$app->session;
 $loggedUser = Yii::$app->user->identity;
-$selectedCity = $loggedUser->city_id ?? 0;
+$currentCityId = $session['current_city_id'] ? $session['current_city_id'] : $loggedUser->city_id;
+
 if ($loggedUser) {
-    $userAvatar = Yii::$app->user->identity->getProfiles()->asArray()->one()['avatar'] ?? 'no-avatar.jpg';
+    $userAvatar = $loggedUser->getProfiles()->asArray()->one()['avatar'] ?? 'no-avatar.jpg';
 }
 
 AppAsset::register($this);
@@ -97,6 +98,77 @@ AppAsset::register($this);
                         </svg>
                     </a>
                 </div>
+                <div class="header__nav">
+                    <?php if ($loggedUser->id):?>
+                    <ul class="header-nav__list site-list">
+                        <li class="site-list__item">
+                            <a href="<?= Url::to(['tasks/index']) ?>">Задания</a>
+                        </li>
+                        <li class="site-list__item">
+                            <a href="<?= Url::to(['users/index']) ?>">Исполнители</a>
+                        </li>
+                        <li class="site-list__item site-list__item--active">
+                            <a href="<?= Url::to(['task/create']) ?>">Создать задание</a>
+                        </li>
+                        <li class="site-list__item">
+                            <a href="<?= Url::to(['/profile/index']) ?>">Мой профиль</a>
+                        </li>
+                    </ul>
+                    <?php endif;?>
+                </div>
+                <?php
+                if (Yii::$app->request->pathInfo !== 'signup/index' && $loggedUser): ?>
+                    <div class="header__town">
+                        <select class="multiple-select input town-select" size="1" name="town[]">
+                            <?php
+                            foreach ($cities as $key => $city):?>
+                                <option <?= ($key === $currentCityId) ? 'selected' : '' ?>
+                                        value="<?=$key ?>"><?= $city ?></option>
+                            <?php
+                            endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="header__lightbulb"></div>
+                    <div class="lightbulb__pop-up">
+                        <h3>Новые события</h3>
+                        <p class="lightbulb__new-task lightbulb__new-task--message">
+                            Новое сообщение в чате
+                            <a href="#" class="link-regular">«Помочь с курсовой»</a>
+                        </p>
+                        <p class="lightbulb__new-task lightbulb__new-task--executor">
+                            Выбран исполнитель для
+                            <a href="#" class="link-regular">«Помочь с курсовой»</a>
+                        </p>
+                        <p class="lightbulb__new-task lightbulb__new-task--close">
+                            Завершено задание
+                            <a href="#" class="link-regular">«Помочь с курсовой»</a>
+                        </p>
+                    </div>
+                    <div class="header__account">
+                        <a class="header__account-photo">
+                            <img src="<?= Url::base() . '/uploads/avatars/' . $userAvatar ?>"
+                                 width="43" height="44"
+                                 alt="Аватар пользователя">
+                        </a>
+                        <span class="header__account-name">
+                 <?= $loggedUser->name ?>
+             </span>
+                    </div>
+                    <div class="account__pop-up">
+                        <ul class="account__pop-up-list">
+                            <li>
+                                <a href="<?= Url::to("/my-list/index") ?>">Мои задания</a>
+                            </li>
+                            <li>
+                                <a href="<?= Url::to("/profile/index") ?>">Настройки</a>
+                            </li>
+                            <li>
+                                <a href="<?= Url::to('user/logout') ?>">Выход</a>
+                            </li>
+                        </ul>
+                    </div>
+                <?php
+                endif; ?>
             </div>
         </header>
 
@@ -115,52 +187,54 @@ AppAsset::register($this);
                         mail@taskforce.com
                     </p>
                 </div>
-                <div class="page-footer__links">
-                    <ul class="links__list">
-                        <li class="links__item">
-                            <a href="">Задания</a>
-                        </li>
-                        <li class="links__item">
-                            <a href="">Мой профиль</a>
-                        </li>
-                        <li class="links__item">
-                            <a href="">Исполнители</a>
-                        </li>
-                        <li class="links__item">
-                            <a href="">Регистрация</a>
-                        </li>
-                        <li class="links__item">
-                            <a href="">Создать задание</a>
-                        </li>
-                        <li class="links__item">
-                            <a href="">Справка</a>
-                        </li>
-                    </ul>
-                </div>
+                <?php if ($loggedUser->id):?>
+                    <div class="page-footer__links">
+                        <ul class="links__list">
+                            <li class="links__item">
+                                <a href="<?= Url::base() . "/tasks/index/" ?>">Задания</a>
+                            </li>
+                            <li class="links__item">
+                                <a href="<?= Url::base() . "/account/index/" ?>">Мой профиль</a>
+                            </li>
+                            <li class="links__item">
+                                <a href="<?= Url::base() ."/users/index" ?>">Исполнители</a>
+                            </li>
+                            <li class="links__item">
+                                <a href="<?= Url::base() . "/signup/index" ?>">Регистрация</a>
+                            </li>
+                            <li class="links__item">
+                                <a href="<?= Url::base() . "/task/create" ?>">Создать задание</a>
+                            </li>
+                            <li class="links__item">
+                                <a href="#">Справка</a>
+                            </li>
+                        </ul>
+                    </div>
+                <?php endif;?>
                 <div class="page-footer__copyright">
                     <a>
                         <img class="copyright-logo"
-                             src="<?=Url::to('/img/academy-logo.png')?>"
+                             src="<?= Url::base() . '/img/academy-logo.png' ?>"
                              width="185" height="63"
                              alt="Логотип HTML Academy">
                     </a>
                 </div>
-
-                <div class="clipart-woman">
-                    <img src="<?=Url::to('/img/clipart-woman.png')?>" width="238" height="450">
-                </div>
-                <div class="clipart-message">
-                    <div class="clipart-message-text">
-                        <h2>Знаете ли вы, что?</h2>
-                        <p>После регистрации вам будет доступно более
-                            двух тысяч заданий из двадцати разных категорий.</p>
-                        <p>В среднем, наши исполнители зарабатывают
-                            от 500 рублей в час.</p>
+                <?php if (
+                Yii::$app->controller->id === 'signup'):?>
+                    <div class="clipart-woman">
+                        <img src="<?=Url::to('/img/clipart-woman.png')?>" width="238" height="450">
                     </div>
-                </div>
-
+                    <div class="clipart-message">
+                        <div class="clipart-message-text">
+                            <h2>Знаете ли вы, что?</h2>
+                            <p>После регистрации вам будет доступно более
+                                двух тысяч заданий из двадцати разных категорий.</p>
+                            <p>В среднем, наши исполнители зарабатывают
+                                от 500 рублей в час.</p>
+                        </div>
+                    </div>
+                <?php endif;?>
             </div>
-
         </footer>
     </div>
     <div class="overlay"></div>
