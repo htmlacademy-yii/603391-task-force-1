@@ -7,7 +7,7 @@ use yii\web\Controller;
 
 abstract class SecureController extends Controller
 {
-    public $layout = 'main';
+   public $layout = 'main';
 
    use HasTitle;
 

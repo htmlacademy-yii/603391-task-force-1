@@ -6,7 +6,6 @@ class ProfileController extends SecureController
 {
     /**
      * Profile
-     *
      * @return string
      */
     public function actionIndex(): string

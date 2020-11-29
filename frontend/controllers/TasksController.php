@@ -33,13 +33,12 @@ class TasksController extends SecureController
         $modelCategoriesFilter = new CategoriesFilterForm();
         $modelCategoriesFilter->init();
 
-        if (Yii::$app->request->getIsPost()) {
-            $modelTasksFilter->load(Yii::$app->request->post());
+        if ($post = Yii::$app->request->post()) {
+            $modelTasksFilter->load($post);
             $modelCategoriesFilter->updateProperties(
-                (Yii::$app->request->post())['CategoriesFilterForm']['categories']
+                ($post)['CategoriesFilterForm']['categories']
             );
-
-            $filterRequest = (Yii::$app->request->post());
+            $filterRequest = ($post);
         }
 
         if (Yii::$app->request->getIsGet()) {

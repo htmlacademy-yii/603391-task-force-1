@@ -9,9 +9,6 @@ use TaskForce\Helpers\Declination;
 use Yii;
 use yii\web\Controller;
 
-/**
- * Landing controller
- */
 class LandingController extends Controller
 {
     public LoginForm $loginForm;
@@ -26,9 +23,7 @@ class LandingController extends Controller
         if (Yii::$app->user->getId()) {
             $this->redirect(['tasks/index']);
         }
-
         $this->loginForm = new LoginForm();
-
         $modelsTasks = Task::findNewTask()->limit(4)->all();
         if (isset($modelsTasks)) {
             foreach ($modelsTasks as $key => $element) {
@@ -45,8 +40,8 @@ class LandingController extends Controller
     public function actionLogin(): void
     {
         $this->loginForm = new LoginForm();
-        if (Yii::$app->request->getIsPost()) {
-            $this->loginForm->load(Yii::$app->request->post());
+        if ($post = Yii::$app->request->post()) {
+            $this->loginForm->load($post);
             if ($this->loginForm->validate()) {
                 $user = $this->loginForm->getUser();
                 Yii::$app->user->login($user);

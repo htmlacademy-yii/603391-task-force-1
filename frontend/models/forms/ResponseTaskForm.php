@@ -27,17 +27,16 @@ class ResponseTaskForm extends Model
         ];
     }
 
-
     /**
-     * @param $taskId
-     * @param $userId
+     * @param int $taskId
      * @throws TaskForceException
      * @throws \Throwable
      */
-    public function createResponse($taskId, $userId)
+    public function createResponse(int $taskId): void
     {
         $response = new Response();
         $transaction = Yii::$app->db->beginTransaction();
+        $userId = Yii::$app->user->getId();
         try {
             $response->description = $this->comment;
             $response->price = $this->payment;
@@ -52,11 +51,5 @@ class ResponseTaskForm extends Model
                 "Ошибка создания отклика пользователя ID #$userId для задачи c ID #$taskId"
             );
         }
-
     }
-
-
-
-
-
 }

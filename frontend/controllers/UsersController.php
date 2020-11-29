@@ -19,6 +19,8 @@ use yii\web\NotFoundHttpException;
 
 class UsersController extends SecureController
 {
+    const MAX_PAGE_USERS = 5;
+
     /**
      * @param string $sortType
      * @return string
@@ -31,20 +33,17 @@ class UsersController extends SecureController
         $modelCategoriesFilter->init();
         $modelUsersFilter = new UsersFilterForm();
 
-        if (Yii::$app->request->getIsGet()) {
-            $ids = Yii::$app->request->get();
-            if   (isset($ids['category'])) {
-                $modelCategoriesFilter->setOneCategory($ids['category']);
-                $filterRequest['CategoriesFilterForm']['categories']=$modelCategoriesFilter->getCategoriesState();
-            }
+        if (($ids = Yii::$app->request->get()) && isset($ids['category'])) {
+            $modelCategoriesFilter->setOneCategory($ids['category']);
+            $filterRequest['CategoriesFilterForm']['categories'] = $modelCategoriesFilter->getCategoriesState();
         }
-        if (Yii::$app->request->getIsPost()) {
-            $modelUsersFilter->load(Yii::$app->request->post());
-            $modelCategoriesFilter->updateProperties(
-                (Yii::$app->request->post())['CategoriesFilterForm']['categories']
-            );
 
-            $filterRequest = (Yii::$app->request->post());
+        if ($post = Yii::$app->request->post() && $modelUsersFilter->validate()) {
+            $modelUsersFilter->load($post);
+            $modelCategoriesFilter->updateProperties(
+                $post['CategoriesFilterForm']['categories']
+            );
+            $filterRequest = ($post);
 
             if (strlen($filterRequest['UsersFilterForm']['searchName']) > 0) {
                 $modelCategoriesFilter->init();
@@ -53,11 +52,10 @@ class UsersController extends SecureController
         }
 
         $modelsUsers = User::findNewExecutors($filterRequest, $sortType);
-
         $pagination = new Pagination(
             [
                 'totalCount' => $modelsUsers->count(),
-                'pageSize' => 5,
+                'pageSize' => self::MAX_PAGE_USERS,
                 'forcePageParam' => false,
                 'pageSizeParam' => false
             ]

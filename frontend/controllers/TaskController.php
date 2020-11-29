@@ -26,7 +26,8 @@ use yii\web\UploadedFile;
 
 class TaskController extends SecureController
 {
-//    public string $layout = 'main';
+    const TASKS_VIEW = 'tasks/view';
+
     /**
      * @return array|array[]
      */
@@ -70,46 +71,43 @@ class TaskController extends SecureController
             $createTaskForm->files = UploadedFile::getInstances($createTaskForm, 'files');
             if ($createTaskForm->validate()) {
                 $taskId = $createTaskForm->saveData($userId);
-
                 if ($taskId) {
-                    $this->redirect('/tasks/view/' . $taskId);
+                    $this->redirect(self::TASKS_VIEW . '/' . $taskId);
                 } else {
                     $createTaskForm->addError('', 'Задача не создана, попробуйте позже.');
                 }
             }
         }
-
         $categories = Category::all();
 
         return $this->render('create', compact('createTaskForm', 'categories', 'cities'));
     }
 
     /**
-     * @param int $id
+     * @param int $taskId
      * @return \yii\web\Response
-     * @throws TaskForceException|\Throwable
+     * @throws TaskForceException
+     * @throws \Throwable
      */
-    public function actionResponse(int $id)
+    public function actionResponse(int $taskId)
     {
-        $task = new TaskEntity($id);
-
-        $existResponse = Response::findResponsesByTaskIdUserId($id, Yii::$app->user->getId());
+        $task = new TaskEntity($taskId);
+        $existResponse = Response::findByTaskIdCurrentUserId($taskId);
         if ($existResponse) {
             Yii::$app->session->setFlash('success', "Отклик уже сущестует");
 
-            return $this->redirect(['tasks/view', 'id' => $id]);
+            return $this->redirect([self::TASKS_VIEW, 'id' => $taskId]);
         }
 
         $responseTaskForm = new ResponseTaskForm();
-        if (Yii::$app->request->getIsPost()) {
-            $responseTaskForm->load(Yii::$app->request->post());
-
+        if ($post = Yii::$app->request->post()) {
+            $responseTaskForm->load($post);
             if ($responseTaskForm->validate() && in_array(ResponseAction::getTitle(), $task->getAvailableActions())) {
-                $responseTaskForm->createResponse($id, Yii::$app->user->getId());
+                $responseTaskForm->createResponse($taskId);
             }
         }
 
-        return $this->redirect(['tasks/view', 'id' => $id]);
+        return $this->redirect([self::TASKS_VIEW, 'id' => $taskId]);
     }
 
     /**
@@ -127,9 +125,8 @@ class TaskController extends SecureController
             $this->goHome();
         }
 
-        return $this->redirect(['tasks/view', 'id' => $task->model->id]);
+        return $this->redirect([self::TASKS_VIEW, 'id' => $task->model->id]);
     }
-
 
     /**
      * @param int $id
@@ -145,9 +142,8 @@ class TaskController extends SecureController
             $this->goHome();
         }
 
-        return $this->redirect(['tasks/view', 'id' => $task->model->id]);
+        return $this->redirect([self::TASKS_VIEW, 'id' => $task->model->id]);
     }
-
 
     /**
      * @param int $id
@@ -157,9 +153,8 @@ class TaskController extends SecureController
     {
         $task = new TaskEntity($id);
         $completeTaskForm = new CompleteTaskForm();
-        if (Yii::$app->request->getIsPost()) {
-            $completeTaskForm->load(Yii::$app->request->post());
-            $completeTaskForm->validate();
+        if ($post = Yii::$app->request->post()) {
+            $completeTaskForm->load($post);
             if ($completeTaskForm->validate()) {
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
@@ -178,6 +173,6 @@ class TaskController extends SecureController
             }
         }
 
-        return $this->redirect(['tasks/view', 'id' => $id]);
+        return $this->redirect([self::TASKS_VIEW, 'id' => $id]);
     }
 }

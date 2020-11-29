@@ -258,18 +258,16 @@ class User extends ActiveRecord implements IdentityInterface
             ->from('task t')
             ->groupBy('executor_id');
 
-
         $query = new Query();
         $query->from('user u')
             ->select(['p.about', 'p.avatar','p.rate','u.role','p.id as profile_id','u.id', 'u.name', 'u.date_login'])
             ->join('LEFT JOIN', 'profile as p', 'u.id = p.user_id')
             ->join('LEFT JOIN', ['t' => $countTasks], 'p.user_id = t.executor_id')
-            ->where(['u.role' => UserRole::EXECUTOR])->andWhere(['not', ['p.id' => null]]);;
+            ->where(['u.role' => UserRole::EXECUTOR])->andWhere(['not', ['p.id' => null]]);
 
         $query = self::applyFilters($request, $query);
-        $query = self::applySort($sortType, $query);
 
-        return $query;
+        return self::applySort($sortType, $query);
     }
 
     /**
@@ -280,8 +278,9 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function applyFilters(array $request, Query $query): ?Query
     {
-        if (strlen($request['UsersFilterForm']['searchName']) > 0) {
-            $query->andWhere(['LIKE','u.name',  $request['UsersFilterForm']['searchName']]);
+        $usersFilters = $request['UsersFilterForm'];
+        if (strlen($usersFilters['searchName']) > 0) {
+            $query->andWhere(['LIKE','u.name',  $usersFilters['searchName']]);
 
             return $query;
         }
@@ -307,7 +306,8 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         // filtering by 'Free Now'
-        if (isset($request['UsersFilterForm']['freeNow'])) {
+        $freeNow = $usersFilters['freeNow'];
+        if (isset($freeNow) && (bool)($freeNow)) {
             $subQuery1 = (new Query())
                 ->select('id')->from('task t')
                 ->where('t.executor_id = p.user_id');
@@ -315,12 +315,14 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         // filter by 'Online Now'
-        if (isset($request['UsersFilterForm']['onlineNow'])) {
+        $onlineNow = $usersFilters['onlineNow'];
+        if (isset($onlineNow) && (bool)($onlineNow)) {
             $query->andWhere('u.date_login > DATE_SUB(NOW(), INTERVAL 30 MINUTE)');
         }
 
         // filter by 'Reviews'
-        if (isset($request['UsersFilterForm']['feedbackExists'])) {
+        $feedbackExists = $usersFilters['feedbackExists'];
+        if (isset($feedbackExists) && (bool)($feedbackExists)) {
             $subQuery2 = (new Query())
                 ->select('id')->from('opinion o')
                 ->where('o.executor_id = p.user_id');
@@ -328,7 +330,8 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         // filter by 'Favorite'
-        if (isset($request['UsersFilterForm']['isFavorite'])) {
+        $isFavorite = $usersFilters['isFavorite'];
+        if (isset($isFavorite) && (bool)($isFavorite)) {
             $subQuery3 = (new Query())
                 ->select('favorite_id')->from('favorite f')
                 ->where('f.favorite_id = p.user_id');

@@ -9,7 +9,6 @@ class MyListController extends SecureController
 {
     /**
      * My Task list
-     *
      * @param string $filter
      * @return string
      */
