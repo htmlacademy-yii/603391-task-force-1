@@ -11,12 +11,13 @@ use frontend\models\Work;
 use TaskForce\Constant\UserRole;
 use TaskForce\Exception\TaskForceException;
 use TaskForce\Helpers\Declination;
+use Throwable;
 use Yii;
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\UsersFilterForm;
 use frontend\models\Profile;
 use yii\data\Pagination;
-use yii\db\Exception;
+use yii\db\StaleObjectException;
 use yii\web\NotFoundHttpException;
 
 class UsersController extends SecureController
@@ -122,6 +123,9 @@ class UsersController extends SecureController
     /**
      * @param int $userId
      * @return string
+     * @throws TaskForceException
+     * @throws Throwable
+     * @throws StaleObjectException
      */
     public function actionBookmark(int $userId)
     {
@@ -141,8 +145,6 @@ class UsersController extends SecureController
             $favorite->favorite_id = $userId;
             $favorite->save();
         }
-        $this->redirect(['users/view', 'id' => $userId]);
+        return $this->redirect(['users/view', 'id' => $userId]);
     }
-
-
 }

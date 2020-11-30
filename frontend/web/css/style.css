@@ -2290,6 +2290,7 @@ footer {
 .landing-task {
   width: 220px;
   margin-right: 20px;
+  overflow: hidden;
   -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
           box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); }
   .landing-task:last-child {
@@ -2318,7 +2319,7 @@ footer {
   background-color: #ff2f4d; }
 
 .task-translation {
-  background-image: url("../img/man-running.png");
+  background-image: url("../img/translate.png");
   background-position: center;
   background-repeat: no-repeat;
   background-color: #5f5f5f; }
@@ -2344,7 +2345,7 @@ footer {
 .landing-task-description {
   padding-left: 20px;
   padding-right: 10px;
-  height: 90px; }
+  height: 90px;}
   .landing-task-description h3 {
     font-weight: 600;
     font-size: 18px;
@@ -2355,7 +2356,8 @@ footer {
     line-height: 16px;
     color: #9c9b9b;
     margin-top: 0;
-    margin-bottom: 30px; }
+    margin-bottom: 30px;
+  }
 
 .landing-task-info {
   display: -webkit-box;

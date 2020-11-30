@@ -182,7 +182,7 @@ class TaskEntity
 
         try {
             $opinion->insert();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw new TaskForceException('Ошибка создания отзыва. ' . $e->getMessage());
         }
 

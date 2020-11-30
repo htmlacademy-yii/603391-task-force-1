@@ -19,9 +19,9 @@ use TaskForce\Exception\TaskForceException;
 use TaskForce\Rule\CustomerAccessRule;
 use TaskForce\Rule\ExecutorAccessRule;
 use TaskForce\TaskEntity;
+use Throwable;
 use Yii;
 use yii\filters\AccessControl;
-use yii\web\Controller;
 use yii\web\UploadedFile;
 
 class TaskController extends SecureController
@@ -87,7 +87,7 @@ class TaskController extends SecureController
      * @param int $taskId
      * @return \yii\web\Response
      * @throws TaskForceException
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function actionResponse(int $taskId)
     {

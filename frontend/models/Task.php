@@ -43,8 +43,6 @@ class Task extends ActiveRecord
 {
     use ExceptionOnFindFail;
 
-    public const NO_AVATAR_JPG = 'no-avatar.jpg';
-
     /**
      * {@inheritdoc}
      */
@@ -206,6 +204,8 @@ class Task extends ActiveRecord
      */
     public static function findNewTask(array $request = []): Query
     {
+        $isLoggedUser = Yii::$app->user->identity;
+
         $query = new Query();
         $list = [];
         if (isset($request['CategoriesFilterForm']['categories'])) {
@@ -217,12 +217,14 @@ class Task extends ActiveRecord
         }
 
         $session = Yii::$app->session;
-        $currentCityId = $session['current_city_id'] ?? Yii::$app->user->identity->city_id;
+        $currentCityId = $session['current_city_id'] ?? $isLoggedUser->city_id;
 
         $query->select(['t.*', 'c.name as cat_name', 'c.icon as icon'])->from('task t')
             ->join('LEFT JOIN', 'category as c', 't.category_id = c.id')
-            ->where(['t.status' => TaskEntity::STATUS_NEW])
-            ->andWhere(
+            ->where(['t.status' => TaskEntity::STATUS_NEW]);
+
+        if ($isLoggedUser) {
+            $query->andWhere(
                 [
                     'or',
                     ['t.city_id' => Yii::$app->user->identity->city_id],
@@ -230,30 +232,32 @@ class Task extends ActiveRecord
                     ['t.city_id' => null]
                 ]
             );
+        }
 
         if (!empty($list)) {
             $categoryList = sprintf('c.id in (%s)', implode(",", $list));
             $query->andWhere($categoryList);
         }
 
-        $searchName = $request['TasksFilterForm']['searchName'] ?? '';
+        $requestFilterForm = $request['TasksFilterForm'];
+        $searchName = $requestFilterForm['searchName'] ?? '';
         if (strlen($searchName) > 0) {
             $query->andWhere(['LIKE', 't.name', $searchName, false]);
         }
 
-        if (isset($request['TasksFilterForm']['withoutExecutor'])
-            && $request['TasksFilterForm']['withoutExecutor'] === '1') {
+        if (isset($requestFilterForm['withoutExecutor'])
+            && $requestFilterForm['withoutExecutor'] === '1') {
             $query->andWhere('t.executor_id IS NULL');
         }
 
-        if (isset($request['TasksFilterForm']['remoteWork'])
-            && $request['TasksFilterForm']['remoteWork'] === '1') {
+        if (isset($requestFilterForm['remoteWork'])
+            && $requestFilterForm['remoteWork'] === '1') {
             $query->andWhere('t.lat IS NULL AND t.lng IS NULL');
         }
 
-        if (isset($request['TasksFilterForm']['timeInterval'])
-            && $request['TasksFilterForm']['timeInterval'] !== TasksFilterForm::FILTER_ALL_TIME) {
-            $datetime = TasksFilterForm::timeBeforeInterval($request['TasksFilterForm']['timeInterval']);
+        if (isset($requestFilterForm['timeInterval'])
+            && $requestFilterForm['timeInterval'] !== TasksFilterForm::FILTER_ALL_TIME) {
+            $datetime = TasksFilterForm::timeBeforeInterval($requestFilterForm['timeInterval']);
             $query->andWhere("t.date_add > STR_TO_DATE('$datetime','%Y-%m-%d %H:%i:%s')");
         }
 

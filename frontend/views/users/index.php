@@ -22,19 +22,7 @@ use yii\widgets\LinkPager;
 <main class="page-main">
     <div class="main-container page-container">
         <section class="user__search">
-            <div class="user__search-link">
-                <p>Сортировать по:</p>
-                <ul class="user__search-list">
-                    <?php foreach (SortingUsers::SORTS as $sort): ?>
-                        <li class="user__search-item <?= ($sortType == $sort) ? ' user__search-item--current' : '' ?>">
-                            <a href="<?= URL::to(['users/index', 'sortType' => $sort]) ?>"
-                               class="link-regular"><?= $sort ?></a>
-                        </li>
-                    <?php endforeach; ?>
-
-                </ul>
-            </div>
-
+            <?=$this->render('_user__serarch-link',compact('sortType'));?>
             <?php foreach ($modelsUsers as $user): ?>
                 <div class="content-view__feedback-card user__search-wrapper">
                     <div class="feedback-card__top">

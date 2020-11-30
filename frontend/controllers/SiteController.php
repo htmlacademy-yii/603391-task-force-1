@@ -2,7 +2,6 @@
 
 namespace frontend\controllers;
 
-use frontend\models\City;
 use frontend\models\File;
 use TaskForce\Exception\FileException;
 use Yii;
