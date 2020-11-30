@@ -67,6 +67,4 @@ class CategoriesFilterForm extends Model
         }
         $this->categories[$id] = true;
     }
-
-
 }

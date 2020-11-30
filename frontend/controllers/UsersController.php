@@ -6,17 +6,13 @@ use frontend\models\Favorite;
 use frontend\models\Opinion;
 use frontend\models\Specialization;
 use frontend\models\Task;
-use frontend\models\User;
 use frontend\models\Work;
 use TaskForce\Constant\UserRole;
 use TaskForce\Exception\TaskForceException;
-use TaskForce\Helpers\Declination;
+use TaskForce\Page\UsersPage;
 use Throwable;
 use Yii;
-use frontend\models\forms\CategoriesFilterForm;
-use frontend\models\forms\UsersFilterForm;
 use frontend\models\Profile;
-use yii\data\Pagination;
 use yii\db\StaleObjectException;
 use yii\web\NotFoundHttpException;
 
@@ -25,63 +21,15 @@ class UsersController extends SecureController
     /**
      * @param string $sortType
      * @return string
-     * @throws TaskForceException
      */
     public function actionIndex(string $sortType = ''): string
     {
-        $filterRequest = [];
-        $modelCategoriesFilter = new CategoriesFilterForm();
-        $modelCategoriesFilter->init();
-        $modelUsersFilter = new UsersFilterForm();
-
-        if (($ids = Yii::$app->request->get()) && isset($ids['category'])) {
-            $modelCategoriesFilter->setOneCategory($ids['category']);
-            $filterRequest['CategoriesFilterForm']['categories'] = $modelCategoriesFilter->getCategoriesState();
-        }
-
-        if ($post = Yii::$app->request->post()) {
-            $modelUsersFilter->load($post);
-            $modelCategoriesFilter->updateProperties(
-                $post['CategoriesFilterForm']['categories']
-            );
-            $filterRequest = ($post);
-
-            if (strlen($filterRequest['UsersFilterForm']['searchName']) > 0) {
-                $modelCategoriesFilter->init();
-                $modelUsersFilter = new UsersFilterForm();
-            }
-        }
-
-        $modelsUsers = User::findNewExecutors($filterRequest, $sortType);
-        $pagination = new Pagination(
-            [
-                'totalCount' => $modelsUsers->count(),
-                'pageSize' => Yii::$app->params['maxPaginatorItems'],
-                'forcePageParam' => false,
-                'pageSizeParam' => false
-            ]
-        );
-
-        $modelsUsers = $modelsUsers->offset($pagination->offset)->limit($pagination->limit)->all();
-
-        if (!empty($modelsUsers)) {
-            foreach ($modelsUsers as $key => $element) {
-                $modelsUsers[$key]['categories'] = Specialization::findItemsByProfileId($element['profile_id']);
-                $modelsUsers[$key]['countTasks'] = Task::findCountTasksByUserId($element['id']);
-                $modelsUsers[$key]['countReplies'] = Opinion::findCountOpinionsByUserId($element['id']);
-                $modelsUsers[$key]['afterTime'] = Declination::getTimeAfter($element['date_login']);
-            }
-        }
+        $usersPage = new UsersPage(Yii::$app->request, $sortType);
+        $usersPage->init();
 
         return $this->render(
             'index',
-            compact(
-                'modelsUsers',
-                'sortType',
-                'modelUsersFilter',
-                'modelCategoriesFilter',
-                'pagination'
-            )
+            $usersPage->getPageData()
         );
     }
 

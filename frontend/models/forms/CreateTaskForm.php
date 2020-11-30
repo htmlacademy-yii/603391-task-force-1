@@ -186,5 +186,4 @@ class CreateTaskForm extends Model
 
         return $taskId;
     }
-
 }
