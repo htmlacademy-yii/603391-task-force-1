@@ -20,6 +20,7 @@ return [
                 'users/view/<id:\d+>' => 'users/view',
                 'users/<sortType:\d+>' => 'users/index',
                 'my-list/<filter:\d+>' => 'my-list/index',
+                'users/bookmark/<userId:\d+>' => 'users/bookmark',
                 'address/location/<search:\d+>' => 'address/location',
                 '/' => 'landing/index',
                 ]

@@ -53,7 +53,7 @@ class TasksController extends SecureController
         $pagination = new Pagination(
             [
                 'totalCount' => $modelsTasks->count(),
-                'pageSize' => 5,
+                'pageSize' => Yii::$app->params['maxPaginatorItems'],
                 'forcePageParam' => false,
                 'pageSizeParam' => false
             ]
@@ -72,7 +72,7 @@ class TasksController extends SecureController
     }
 
     /**
-     *
+     * View task
      * @param int $id
      * @return string
      * @throws TaskForceException

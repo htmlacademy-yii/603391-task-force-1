@@ -6,7 +6,6 @@ use yii\base\Model;
 
 class UsersFilterForm extends Model
 {
-
     public bool $freeNow = false;
     public bool $onlineNow = false;
     public bool $feedbackExists = false;
@@ -25,7 +24,6 @@ class UsersFilterForm extends Model
             'isFavorite' => 'В избранном',
         ];
     }
-
 
     /**
      * @return array|string[]
@@ -61,5 +59,4 @@ class UsersFilterForm extends Model
             [['searchName'], 'match', 'pattern' => '/^[A-Za-zА-Яа-я0-9ё_\s,]+$/']
         ];
     }
-
 }

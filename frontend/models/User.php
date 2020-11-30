@@ -22,7 +22,6 @@ use yii\db\ActiveQuery;
  * @property string $date_add
  * @property string $date_login
  * @property int $city_id;
- *
  * @property Chat[] $chats
  * @property Chat[] $chats0
  * @property Favorite[] $favorites
@@ -78,7 +77,6 @@ class User extends ActiveRecord implements IdentityInterface
             'date_login' => 'Date Login',
         ];
     }
-
 
     public static function findIdentity($id)
     {
@@ -244,7 +242,6 @@ class User extends ActiveRecord implements IdentityInterface
         return new UserQuery(get_called_class());
     }
 
-
     /**
      * Add data
      * @param array $request request
@@ -260,7 +257,9 @@ class User extends ActiveRecord implements IdentityInterface
 
         $query = new Query();
         $query->from('user u')
-            ->select(['p.about', 'p.avatar','p.rate','u.role','p.id as profile_id','u.id', 'u.name', 'u.date_login'])
+            ->select(
+                ['p.about', 'p.avatar', 'p.rate', 'u.role', 'p.id as profile_id', 'u.id', 'u.name', 'u.date_login']
+            )
             ->join('LEFT JOIN', 'profile as p', 'u.id = p.user_id')
             ->join('LEFT JOIN', ['t' => $countTasks], 'p.user_id = t.executor_id')
             ->where(['u.role' => UserRole::EXECUTOR])->andWhere(['not', ['p.id' => null]]);
@@ -280,15 +279,16 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $usersFilters = $request['UsersFilterForm'];
         if (strlen($usersFilters['searchName']) > 0) {
-            $query->andWhere(['LIKE','u.name',  $usersFilters['searchName']]);
+            $query->andWhere(['LIKE', 'u.name', $usersFilters['searchName']]);
 
             return $query;
         }
 
         // filter by category
-        if (isset($request['CategoriesFilterForm']['categories'])) {
+        $categoriesFilterForm = $request['CategoriesFilterForm'];
+        if (isset($categoriesFilterForm['categories'])) {
             $list = [];
-            foreach ($request['CategoriesFilterForm']['categories'] as $key => $item) {
+            foreach ($categoriesFilterForm['categories'] as $key => $item) {
                 if ($item) {
                     $list[] = sprintf("'%s'", $key);
                 }
@@ -306,8 +306,7 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         // filtering by 'Free Now'
-        $freeNow = $usersFilters['freeNow'];
-        if (isset($freeNow) && (bool)($freeNow)) {
+        if ((bool)$usersFilters['freeNow']) {
             $subQuery1 = (new Query())
                 ->select('id')->from('task t')
                 ->where('t.executor_id = p.user_id');
@@ -315,14 +314,12 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         // filter by 'Online Now'
-        $onlineNow = $usersFilters['onlineNow'];
-        if (isset($onlineNow) && (bool)($onlineNow)) {
+        if ((bool)$usersFilters['onlineNow']) {
             $query->andWhere('u.date_login > DATE_SUB(NOW(), INTERVAL 30 MINUTE)');
         }
 
         // filter by 'Reviews'
-        $feedbackExists = $usersFilters['feedbackExists'];
-        if (isset($feedbackExists) && (bool)($feedbackExists)) {
+        if ((bool)$usersFilters['feedbackExists']) {
             $subQuery2 = (new Query())
                 ->select('id')->from('opinion o')
                 ->where('o.executor_id = p.user_id');
@@ -330,8 +327,7 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         // filter by 'Favorite'
-        $isFavorite = $usersFilters['isFavorite'];
-        if (isset($isFavorite) && (bool)($isFavorite)) {
+        if ((bool)$usersFilters['isFavorite']) {
             $subQuery3 = (new Query())
                 ->select('favorite_id')->from('favorite f')
                 ->where('f.favorite_id = p.user_id');
@@ -340,7 +336,6 @@ class User extends ActiveRecord implements IdentityInterface
 
         return $query;
     }
-
 
     /**
      * sorting
@@ -366,5 +361,4 @@ class User extends ActiveRecord implements IdentityInterface
 
         return $query;
     }
-
 }

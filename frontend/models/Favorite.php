@@ -2,6 +2,7 @@
 
 namespace frontend\models;
 
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -10,11 +11,11 @@ use yii\db\ActiveRecord;
  * @property int $user_id
  * @property int $favorite_id
  *
- * @property File $favorite
- * @property User $user
  */
 class Favorite extends ActiveRecord
 {
+    use ExceptionOnFindFail;
+
     /**
      * {@inheritdoc}
      */
@@ -32,7 +33,7 @@ class Favorite extends ActiveRecord
             [['user_id', 'favorite_id'], 'required'],
             [['user_id', 'favorite_id'], 'integer'],
             [['user_id', 'favorite_id'], 'unique', 'targetAttribute' => ['user_id', 'favorite_id']],
-            [['favorite_id'], 'exist', 'skipOnError' => true, 'targetClass' => File::class, 'targetAttribute' => ['favorite_id' => 'id']],
+            [['favorite_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['favorite_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
@@ -51,7 +52,7 @@ class Favorite extends ActiveRecord
     /**
      * Gets query for [[Favorite]].
      *
-     * @return \yii\db\ActiveQuery|FileQuery
+     * @return ActiveQuery|FileQuery
      */
     public function getFavorite()
     {
@@ -61,7 +62,7 @@ class Favorite extends ActiveRecord
     /**
      * Gets query for [[User]].
      *
-     * @return \yii\db\ActiveQuery|UserQuery
+     * @return ActiveQuery|UserQuery
      */
     public function getUser()
     {

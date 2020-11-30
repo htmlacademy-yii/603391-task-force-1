@@ -38,9 +38,12 @@ use yii\helpers\Url;
                             echo $words->getWord($modelUser['countTask']);
                                  ?></b>
                     </div>
-                    <div class="content-view__headline user__card-bookmark user__card-bookmark--current">
+                    <div class="content-view__headline user__card-bookmark
+                    <?=($modelUser['favorite'])?'user__card-bookmark--current':'user__card-bookmark'?>">
                         <span>Был на сайте <?= Declination::getTimeAfter($modelUser['date_login']) ?> назад</span>
-                        <a href="#"><?= $modelUser['favorite'] ?><b></b></a>
+                        <a href="<?= Url::to(['users/bookmark','userId'=>$modelUser['user_id']])?>">
+                            <b></b>
+                        </a>
                     </div>
                 </div>
                 <div class="content-view__description">
