@@ -9,7 +9,7 @@ use frontend\models\Task;
 use frontend\models\Work;
 use TaskForce\Constant\UserRole;
 use TaskForce\Exception\TaskForceException;
-use TaskForce\Page\UsersPage;
+use TaskForce\Page\PageUsers;
 use Throwable;
 use Yii;
 use frontend\models\Profile;
@@ -24,7 +24,7 @@ class UsersController extends SecureController
      */
     public function actionIndex(string $sortType = ''): string
     {
-        $usersPage = new UsersPage(Yii::$app->request, $sortType);
+        $usersPage = new PageUsers(Yii::$app->request, $sortType);
         $usersPage->init();
 
         return $this->render(
@@ -49,7 +49,7 @@ class UsersController extends SecureController
             throw new NotFoundHttpException('Executor profile not found.');
         }
 
-        $modelUser['countTask'] = Task::findCountTasksByUserId($id);
+        $modelUser['countTask'] = Task::findCountByUserId($id);
         $modelUser['favorite'] = (bool)Favorite::findOne(['favorite_id' => $id, 'user_id' => $currentUserId]);
         $modelsOpinions = Opinion::findOpinionsByUserId($id);
         $countOpinions = Opinion::findCountOpinionsByUserId($id);
@@ -78,11 +78,9 @@ class UsersController extends SecureController
     public function actionBookmark(int $userId)
     {
         $currentUserId = Yii::$app->user->getId();
-
         if (!$userId) {
             throw new TaskForceException('Не задан параметр userId.');
         }
-
         $favorite = Favorite::findOne(['favorite_id' => $userId, 'user_id' => $currentUserId]);
 
         if ($favorite) {

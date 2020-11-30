@@ -299,7 +299,7 @@ class Task extends ActiveRecord
      * @return int|null
      * @throws TaskForceException
      */
-    public static function findCountTasksByUserId(int $id): ?int
+    public static function findCountByUserId(int $id): ?int
     {
         if ($id && ($id < 1)) {
             throw new TaskForceException('Не задан ID пользователя');

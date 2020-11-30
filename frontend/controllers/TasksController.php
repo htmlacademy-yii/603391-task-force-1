@@ -3,19 +3,16 @@
 namespace frontend\controllers;
 
 use frontend\models\File;
-use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\CompleteTaskForm;
 use frontend\models\forms\ResponseTaskForm;
-use frontend\models\forms\TasksFilterForm;
 use frontend\models\Profile;
 use frontend\models\Response;
 use Exception;
+use TaskForce\Page\PageTasks;
 use TaskForce\Exception\TaskForceException;
-use TaskForce\Helpers\Declination;
 use TaskForce\TaskEntity;
 use yii;
 use frontend\models\Task;
-use yii\data\Pagination;
 use yii\helpers\ArrayHelper;
 
 class TasksController extends SecureController
@@ -28,46 +25,11 @@ class TasksController extends SecureController
      */
     public function actionIndex(): string
     {
-        $filterRequest = [];
-        $modelTasksFilter = new TasksFilterForm();
-        $modelCategoriesFilter = new CategoriesFilterForm();
-        $modelCategoriesFilter->init();
-
-        if ($post = Yii::$app->request->post()) {
-            $modelTasksFilter->load($post);
-            $modelCategoriesFilter->updateProperties(
-                ($post)['CategoriesFilterForm']['categories']
-            );
-            $filterRequest = ($post);
-        }
-
-        if (Yii::$app->request->getIsGet()) {
-            $ids = Yii::$app->request->get();
-            if (isset($ids['category'])) {
-                $modelCategoriesFilter->setOneCategory($ids['category']);
-                $filterRequest['CategoriesFilterForm']['categories'] = $modelCategoriesFilter->getCategoriesState();
-            }
-        }
-
-        $modelsTasks = Task::findNewTask($filterRequest);
-        $pagination = new Pagination(
-            [
-                'totalCount' => $modelsTasks->count(),
-                'pageSize' => Yii::$app->params['maxPaginatorItems'],
-                'forcePageParam' => false,
-                'pageSizeParam' => false
-            ]
-        );
-        $modelsTasks = $modelsTasks->offset($pagination->offset)->limit($pagination->limit)->all();
-        if (isset($modelsTasks)) {
-            foreach ($modelsTasks as $key => $element) {
-                $modelsTasks[$key]['afterTime'] = Declination::getTimeAfter($element['date_add']);
-            }
-        }
+        $pageTasks = new PageTasks(Yii::$app->request);
+        $pageTasks->init();
 
         return $this->render(
-            'index',
-            compact('modelsTasks', 'modelTasksFilter', 'modelCategoriesFilter', 'pagination')
+            'index',$pageTasks->getPageData()
         );
     }
 
@@ -87,31 +49,19 @@ class TasksController extends SecureController
         $modelTask = Task::findTaskTitleInfoByID($id);
         $task = new TaskEntity($id);
         $availableActions = $task->getAvailableActions();
-        $modelsResponse = Response::findResponsesByTask($task->model);
+        $modelsResponse = Response::findByTask($task->model);
         $ids = ArrayHelper::getColumn($modelsResponse, 'user_id');
         $existsUserResponse = in_array(Yii::$app->user->identity->getId(), $ids);
         $taskAssistUserId = $task->getAssistUserId();
-        $modelsFiles = File::findFilesByTaskID($id);
+        $modelsFiles = File::findByTaskID($id);
         $modelTaskUser = [];
-
         if ($taskAssistUserId) {
             $modelTaskUser = Profile::findByUserId($taskAssistUserId);
-            $modelTaskUser['countTask'] = Task::findCountTasksByUserId($taskAssistUserId);
+            $modelTaskUser['countTask'] = Task::findCountByUserId($taskAssistUserId);
         }
 
-        return $this->render(
-            'view',
-            compact(
-                'modelTask',
-                'modelsFiles',
-                'modelsResponse',
-                'modelTaskUser',
-                'currentUserRole',
-                'availableActions',
-                'responseTaskForm',
-                'completeTaskForm',
-                'existsUserResponse'
-            )
-        );
+        return $this->render('view', compact('modelTask', 'modelsFiles', 'modelsResponse',
+                                             'modelTaskUser', 'currentUserRole', 'availableActions',
+                                             'responseTaskForm', 'completeTaskForm', 'existsUserResponse'));
     }
 }

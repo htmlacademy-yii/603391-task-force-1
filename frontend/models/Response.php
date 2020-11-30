@@ -36,7 +36,7 @@ class Response extends ActiveRecord
      * @param ActiveRecord $task
      * @return array
      */
-    public static function findResponsesByTask(ActiveRecord $task): array
+    public static function findByTask(ActiveRecord $task): array
     {
         $currentUserId = Yii::$app->user->identity->getId();
 

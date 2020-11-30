@@ -13,7 +13,7 @@ use Yii;
 use yii\web\Request;
 use yii\data\Pagination;
 
-class UsersPage
+class PageUsers
 {
     /**
      * @var mixed
@@ -21,14 +21,14 @@ class UsersPage
     private $modelsUsers;
     private UsersFilterForm $modelUsersFilter;
     private CategoriesFilterForm $modelCategoriesFilter;
-    private ?Request $request;
     private string $sortType = '';
     private array $filterRequest = [];
     private ?Pagination $pagination;
+    private ?Request $request;
 
     /**
-     * UsersPage constructor.
-     * @param Request|\yii\web\Request $request
+     * PageUsers constructor.
+     * @param $request
      * @param string $sortType
      */
     public function __construct($request, string $sortType)
@@ -53,7 +53,7 @@ class UsersPage
     /**
      * Handle Request
      */
-    private function handleRequest()
+    protected function handleRequest()
     {
         if (($ids = $this->request->get()) && isset($ids['category'])) {
             $this->modelCategoriesFilter->setOneCategory($ids['category']);
@@ -73,7 +73,7 @@ class UsersPage
         }
     }
 
-    private function handleModel()
+    protected function handleModel()
     {
         $this->modelsUsers = User::findNewExecutors($this->filterRequest, $this->sortType);
         $this->pagination = new Pagination(
@@ -95,7 +95,7 @@ class UsersPage
         if (!empty($this->modelsUsers)) {
             foreach ($this->modelsUsers as $key => $element) {
                 $this->modelsUsers[$key]['categories'] = Specialization::findItemsByProfileId($element['profile_id']);
-                $this->modelsUsers[$key]['countTasks'] = Task::findCountTasksByUserId($element['id']);
+                $this->modelsUsers[$key]['countTasks'] = Task::findCountByUserId($element['id']);
                 $this->modelsUsers[$key]['countReplies'] = Opinion::findCountOpinionsByUserId($element['id']);
                 $this->modelsUsers[$key]['afterTime'] = Declination::getTimeAfter($element['date_login']);
             }

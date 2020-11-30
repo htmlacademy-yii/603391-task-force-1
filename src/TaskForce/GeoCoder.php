@@ -17,6 +17,8 @@ use yii\web\NotFoundHttpException;
 
 class GeoCoder
 {
+
+    public const HTTP_GEOCODE_MAPS_YANDEX_RU = 'http://geocode-maps.yandex.ru/';
     public const MAX_LOCATIONS = 5;
     public const FORMAT_JSON = 'json';
     private string $apiKey = '';
@@ -28,7 +30,7 @@ class GeoCoder
     public function __construct()
     {
         $this->apiKey = Yii::$app->params['yandex_api_key'];
-        $this->apiClient = new Client(['base_uri' => 'http://geocode-maps.yandex.ru/']);
+        $this->apiClient = new Client(['base_uri' => self::HTTP_GEOCODE_MAPS_YANDEX_RU]);
     }
 
     /**
@@ -67,20 +69,23 @@ class GeoCoder
     private function convertLocations(array $GeoObjects): ?array
     {
         $locations = [];
-        $userCityModel = City::findOrFail(Yii::$app->user->identity->city_id) ;
+        $userCityModel = City::findOrFail(Yii::$app->user->identity->city_id);
         foreach ($GeoObjects as $item) {
             $pointData = ArrayHelper::getValue($item, 'GeoObject.Point.pos');
             $coords = explode(" ", $pointData);
             $lat = $coords[1];
             $lng = $coords[0];
-            $city= ArrayHelper::getValue($item,
-                                  'GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.LocalityName');
+            $city = ArrayHelper::getValue(
+                $item,
+                'GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.'
+                . 'AdministrativeArea.SubAdministrativeArea.Locality.LocalityName'
+            );
 
             $text = ArrayHelper::getValue($item, 'GeoObject.metaDataProperty.GeocoderMetaData.text');
 
-            if (stripos($text,$userCityModel['city'])) {
-                array_push($locations, ['text'=>$text,'lat'=> $lat, 'lng'=>$lng, 'city'=>$city]);
-           }
+            if (stripos($text, $userCityModel['city'])) {
+                array_push($locations, ['text' => $text, 'lat' => $lat, 'lng' => $lng, 'city' => $city]);
+            }
         }
 
 
@@ -133,7 +138,7 @@ class GeoCoder
 
     public function getCoordinates($location): ?array
     {
-        return  $this->findAddressesByRequest($location)[0];
+        return $this->findAddressesByRequest($location)[0];
     }
 
 
