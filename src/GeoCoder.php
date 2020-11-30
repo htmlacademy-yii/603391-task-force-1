@@ -13,7 +13,6 @@ use GuzzleHttp\Psr7\Request;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
-use yii\web\NotFoundHttpException;
 
 class GeoCoder
 {
