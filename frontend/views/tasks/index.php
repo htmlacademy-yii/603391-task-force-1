@@ -9,12 +9,10 @@
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\Task;
 use frontend\models\forms\TasksFilterForm;
-use frontend\widgets\TasksFilters;use yii\data\Pagination;
+use frontend\widgets\TasksFilters;
+use yii\data\Pagination;
 use yii\helpers\Url;
-use yii\helpers\Html;
-use yii\widgets\ActiveForm;
 use yii\widgets\LinkPager;
-
 ?>
 <main class="page-main">
     <div class="main-container page-container">

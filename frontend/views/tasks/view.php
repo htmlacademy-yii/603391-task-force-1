@@ -28,6 +28,7 @@ use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
 $this->registerJSFile('/js/main.js');
+$this->registerJSFile('/js/messenger.js');
 $currentUserId = Yii::$app->user->getId();
 ?>
 <main class="page-main">

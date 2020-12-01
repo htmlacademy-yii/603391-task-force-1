@@ -26,19 +26,6 @@ class UsersFilters extends Widget
     }
 
     /**
-     * Registers
-     */
-    public function init(): bool
-    {
-        parent::init();
-        if (!$this->validate()) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Map html block
      * @return string|null
      */
