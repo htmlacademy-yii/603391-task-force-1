@@ -8,9 +8,9 @@
 /** @var TasksFilterForm $modelTasksFilter */
 /** @var CategoriesFilterForm $modelCategoriesFilter */
 
-use frontend\widgets\StarRating;
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\TasksFilterForm;
+use frontend\widgets\Rating;
 use TaskForce\Helpers\Declination;
 use yii\helpers\Url;
 
@@ -26,7 +26,7 @@ use yii\helpers\Url;
                         <h1><?= $modelUser['name'] ?></h1>
                         <p>Россия, Санкт-Петербург, <?= Declination::getTimeAfter((string)$modelUser['birthday']) ?></p>
                         <div class="profile-mini__name five-stars__rate">
-                            <?= StarRating::widget(['rate' => $modelUser['rate']]) ?>
+                            <?= Rating::widget(['rate' => $modelUser['rate']]) ?>
                         </div>
                         <b class="done-task">Выполнил <?php
                             echo $modelUser['countTask'];
@@ -77,9 +77,9 @@ use yii\helpers\Url;
                     </div>
                 </div>
             </div>
-            <?php if ($countOpinions):?>
+            <?php if (count($modelsOpinions)):?>
             <div class="content-view__feedback">
-                <h2>Отзывы <span>(<?= $countOpinions ?>)</span></h2>
+                <h2>Отзывы <span>(<?= count($modelsOpinions) ?>)</span></h2>
                 <div class="content-view__feedback-wrapper reviews-wrapper">
                     <?php foreach ($modelsOpinions as $key => $modelOpinion): ?>
                         <div class="feedback-card__reviews">
@@ -97,9 +97,7 @@ use yii\helpers\Url;
                                         <?= $modelOpinion['description'] ?>
                                     </p>
                                 </div>
-                                <div class="card__review-rate">
-                                    <p class="five-rate big-rate"><?= $modelOpinion['rate'] ?><span></span></p>
-                                </div>
+                                <?= Rating::widget(['rate' => $modelUser['rate'], 'type' => 2]) ?>
                             </div>
                         </div>
                     <?php endforeach; ?>

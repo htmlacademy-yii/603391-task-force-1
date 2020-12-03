@@ -11,7 +11,7 @@
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\Task;
 use frontend\models\forms\TasksFilterForm;
-use frontend\widgets\StarRating;
+use frontend\widgets\Rating;
 use TaskForce\TaskEntity;
 use yii\data\Pagination;
 use yii\helpers\Url;
@@ -63,7 +63,7 @@ use yii\helpers\Url;
                                 </p>
                                 <a href="<?= Url::to(['tasks/view', 'id' => $modelTask['id']]) ?>"
                                    class="my-list__bottom-chat  my-list__bottom-chat--new"><b><?= $modelTask['messages']??0 ?></b></a>
-                                <?= StarRating::widget(['rate' =>  $modelTask['rate']]) ?>
+                                <?= Rating::widget(['rate' =>  $modelTask['rate']]) ?>
                             </div>
                         </div>
                     </div>

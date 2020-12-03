@@ -23,7 +23,7 @@ return [
                 'users/bookmark/<userId:\d+>' => 'users/bookmark',
                 'address/location/<search:\d+>' => 'address/location',
                 '/' => 'landing/index',
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'api/contacts']
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'api/messages']
                 ]
             ],
         'cache' => [

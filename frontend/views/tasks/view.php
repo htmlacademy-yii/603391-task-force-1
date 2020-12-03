@@ -11,7 +11,7 @@
 /** @var bool $existsUserResponse */
 /** @var array $availableActions */
 
-use frontend\widgets\StarRating;
+use frontend\widgets\Rating;
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\CompleteTaskForm;
 use frontend\models\forms\ResponseTaskForm;
@@ -141,7 +141,7 @@ $currentUserId = Yii::$app->user->getId();
                                 <div class="feedback-card__top--name">
                                     <p><a href="<?= Url::to(['users/view', 'id' => $response['user_id']]) ?>"
                                           class="link-regular"><?= $response['name'] ?></a></p>
-                                    <?= StarRating::widget(['rate' => $response['rate'] ?? 0]) ?>
+                                    <?= Rating::widget(['rate' => $response['rate'] ?? 0]) ?>
                                 </div>
                                 <span class="new-task__time"><?= Declination::getTimeAfter(
                                         (string)$response['created_at']
@@ -206,7 +206,7 @@ $currentUserId = Yii::$app->user->getId();
                                  alt="Аватар <?= ($showExecutor) ? 'исполнтеля' : 'заказчика' ?>">
                             <div class="profile-mini__name five-stars__rate">
                                 <p><?= $modelTaskUser['name'] ?></p>
-                                <?= StarRating::widget(['rate' => $modelTaskUser['rate']]) ?>
+                                <?= Rating::widget(['rate' => $modelTaskUser['rate']]) ?>
                             </div>
                         </div>
                         <p class="info-customer"><span><?= $modelTaskUser['countTask'] ?> заданий</span>

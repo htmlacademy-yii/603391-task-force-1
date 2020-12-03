@@ -1652,15 +1652,6 @@ footer {
     top: 16px;
     left: 30px; }
 
-.five-rate {
-  color: #ff7f50; }
-  .five-rate span {
-    background-image: url("../img/star-rate.png"); }
-
-.three-rate {
-  color: #c71d1d; }
-  .three-rate span {
-    background-image: url("../img/three-rate.png"); }
 
 .registration__user {
   margin-right: auto;

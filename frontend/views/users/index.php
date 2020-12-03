@@ -1,6 +1,6 @@
 <?php
 
-use frontend\widgets\StarRating;
+use frontend\widgets\Rating;
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\UsersFilterForm;
 use frontend\widgets\UsersFilters;
@@ -34,7 +34,7 @@ use yii\widgets\LinkPager;
                         <div class="feedback-card__top--name user__search-card">
                             <p class="link-name"><a href="<?= Url::to(['users/view', 'id' => $user['id']]) ?>"
                                                     class="link-regular"><?= $user['name'] ?></a></p>
-                            <?= StarRating::widget(['rate' => $user['rate']]) ?>
+                            <?= Rating::widget(['rate' => $user['rate']]) ?>
                             <p class="user__search-content">
                                 <?= $user['about'] ?>
                             </p>
