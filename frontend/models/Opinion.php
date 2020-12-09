@@ -2,7 +2,6 @@
 
 namespace frontend\models;
 
-use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -115,11 +114,11 @@ class Opinion extends ActiveRecord
      */
     public static function findOpinionsByUserId(int $id): array
     {
-        return self::find()->select('o.*, t.name as taskName, u.name as userName, p.*')
+        return self::find()->select('o.*, t.name as taskName,t.id as task_id, u.name as userName, p.*')
             ->from('opinion o')
-            ->join('LEFT JOIN', 'profile as p', 'o.executor_id = p.user_id')
-            ->join('LEFT JOIN', 'user as u', 'o.executor_id = u.id')
-            ->join('LEFT JOIN', 'task as t', 'o.executor_id = t.customer_id')
+            ->join('LEFT JOIN', 'profile as p', 'o.owner_id = p.user_id')
+            ->join('LEFT JOIN', 'user as u', 'o.owner_id = u.id')
+            ->join('LEFT JOIN', 'task as t', 'o.owner_id = t.customer_id')
             ->where(['o.executor_id' => $id])->asArray()->all();
     }
 

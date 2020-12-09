@@ -38,6 +38,7 @@ use yii\db\ActiveQuery;
  */
 class User extends ActiveRecord implements IdentityInterface
 {
+    use ExceptionOnFindFail;
 
     /**
      * {@inheritdoc}
@@ -264,7 +265,7 @@ class User extends ActiveRecord implements IdentityInterface
             ->join('LEFT JOIN', ['t' => $countTasks], 'p.user_id = t.executor_id')
             ->where(['u.role' => UserRole::EXECUTOR])->andWhere(['not', ['p.id' => null]]);
 
-        $query = self::applyFilters($request, $query);
+         $query = self::applyFilters($request, $query);
 
         return self::applySort($sortType, $query);
     }
@@ -277,6 +278,9 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function applyFilters(array $request, Query $query): ?Query
     {
+        if (!isset($request['UsersFilterForm'])) {
+            return $query;}
+
         $usersFilters = $request['UsersFilterForm'];
         if (strlen($usersFilters['searchName']) > 0) {
             $query->andWhere(['LIKE', 'u.name', $usersFilters['searchName']]);

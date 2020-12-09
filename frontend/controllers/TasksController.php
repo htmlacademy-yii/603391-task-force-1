@@ -8,8 +8,6 @@ use frontend\models\forms\ResponseTaskForm;
 use frontend\models\Profile;
 use frontend\models\Response;
 use Exception;
-use TaskForce\Page\PageTasks;
-use TaskForce\Exception\TaskForceException;
 use TaskForce\TaskEntity;
 use yii;
 use frontend\models\Task;
@@ -17,34 +15,25 @@ use yii\helpers\ArrayHelper;
 
 class TasksController extends SecureController
 {
-    /**
-     * Task list
-     *
-     * @return string
-     * @throws TaskForceException
-     */
-    public function actionIndex(): string
+    public function actions()
     {
-        $pageTasks = new PageTasks(Yii::$app->request);
-        $pageTasks->init();
-
-        return $this->render(
-            'index',$pageTasks->getPageData()
-        );
+        return [
+            'index' => [
+                'class' => 'frontend\actions\TasksIndexAction',
+            ],
+        ];
     }
 
     /**
      * View task
      * @param int $id
      * @return string
-     * @throws TaskForceException
      * @throws Exception
      */
     public function actionView(int $id): string
     {
         $responseTaskForm = new ResponseTaskForm();
         $completeTaskForm = new CompleteTaskForm();
-
         $currentUserRole = Yii::$app->user->identity->role;
         $modelTask = Task::findTaskTitleInfoByID($id);
         $task = new TaskEntity($id);

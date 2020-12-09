@@ -1,9 +1,9 @@
 <?php
 
-use frontend\widgets\Rating;
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\UsersFilterForm;
-use frontend\widgets\UsersFilters;
+use TaskForce\widgets\RatingWidget;
+use TaskForce\widgets\UsersFiltersWidget;
 use yii\data\Pagination;
 use yii\helpers\Url;
 use yii\widgets\LinkPager;
@@ -27,19 +27,19 @@ use yii\widgets\LinkPager;
                         <div class="user__search-icon">
                             <a href="<?= Url::to(['users/view', 'id' => $user['profile_id']]) ?>"><img
                                     src="<?= Url::base() . '/uploads/avatars/' . $user['avatar'] ?>" width="65" height="65" alt=""></a>
-                            <span><?= $user['countTasks'] ?> заданий</span>
-                            <span><?= $user['countReplies'] ?> отзывов</span>
+                            <span><?= $user['countTasks'] ?? 0 ?> заданий</span>
+                            <span><?= $user['countReplies'] ?? 0?> отзывов</span>
                         </div>
 
                         <div class="feedback-card__top--name user__search-card">
                             <p class="link-name"><a href="<?= Url::to(['users/view', 'id' => $user['id']]) ?>"
                                                     class="link-regular"><?= $user['name'] ?></a></p>
-                            <?= Rating::widget(['rate' => $user['rate']]) ?>
+                            <?= RatingWidget::widget(['rate' => $user['rate']]) ?>
                             <p class="user__search-content">
                                 <?= $user['about'] ?>
                             </p>
                         </div>
-                        <span class="new-task__time">Был на сайте </br> <?= $user['afterTime'] ?> назад</span>
+                        <span class="new-task__time">Был на сайте  <?= $user['afterTime'] ?> назад</span>
                     </div>
                     <div class="link-specialization user__search-link--bottom">
                         <?php
@@ -69,7 +69,7 @@ use yii\widgets\LinkPager;
 
 
         </section>
-                    <?= UsersFilters::widget(compact('modelCategoriesFilter', 'modelUsersFilter'));?>
+                    <?= UsersFiltersWidget::widget(compact('modelCategoriesFilter', 'modelUsersFilter'));?>
     </div>
 </main>
 

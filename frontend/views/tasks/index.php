@@ -9,10 +9,11 @@
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\Task;
 use frontend\models\forms\TasksFilterForm;
-use frontend\widgets\TasksFilters;
+use TaskForce\widgets\TasksFiltersWidget;
 use yii\data\Pagination;
 use yii\helpers\Url;
 use yii\widgets\LinkPager;
+
 ?>
 <main class="page-main">
     <div class="main-container page-container">
@@ -55,7 +56,7 @@ use yii\widgets\LinkPager;
             </div>
         </section>
 
-        <?= TasksFilters::widget(compact('modelCategoriesFilter', 'modelTasksFilter'))?>
+        <?= TasksFiltersWidget::widget(compact('modelCategoriesFilter', 'modelTasksFilter'))?>
 
     </div>
 </main>

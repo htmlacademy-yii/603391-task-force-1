@@ -11,12 +11,13 @@
 /** @var bool $existsUserResponse */
 /** @var array $availableActions */
 
-use frontend\widgets\Rating;
+use frontend\assets\TaskViewAsset;
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\CompleteTaskForm;
 use frontend\models\forms\ResponseTaskForm;
 use frontend\models\forms\TasksFilterForm;
-use frontend\widgets\YandexMap;
+use TaskForce\widgets\RatingWidget;
+use TaskForce\widgets\YandexMapWidget;
 use TaskForce\Actions\CancelAction;
 use TaskForce\Actions\CompleteAction;
 use TaskForce\Actions\RefuseAction;
@@ -27,9 +28,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
-$this->registerJSFile('/js/main.js');
-$this->registerJSFile('/js/vue.js');
-$this->registerJSFile('/js/messenger.js');
+TaskViewAsset::register($this);
 $currentUserId = Yii::$app->user->getId();
 ?>
 <main class="page-main">
@@ -77,9 +76,7 @@ $currentUserId = Yii::$app->user->getId();
                         <div class="content-view__location">
                             <h3 class="content-view__h3">Расположение</h3>
                             <div class="content-view__location-wrapper">
-
-                                 <?=   YandexMap::widget(['lat'=>$modelTask['lat'],'lng'=>$modelTask['lng']]);?>
-
+                                 <?= YandexMapWidget::widget(['lat'=>$modelTask['lat'],'lng'=>$modelTask['lng']]);?>
                                 <div class="content-view__address">
                                     <span class="address__town"><?= $modelTask['city'] ?></span><br>
                                     <span><?= $modelTask['address'] ?></span>
@@ -141,7 +138,7 @@ $currentUserId = Yii::$app->user->getId();
                                 <div class="feedback-card__top--name">
                                     <p><a href="<?= Url::to(['users/view', 'id' => $response['user_id']]) ?>"
                                           class="link-regular"><?= $response['name'] ?></a></p>
-                                    <?= Rating::widget(['rate' => $response['rate'] ?? 0]) ?>
+                                    <?= RatingWidget::widget(['rate' => $response['rate'] ?? 0]) ?>
                                 </div>
                                 <span class="new-task__time"><?= Declination::getTimeAfter(
                                         (string)$response['created_at']
@@ -206,7 +203,7 @@ $currentUserId = Yii::$app->user->getId();
                                  alt="Аватар <?= ($showExecutor) ? 'исполнтеля' : 'заказчика' ?>">
                             <div class="profile-mini__name five-stars__rate">
                                 <p><?= $modelTaskUser['name'] ?></p>
-                                <?= Rating::widget(['rate' => $modelTaskUser['rate']]) ?>
+                                <?= RatingWidget::widget(['rate' => $modelTaskUser['rate']]) ?>
                             </div>
                         </div>
                         <p class="info-customer"><span><?= $modelTaskUser['countTask'] ?> заданий</span>
@@ -228,7 +225,6 @@ $currentUserId = Yii::$app->user->getId();
                     && ($modelTask['executor_id'] !== null)
                 ): ?>
                 <div id="chat-container">
-
                     <chat class="connect-desk__chat" task="<?=$modelTask['id']?>"></chat>
                 <?php
                 endif; ?>

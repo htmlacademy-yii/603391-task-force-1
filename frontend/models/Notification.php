@@ -2,7 +2,7 @@
 
 namespace frontend\models;
 
-use Yii;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -50,7 +50,7 @@ class Notification extends ActiveRecord
     /**
      * Gets query for [[UserNotifications]].
      *
-     * @return \yii\db\ActiveQuery|UserNotificationQuery
+     * @return ActiveQuery|UserNotificationQuery
      */
     public function getUserNotifications()
     {
@@ -60,7 +60,7 @@ class Notification extends ActiveRecord
     /**
      * Gets query for [[Users]].
      *
-     * @return \yii\db\ActiveQuery|UserQuery
+     * @return ActiveQuery|UserQuery
      */
     public function getUsers()
     {
@@ -69,10 +69,10 @@ class Notification extends ActiveRecord
 
     /**
      * {@inheritdoc}
-     * @return NotifiQuery the active query used by this AR class.
+     * @return NotificationQuery the active query used by this AR class.
      */
     public static function find()
     {
-        return new NotifiQuery(get_called_class());
+        return new NotificationQuery(get_called_class());
     }
 }

@@ -14,7 +14,7 @@ class SiteController extends SecureController
     /**
      * @return array|string[][]
      */
-    public function actions()
+    public function actions(): array
     {
         return [
             'error' => [
@@ -43,5 +43,3 @@ class SiteController extends SecureController
         $session['current_city_id'] = $cityId;
     }
 }
-
-

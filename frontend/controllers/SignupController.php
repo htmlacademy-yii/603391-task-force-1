@@ -16,14 +16,14 @@ class SignupController extends Controller
 {
     use HasTitle;
 
-    public $layout = 'main';
+    public $layout = 'mini';
 
     /**
      * @param Action $action
      * @return bool
      * @throws BadRequestHttpException
      */
-    public function beforeAction($action)
+    public function beforeAction($action): bool
     {
         $this->getTitle();
         return parent::beforeAction($action);

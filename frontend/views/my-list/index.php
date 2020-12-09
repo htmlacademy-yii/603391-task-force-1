@@ -1,18 +1,20 @@
 <?php
 
 /* @var $this yii\web\View */
+
 /** @var TasksFilterForm $modelTasksFilter */
 /** @var Task $modelsTasks */
 /** @var CategoriesFilterForm $modelCategoriesFilter */
 /** @var Pagination $pagination */
 /** @var array $modelTasks */
+
 /** @var string $currentFilter */
 
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\Task;
 use frontend\models\forms\TasksFilterForm;
-use frontend\widgets\Rating;
 use TaskForce\TaskEntity;
+use TaskForce\widgets\RatingWidget;
 use yii\data\Pagination;
 use yii\helpers\Url;
 
@@ -20,7 +22,7 @@ use yii\helpers\Url;
 <main class="page-main">
     <div class="main-container page-container">
 
-        <?= $this->render('_filters_menu-toggle',['currentFilter'=> $currentFilter]) ?>
+        <?= $this->render('_filters_menu-toggle', ['currentFilter' => $currentFilter]) ?>
 
 
         <section class="my-list">
@@ -56,14 +58,16 @@ use yii\helpers\Url;
                         </p>
                         <div class="feedback-card__top ">
                             <a href="<?= Url::to(['users/view', 'id' => $modelTask['customer_id']]) ?>">
-                                <img src="<?= Url::base() . '/uploads/avatars/' . ($response['avatar'] ?? 'no-avatar.jpg') ?>" width="36" height="36" alt="avatar">
+                                <img src="<?= Url::base(
+                                ) . '/uploads/avatars/' . ($response['avatar'] ?? 'no-avatar.jpg') ?>" width="36"
+                                     height="36" alt="avatar">
                             </a>
                             <div class="feedback-card__top--name my-list__bottom">
                                 <p class="link-name"><a href="#" class="link-regular"><?= $modelTask['user_name'] ?></a>
                                 </p>
                                 <a href="<?= Url::to(['tasks/view', 'id' => $modelTask['id']]) ?>"
-                                   class="my-list__bottom-chat  my-list__bottom-chat--new"><b><?= $modelTask['messages']??0 ?></b></a>
-                                <?= Rating::widget(['rate' =>  $modelTask['rate']]) ?>
+                                   class="my-list__bottom-chat  my-list__bottom-chat--new"><b><?= $modelTask['messages'] ?? 0 ?></b></a>
+                                <?= RatingWidget::widget(['rate' => $modelTask['rate']]) ?>
                             </div>
                         </div>
                     </div>

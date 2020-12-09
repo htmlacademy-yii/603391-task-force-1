@@ -4,18 +4,16 @@
 /** @var CreateTaskForm $createTaskForm */
 /** @var array $cities */
 
+use frontend\assets\TaskCreateAsset;
 use frontend\models\forms\CreateTaskForm;
 use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 
 $apiKey = Yii::$app->params['yandex_api_key'];
 $yandexApiJs = "https://api-maps.yandex.ru/2.1/?apikey=$apiKey&lang=ru_RU";
-$this->registerJSFile($yandexApiJs,  $options = [$position = yii\web\View::POS_HEAD]);
+$this->registerJSFile($yandexApiJs, $options = [$position = yii\web\View::POS_HEAD]);
 
-$this->registerJSFile('/js/autoComplete.min.js', $options = [$position = yii\web\View::POS_BEGIN]);
-$this->registerJSFile('/js/autoComplete.init.js', $options = [$position = yii\web\View::POS_END]);
-$this->registerCSSFile('/css/js-plugin.css', $options = [$position = yii\web\View::POS_END]);
-
+TaskCreateAsset::register($this);
 ?>
 
 <main class="page-main">
@@ -79,15 +77,21 @@ $this->registerCSSFile('/css/js-plugin.css', $options = [$position = yii\web\Vie
                 <label>Файлы</label>
                 <span>Загрузите файлы, которые помогут исполнителю лучше выполнить или оценить работу</span>
 
-
-                <?=  $form->field($createTaskForm, 'files[]',
-                                  [ 'options' =>['tag' => 'div','for' => 'file' ,'class'=>'create__file input'],
-                                  ])
-                    ->fileInput(['class' => 'dropzone visually-hidden',
-                                    'multiple' => 'true',
-                                        'id'=>'file'
-                                ])
-                    ->label('Добавить новый файл')?>
+                <?= $form->field(
+                    $createTaskForm,
+                    'files[]',
+                    [
+                        'options' => ['tag' => 'div', 'for' => 'file', 'class' => 'create__file input'],
+                    ]
+                )
+                    ->fileInput(
+                        [
+                            'class' => 'dropzone visually-hidden',
+                            'multiple' => 'true',
+                            'id' => 'file'
+                        ]
+                    )
+                    ->label('Добавить новый файл') ?>
 
 
                 <?= $form
@@ -199,9 +203,11 @@ $this->registerCSSFile('/css/js-plugin.css', $options = [$position = yii\web\Vie
                     endif; ?>
                 </div>
             </div>
-
             <?php
-            echo Html::submitButton('Опубликовать', ['class' => 'button', 'id' => 'submit-all', 'form' => 'task-form']); ?>
+            echo Html::submitButton(
+                'Опубликовать',
+                ['class' => 'button', 'id' => 'submit-all', 'form' => 'task-form']
+            ); ?>
         </section>
     </div>
 </main>

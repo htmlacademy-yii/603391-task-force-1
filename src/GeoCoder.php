@@ -13,6 +13,7 @@ use GuzzleHttp\Psr7\Request;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
+use yii\web\NotFoundHttpException;
 
 class GeoCoder
 {
@@ -22,14 +23,18 @@ class GeoCoder
     public const FORMAT_JSON = 'json';
     private string $apiKey = '';
     private Client $apiClient;
+    private string $userCity;
 
     /**
      * GeoCoder constructor.
+     * @throws NotFoundHttpException
      */
     public function __construct()
     {
         $this->apiKey = Yii::$app->params['yandex_api_key'];
         $this->apiClient = new Client(['base_uri' => self::HTTP_GEOCODE_MAPS_YANDEX_RU]);
+        $userCityModel = City::findOrFail(Yii::$app->user->identity->city_id);
+        $this->userCity = $userCityModel['city'];
     }
 
     /**
@@ -40,7 +45,11 @@ class GeoCoder
     public function findAddressesByRequest(string $userRequest): ?array
     {
         if (!$userRequest) {
-            return null;
+            $userRequest = $this->userCity;
+        }
+
+        if ( !strpos(mb_strtolower($userRequest), mb_strtolower($this->userCity))){
+            $userRequest = $this->userCity . ', ' .  $userRequest;
         }
 
         try {
@@ -68,7 +77,6 @@ class GeoCoder
     private function convertLocations(array $GeoObjects): ?array
     {
         $locations = [];
-        $userCityModel = City::findOrFail(Yii::$app->user->identity->city_id);
         foreach ($GeoObjects as $item) {
             $pointData = ArrayHelper::getValue($item, 'GeoObject.Point.pos');
             $coords = explode(" ", $pointData);
@@ -82,7 +90,7 @@ class GeoCoder
 
             $text = ArrayHelper::getValue($item, 'GeoObject.metaDataProperty.GeocoderMetaData.text');
 
-            if (stripos($text, $userCityModel['city'])) {
+            if (stripos($text, $this->userCity)) {
                 array_push($locations, ['text' => $text, 'lat' => $lat, 'lng' => $lng, 'city' => $city]);
             }
         }

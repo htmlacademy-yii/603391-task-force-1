@@ -1,17 +1,14 @@
 <?php
+
 /* @var $this yii\web\View */
-/** @var array $countOpinions */
 /** @var array $modelUser */
 /** @var array $modelsOpinions */
 /** @var array $works */
 /** @var array $specializations */
-/** @var TasksFilterForm $modelTasksFilter */
-/** @var CategoriesFilterForm $modelCategoriesFilter */
 
-use frontend\models\forms\CategoriesFilterForm;
-use frontend\models\forms\TasksFilterForm;
-use frontend\widgets\Rating;
 use TaskForce\Helpers\Declination;
+use TaskForce\widgets\PhotosWidget;
+use TaskForce\widgets\RatingWidget;
 use yii\helpers\Url;
 
 ?>
@@ -26,16 +23,16 @@ use yii\helpers\Url;
                         <h1><?= $modelUser['name'] ?></h1>
                         <p>Россия, Санкт-Петербург, <?= Declination::getTimeAfter((string)$modelUser['birthday']) ?></p>
                         <div class="profile-mini__name five-stars__rate">
-                            <?= Rating::widget(['rate' => $modelUser['rate']]) ?>
+                            <?= RatingWidget::widget(['rate' => $modelUser['rate']]) ?>
                         </div>
                         <b class="done-task">Выполнил <?php
                             echo $modelUser['countTask'];
                             $words = new Declination('заказ', 'заказа', 'заказов');
                             echo $words->getWord($modelUser['countTask']) ?></b>
                         <b class="done-review">Получил <?php
-                            echo $countOpinions;
+                            echo count($modelsOpinions);
                             $words = new Declination('отзыв', 'отзыва', 'отзывов');
-                            echo $words->getWord($modelUser['countTask']);
+                            echo $words->getWord(count($modelsOpinions));
                                  ?></b>
                     </div>
                     <div class="content-view__headline user__card-bookmark
@@ -47,7 +44,7 @@ use yii\helpers\Url;
                     </div>
                 </div>
                 <div class="content-view__description">
-                    <p><?= $modelUser['description'] ?></p>
+                    <p><?= $modelUser['about'] ?></p>
                 </div>
                 <div class="user__card-general-information">
                     <div class="user__card-info">
@@ -65,16 +62,7 @@ use yii\helpers\Url;
                             <a class="user__card-link--skype link-regular" href="#"><?= $modelUser['skype'] ?></a>
                         </div>
                     </div>
-                    <div class="user__card-photo">
-                        <h3 class="content-view__h3">Фото работ</h3>
-                        <?= (!$works) ? '-' : '' ?>
-                        <?php
-                        foreach ($works as $key => $work): ?>
-                            <a href="#"><img src="../../img/<?= $work['filename'] ?>" width="85" height="86"
-                                             alt="Фото работы"></a>
-                        <?php endforeach; ?>
-
-                    </div>
+                    <?= PhotosWidget::widget(['userId'=>$modelUser['user_id']])?>
                 </div>
             </div>
             <?php if (count($modelsOpinions)):?>
@@ -84,20 +72,21 @@ use yii\helpers\Url;
                     <?php foreach ($modelsOpinions as $key => $modelOpinion): ?>
                         <div class="feedback-card__reviews">
                             <p class="link-task link">Задание
-                                <a href="#" class="link-regular">«<?= $modelOpinion['taskName'] ?>»</a>
+                                <a href="<?= Url::to(['tasks/view','id'=>$modelOpinion['task_id']])?>" class="link-regular">«<?= $modelOpinion['taskName'] ?>»</a>
                             </p>
                             <div class="card__review">
-                                <a href="#"><img src="../../img/<?= $modelOpinion['avatar'] ?>" width="55" height="54"
+                                <a href="#"><img src="<?=
+                                    Url::base() . '/uploads/avatars/' . $modelOpinion['avatar'] ?>" width="55" height="54"
                                                  alt=""></a>
                                 <div class="feedback-card__reviews-content">
                                     <p class="link-name link">
-                                        <a href="#" class="link-regular"><?= $modelOpinion['userName'] ?></a>
+                                        <a  class="link-regular"><?= $modelOpinion['userName'] ?></a>
                                     </p>
                                     <p class="review-text">
                                         <?= $modelOpinion['description'] ?>
                                     </p>
                                 </div>
-                                <?= Rating::widget(['rate' => $modelUser['rate'], 'type' => 2]) ?>
+                                <?= RatingWidget::widget(['rate' => $modelUser['rate'], 'type' => 2]) ?>
                             </div>
                         </div>
                     <?php endforeach; ?>

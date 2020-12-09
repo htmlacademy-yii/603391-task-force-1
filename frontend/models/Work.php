@@ -2,7 +2,6 @@
 
 namespace frontend\models;
 
-use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -12,11 +11,16 @@ use yii\db\ActiveRecord;
  * @property int $id
  * @property int|null $user_id
  * @property string|null $filename
+ * @property string|null $generated_name
  *
  * @property User $user
  */
 class Work extends ActiveRecord
 {
+    /**
+     * @var mixed|string|null
+     */
+
     /**
      * {@inheritdoc}
      */
@@ -77,5 +81,4 @@ class Work extends ActiveRecord
     {
         return self::find()->where(['user_id' => $id])->asArray()->limit(5)->all();
     }
-
 }

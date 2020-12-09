@@ -30,7 +30,6 @@ use yii\web\NotFoundHttpException;
  * @property string $date_add
  * @property int|null $executor_id
  * @property int $customer_id
- *
  * @property Chat[] $chats
  * @property File[] $files
  * @property Response[] $responses
@@ -216,14 +215,13 @@ class Task extends ActiveRecord
             }
         }
 
-        $session = Yii::$app->session;
-        $currentCityId = $session['current_city_id'] ?? $isLoggedUser->city_id;
-
         $query->select(['t.*', 'c.name as cat_name', 'c.icon as icon'])->from('task t')
             ->join('LEFT JOIN', 'category as c', 't.category_id = c.id')
             ->where(['t.status' => TaskEntity::STATUS_NEW]);
 
         if ($isLoggedUser) {
+            $session = Yii::$app->session;
+            $currentCityId = $session['current_city_id'] ?? $isLoggedUser->city_id;
             $query->andWhere(
                 [
                     'or',
@@ -239,7 +237,7 @@ class Task extends ActiveRecord
             $query->andWhere($categoryList);
         }
 
-        $requestFilterForm = $request['TasksFilterForm'];
+        $requestFilterForm = $request['TasksFilterForm'] ?? '';
         $searchName = $requestFilterForm['searchName'] ?? '';
         if (strlen($searchName) > 0) {
             $query->andWhere(['LIKE', 't.name', $searchName, false]);
@@ -270,17 +268,16 @@ class Task extends ActiveRecord
      * @return array
      * @throws TaskForceException
      * @throws NotFoundHttpException
+     * @throws TaskForceException
      */
     public static function findTaskTitleInfoByID(int $id = null): ?array
     {
         $query = new Query();
-
         $query->select(['t.*', 'c.name as cat_name', 'c1.city', 'c.icon as icon'])->from('task t')
             ->join('LEFT JOIN', 'category as c', 't.category_id = c.id')
             ->join('LEFT JOIN', 'city as c1', 't.city_id = c1.id')
             ->where(['t.id' => $id])
             ->limit(1);
-
         $model = $query->one();
 
         if ($model) {

@@ -9,7 +9,10 @@ trait HasTitle
 {
     public function getTitle()
     {
-        Yii::$app->view->title = Yii::$app->params['AppName'] . ' - ' . Page::ROUTE_TO_PAGE_NAME
-            [Yii::$app->controller->id . '/' . Yii::$app->controller->action->id];
+        $pageName = Page::ROUTE_TO_TITLE[Yii::$app->controller->id . '/' . Yii::$app->controller->action->id] ?? '';
+        if ($pageName) {
+            $pageName = ' - ' . $pageName;
+        }
+        Yii::$app->view->title = Yii::$app->params['AppName'] . $pageName;
     }
 }

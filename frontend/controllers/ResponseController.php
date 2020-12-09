@@ -47,7 +47,6 @@ class ResponseController extends SecureController
 
     /**
      * Cancel response
-     *
      * @param int $id
      * @return Response
      * @throws TaskForceException

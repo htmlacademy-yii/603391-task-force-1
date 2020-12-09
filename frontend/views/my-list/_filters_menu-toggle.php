@@ -9,6 +9,7 @@
             <li class="menu-toggle__item menu-toggle__item--
             <?php
             echo $filter;
+            /** @var object $currentFilter */
             echo ($filter === $currentFilter) ? ' menu_toggle__item--current' : ''; ?>
                             ><div class=" menu-toggle__svg-wrapper">
             <?php

@@ -3,6 +3,7 @@
 namespace frontend\models\forms;
 
 use frontend\models\Category;
+use frontend\models\Specialization;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
 
@@ -16,12 +17,12 @@ class CategoriesFilterForm extends Model
     private ?array $categories = null;
     private ?array $categoriesId = null;
 
-    public function init(): void
+    public function init(bool $defaultValue = true): void
     {
         $this->categoriesId = ArrayHelper::map(Category::find()->select(['id', 'name'])->all(), 'id', 'name');
 
         foreach ($this->categoriesId as $key => $element) {
-            $this->categories[$key] = true;
+            $this->categories[$key] = $defaultValue;
         }
     }
 
@@ -43,6 +44,19 @@ class CategoriesFilterForm extends Model
     {
         if (array_key_exists($name, $this->categories)) {
             $this->categories[$name] = $value;
+        }
+    }
+
+    public function loadSpec(): void
+    {
+        $profileId = (\Yii::$app->user->identity->getProfiles()->asArray()->one()['id']);
+        $this->categoriesId = ArrayHelper::map(Category::find()->select(['id', 'name'])->all(), 'id', 'name');
+        $spec = Specialization::find()->select(['category_id'])
+                                     ->where(['profile_id'=>$profileId])->asArray()
+                                     ->all();
+        $this->init(false);
+        foreach ($spec as $element) {
+            $this->categories[$element['category_id']] = true;
         }
     }
 

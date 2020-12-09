@@ -9,7 +9,6 @@ use frontend\models\Task;
 use frontend\models\Work;
 use TaskForce\Constant\UserRole;
 use TaskForce\Exception\TaskForceException;
-use TaskForce\Page\PageUsers;
 use Throwable;
 use Yii;
 use frontend\models\Profile;
@@ -18,19 +17,13 @@ use yii\web\NotFoundHttpException;
 
 class UsersController extends SecureController
 {
-    /**
-     * @param string $sortType
-     * @return string
-     */
-    public function actionIndex(string $sortType = ''): string
+    public function actions()
     {
-        $usersPage = new PageUsers(Yii::$app->request, $sortType);
-        $usersPage->init();
-
-        return $this->render(
-            'index',
-            $usersPage->getPageData()
-        );
+        return [
+            'index' => [
+                'class' => 'frontend\actions\UsersIndexAction',
+            ],
+        ];
     }
 
     /**

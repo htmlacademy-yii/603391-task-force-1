@@ -4,14 +4,13 @@ namespace frontend\controllers;
 
 use frontend\models\forms\LoginForm;
 use frontend\models\Task;
-use TaskForce\Exception\TaskForceException;
 use TaskForce\Helpers\Declination;
+use TaskForce\Exception\TaskForceException;
 use Yii;
 use yii\web\Controller;
 
 class LandingController extends Controller
 {
-    public LoginForm $loginForm;
     public $layout = 'landing';
 
     /**
@@ -23,7 +22,6 @@ class LandingController extends Controller
         if (Yii::$app->user->getId()) {
             $this->redirect(['tasks/index']);
         }
-        $this->loginForm = new LoginForm();
         $modelsTasks = Task::findNewTask()->limit(4)->all();
         if (isset($modelsTasks)) {
             foreach ($modelsTasks as $key => $element) {
@@ -31,7 +29,7 @@ class LandingController extends Controller
             }
         }
 
-        return $this->render('index', compact('loginForm', 'modelsTasks'));
+        return $this->render('index', compact( 'modelsTasks'));
     }
 
     /**
@@ -39,11 +37,11 @@ class LandingController extends Controller
      */
     public function actionLogin(): void
     {
-        $this->loginForm = new LoginForm();
+        $loginForm = new LoginForm();
         if ($post = Yii::$app->request->post()) {
-            $this->loginForm->load($post);
-            if ($this->loginForm->validate()) {
-                $user = $this->loginForm->getUser();
+            $loginForm->load($post);
+            if ($loginForm->validate()) {
+                $user = $loginForm->getUser();
                 Yii::$app->user->login($user);
                 $this->redirect(['tasks/index']);
             } else {

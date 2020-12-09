@@ -28,6 +28,8 @@ use yii\db\Query;
  */
 class Profile extends ActiveRecord
 {
+    use ExceptionOnFindFail;
+
     /**
      * {@inheritdoc}
      */
@@ -55,7 +57,6 @@ class Profile extends ActiveRecord
                 'skipOnError' => true,
                 'targetClass' => User::class,
                 'targetAttribute' => ['user_id' => 'id']
-
             ]
         ];
     }
@@ -80,7 +81,6 @@ class Profile extends ActiveRecord
         ];
     }
 
-
     /**
      * Gets query for [[User]].
      *
@@ -100,8 +100,6 @@ class Profile extends ActiveRecord
         return new ProfileQuery(get_called_class());
     }
 
-
-
     /**
      * @param int $id
      * @return array|null
@@ -109,8 +107,10 @@ class Profile extends ActiveRecord
     public static function findByUserId(int $id): ?array
     {
         return self::find()
-            ->select('u.role,p.about, p.id as profile_id, p.user_id, p.birthday,p.phone, p.messenger, p.skype,
-             p.avatar, p.rate, u.email, u.city_id, u.date_login, u.name, u.date_add')
+            ->select(
+                'u.role,p.about, p.id as profile_id, p.user_id, p.birthday,p.phone, p.messenger, p.skype,
+             p.avatar, p.rate, u.email, u.city_id, u.date_login, u.name, u.date_add'
+            )
             ->from('profile p')
             ->join('LEFT JOIN', 'user as u', 'p.user_id = u.id')
             ->where(['p.user_id' => $id])
@@ -132,5 +132,4 @@ class Profile extends ActiveRecord
             ->limit(1)
             ->asArray()->one();
     }
-
 }

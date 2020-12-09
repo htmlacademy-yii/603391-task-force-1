@@ -19,7 +19,7 @@ abstract class SecureController extends Controller
      * @throws BadRequestHttpException
      */
     public function beforeAction($action)
-   {
+    {
        $this->getTitle();
        return parent::beforeAction($action);
    }
