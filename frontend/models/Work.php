@@ -34,32 +34,14 @@ class Work extends ActiveRecord
         return 'work';
     }
 
-    public static function findAllFiles($dir): array
-    {
-        $root = scandir($dir);
-        $result = [];
-        foreach ($root as $value) {
-            if ($value === '.' || $value === '..') {
-                continue;
-            }
-            if (is_file("$dir/$value")) {
-                $result[] = "$dir/$value";
-                continue;
-            }
-            foreach (self::findAllFiles("$dir/$value") as $item) {
-                $result[] = $item;
-            }
-        }
-
-        return $result;
-    }
-
     public static function saveFile(?UploadedFile $file): string
     {
         $ds = DIRECTORY_SEPARATOR;
         $upload = Yii::$app->params['uploadsDir'] . $ds . Yii::$app->params['worksDir'];
         $uploadDir = $upload . $ds . Yii::$app->user->getId();
-        $countFiles = count(self::findAllFiles($uploadDir));
+        $userId = Yii::$app->user->getId();
+        $countFiles = Work::find()->where(['user_id'=>$userId])->count();
+
         if ($countFiles > Yii::$app->params['maxWorksFiles'] - 1) {
             throw new Exception('Error');
         }
@@ -69,7 +51,7 @@ class Work extends ActiveRecord
             throw new FileException(sprintf('Error create directory: %s', $e->getMessage()));
         }
 
-        $newFileName =  uniqid() . '.' . $file->extension;
+        $newFileName = uniqid() . '.' . $file->extension;
         $file->saveAs($uploadDir . $ds . $newFileName);
         $work = new Work();
         $work->user_id = Yii::$app->user->getId();
