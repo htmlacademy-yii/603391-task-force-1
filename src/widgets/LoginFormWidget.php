@@ -16,5 +16,4 @@ class LoginFormWidget extends Widget
 
         return $this->render('../loginForm/view', ['loginForm'=> $this->loginForm ]);
     }
-
 }

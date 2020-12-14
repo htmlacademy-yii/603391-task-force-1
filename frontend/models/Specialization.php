@@ -10,7 +10,6 @@ use yii\db\ActiveRecord;
  *
  * @property int $profile_id
  * @property int $category_id
- *
  * @property Category $category
  */
 class Specialization extends ActiveRecord
@@ -78,7 +77,4 @@ class Specialization extends ActiveRecord
             ->join('LEFT JOIN', 'category as c', 's.category_id = c.id')
             ->where(['p.id' => $profileId])->asArray()->all();
     }
-
-
-
 }

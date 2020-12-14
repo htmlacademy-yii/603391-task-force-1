@@ -26,7 +26,6 @@ class WorkAddAction extends Action
             }
         }
 
-
         return Json::encode($response);
     }
 }

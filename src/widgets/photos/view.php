@@ -6,7 +6,8 @@
     /** @var string $userId */
 
     foreach ($works as $key => $work): ?>
-        <a href="#"><img src="/uploads/works/<?=
+        <a href="/uploads/works/<?=
+        $userId . '/' . $work['generated_name'] ?>"   target="_blank" ><img src="/uploads/works/<?=
             $userId . '/' . $work['generated_name'] ?>" width="85" height="86"
                          alt="Фото работы"></a>
     <?php

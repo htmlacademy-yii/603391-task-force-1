@@ -96,7 +96,6 @@ use yii\helpers\Url;
         </section>
         <section class="connect-desk">
             <div class="connect-desk__chat">
-
             </div>
         </section>
     </div>
