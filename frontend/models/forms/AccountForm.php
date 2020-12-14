@@ -13,7 +13,6 @@ use yii\base\Exception;
 use yii\base\Model;
 use yii\helpers\FileHelper;
 use yii\web\NotFoundHttpException;
-use yii\web\UploadedFile;
 
 class AccountForm extends Model
 {
@@ -185,7 +184,6 @@ class AccountForm extends Model
             }
         }
         $file->saveAs($uploadPath . '/' . $fileName);
-
         $profile = Profile::findOrFail($profileId);
         $profile->avatar = $fileName;
         $profile->save();
