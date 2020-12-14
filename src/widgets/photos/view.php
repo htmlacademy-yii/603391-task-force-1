@@ -7,7 +7,7 @@
 
     foreach ($works as $key => $work): ?>
         <a href="#"><img src="/uploads/works/<?=
-            $userId . '/' . $work['filename'] ?>" width="85" height="86"
+            $userId . '/' . $work['generated_name'] ?>" width="85" height="86"
                          alt="Фото работы"></a>
     <?php
     endforeach; ?>
