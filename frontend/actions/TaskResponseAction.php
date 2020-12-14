@@ -14,7 +14,7 @@ use yii\base\Action;
 class TaskResponseAction extends Action
 {
     /**
-     * @param int $taskId
+     * @param int $id
      * @return string
      * @throws TaskForceException
      * @throws Throwable

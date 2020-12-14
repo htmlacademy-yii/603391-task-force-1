@@ -1,7 +1,6 @@
 <?php
 
 /** @var UsersFilterForm $modelUsersFilter */
-
 /** @var CategoriesFilterForm $modelCategoriesFilter */
 
 use frontend\models\forms\CategoriesFilterForm;
@@ -11,7 +10,7 @@ use yii\widgets\ActiveForm;
 
 ?>
 <section class="search-task">
-    <div class="search-task__wrapper">';
+    <div class="search-task__wrapper">
         <?php
         $form = ActiveForm::begin(
             [

@@ -2,13 +2,8 @@
 
 namespace frontend\models;
 
-
-use TaskForce\Constant\UserRole;
-use TaskForce\Exception\TaskForceException;
-use TaskForce\SortingUsers;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
-use yii\db\Query;
 
 /**
  * This is the model class for table "profile".
@@ -25,6 +20,8 @@ use yii\db\Query;
  * @property int $rate
  * @property string $show
  * @property User $user
+ * @property boolean $show_it
+ * @property boolean $show_only_executor
  */
 class Profile extends ActiveRecord
 {
@@ -50,6 +47,7 @@ class Profile extends ActiveRecord
             [['about'], 'string'],
             [['address', 'skype', 'messenger', 'avatar'], 'string', 'max' => 255],
             [['phone'], 'string', 'max' => 11],
+            [['show_it','show_only_executor'], 'boolean'],
 
             [
                 ['user_id'],
@@ -77,7 +75,8 @@ class Profile extends ActiveRecord
             'messenger' => 'Messenger',
             'avatar' => 'Avatar',
             'rate' => 'Rate',
-
+            'show_it'=>'Show my contact',
+            'show_only_executor'=>'Dont show profile',
         ];
     }
 
@@ -109,7 +108,7 @@ class Profile extends ActiveRecord
         return self::find()
             ->select(
                 'u.role,p.about, p.id as profile_id, p.user_id, p.birthday,p.phone, p.messenger, p.skype,
-             p.avatar, p.rate, u.email, u.city_id, u.date_login, u.name, u.date_add'
+             p.avatar, p.rate, u.email, u.city_id, u.date_login, u.name, u.date_add, p.show_it, p.show_only_executor'
             )
             ->from('profile p')
             ->join('LEFT JOIN', 'user as u', 'p.user_id = u.id')

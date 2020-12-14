@@ -14,11 +14,8 @@ const INPUT_LABEL = '{input}{label}';
 ?>
 
 <section class="search-task">
-    <div class="search-task__wrapper">'
-
+    <div class="search-task__wrapper">
         <?php
-
-
         $form = ActiveForm::begin(
             [
                 'options' => [
@@ -33,10 +30,7 @@ const INPUT_LABEL = '{input}{label}';
         ); ?>
         <fieldset class="search-task__categories">
             <legend>Категории</legend>
-            '
-
             <?php
-
             foreach ($modelCategoriesFilter->attributeLabels() as $key => $label) {
                 echo $form
                     ->field(
@@ -116,7 +110,6 @@ const INPUT_LABEL = '{input}{label}';
                 ['class' => "input-middle input"]
             )
             ->label($modelTasksFilter->attributeLabels()['searchName'], ['class' => "search-task__name"]); ?>
-
         <?php
         echo Html::submitButton('Искать', ['class' => 'button']);
         ActiveForm::end(); ?>

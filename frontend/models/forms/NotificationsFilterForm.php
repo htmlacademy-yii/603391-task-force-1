@@ -3,6 +3,8 @@
 namespace frontend\models\forms;
 
 use frontend\models\Notification;
+use frontend\models\UserNotification;
+use Yii;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
 
@@ -16,7 +18,7 @@ class NotificationsFilterForm extends Model
     private ?array $notifications = [];
     private ?array $notificationsId = null;
 
-    public function init(bool $defaultValue = true): void
+    public function init(bool $defaultValue = false): void
     {
         $this->notificationsId = ArrayHelper::map(Notification::find()->select(['id', 'name_rus'])->all(), 'id', 'name_rus');
 
@@ -68,5 +70,41 @@ class NotificationsFilterForm extends Model
         $this->notifications [$id] = true;
     }
 
+    public function saveData()
+    {
+        $userId = (int)yii::$app->user->id;
+        UserNotification::deleteAll(['user_id' => (int)$userId]);
+        foreach ($this->notifications as $name => $value) {
+            if ((bool)$value) {
+                $notification = new UserNotification();
+                $notification->user_id = $userId;
+                $notification->notification_id = $name;
+                $notification->save();
+            }
+        }
+    }
+
+    public function loadNotify(): void
+    {
+        $userId = (int)Yii::$app->user->identity->id;
+        $this->notificationsId = ArrayHelper::map(Notification::find()->select(['id', 'name'])->all(), 'id', 'name');
+        $list = UserNotification::find()->select(['notification_id'])
+            ->where(['user_id'=>$userId])->asArray()
+            ->all();
+        $this->init();
+        foreach ($list as $element) {
+            $this->notifications[$element['notification_id']] = '1';
+        }
+    }
+
+    public function load($data, $formName = null)
+    {
+        if ($formName) {
+            $this->notifications = $data[$formName]['notifications'];
+            return true;
+        }
+
+        return false;
+    }
 
 }

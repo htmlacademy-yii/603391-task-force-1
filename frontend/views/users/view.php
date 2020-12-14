@@ -7,7 +7,7 @@
 /** @var array $specializations */
 
 use TaskForce\Helpers\Declination;
-use TaskForce\widgets\PhotosWidget;
+use TaskForce\widgets\PhotosListWidget;
 use TaskForce\widgets\RatingWidget;
 use yii\helpers\Url;
 
@@ -62,7 +62,7 @@ use yii\helpers\Url;
                             <a class="user__card-link--skype link-regular" href="#"><?= $modelUser['skype'] ?></a>
                         </div>
                     </div>
-                    <?= PhotosWidget::widget(['userId'=>$modelUser['user_id']])?>
+                    <?= PhotosListWidget::widget(['userId'=>$modelUser['user_id']])?>
                 </div>
             </div>
             <?php if (count($modelsOpinions)):?>

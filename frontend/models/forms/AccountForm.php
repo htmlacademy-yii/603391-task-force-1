@@ -6,7 +6,6 @@ use frontend\models\City;
 use frontend\models\Profile;
 use frontend\models\User;
 use frontend\models\Work;
-use TaskForce\Constant\UserRole;
 use TaskForce\Exception\TaskForceException;
 use Yii;
 use yii\base\Exception;
@@ -17,6 +16,7 @@ use yii\web\NotFoundHttpException;
 class AccountForm extends Model
 {
     public const NOT_CORRECT_CITY = 'Не допустимый город';
+    const LONG_NAME_NOTIFY = 'Наименование должно быть более 30 символов.';
 
     public $avatarFile = null;
     public $file = null;
@@ -50,6 +50,8 @@ class AccountForm extends Model
         $this->telegram = $profile['messenger'] ?? '';
         $this->phone = $profile['phone'] ?? '';
         $this->avatar = $profile['avatar'] ?? '';
+        $this->showMyContact = (bool)$profile['show_it'];
+        $this->dontShowProfile = (bool)$profile['show_only_executor'];
     }
 
     public function attributeLabels(): array
@@ -68,7 +70,9 @@ class AccountForm extends Model
             'phone' => 'Телефон',
             'skype' => 'Skype',
             'telegram' => 'Telegram',
-            'file' => 'Фотографии работ'
+            'file' => 'Фотографии работ',
+            'showMyContact' => 'Показывать мои контакты только заказчику',
+            'dontShowProfile' => 'Не показывать мой профиль',
         ];
     }
 
@@ -85,6 +89,7 @@ class AccountForm extends Model
             ['name', 'string', 'max' => 128, 'tooLong' => 'Имя должно быть не более 255 символов.'],
             ['email', 'email', 'message' => 'Не корректный email'],
             ['cityId', 'integer'],
+            ['newPassword', 'compare', 'compareAttribute' => 'repeatPassword'],
             [
                 'cityId',
                 'exist',
@@ -98,20 +103,29 @@ class AccountForm extends Model
                 'format' => 'php:Y-m-d',
             ],
             ['avatarFile', 'file', 'extensions' => ['jpg', 'jpeg', 'gif', 'png']],
+            [['showMyContact', 'dontShowProfile'], 'boolean'],
             [
                 'phone',
                 'match',
-                'pattern' => '/^[0-9]{3}-[0-9]{3}-[0-9]{4}$/',
-
-                'message' => 'Введите телефон в формате ххх-ххх-хххх'
+                'pattern' => '/^[0-9]{11}$/',
+                'message' => 'Введите телефон в формате 89231231212'
             ],
-
-
-            ['info', 'string', 'min' => 30, 'tooShort' => 'Наименование должно быть более 30 символов.'],
-
-            ['file', 'safe'],
+            ['info', 'string', 'min' => 30, 'tooShort' => self::LONG_NAME_NOTIFY],
+            [
+                ['telegram', 'skype'],
+                'string',
+                'max' => 255,
+                'tooShort' => self::LONG_NAME_NOTIFY
+            ],
+            ['info', 'string', 'min' => 30, 'tooShort' => self::LONG_NAME_NOTIFY],
             ['avatarFile', 'safe'],
             ['birthday', 'date', 'format' => 'yyyy-mm-dd'],
+            [
+                ['newPassword', 'repeatPassword'],
+                'string',
+                'min' => 8,
+                'tooShort' => 'Пароль должен быть не менее 8 символов.'
+            ],
         ];
     }
 
@@ -126,7 +140,6 @@ class AccountForm extends Model
             $this->addError($attribute, 'Дата не может быть меньше текущей.');
         }
     }
-
 
     /**
      * @param array $files
@@ -150,7 +163,6 @@ class AccountForm extends Model
 
         return true;
     }
-
 
     /**
      * @param array $file
@@ -195,21 +207,21 @@ class AccountForm extends Model
             $profile->phone = $this->phone;
             $profile->skype = $this->skype;
             $profile->messenger = $this->telegram;
-            $profile->show_it = $this->showMyContact;
-            $profile->show_only_executor = $this->dontShowProfile;
+            $profile->show_it = (bool)$this->showMyContact;
+            $profile->show_only_executor = (bool)$this->dontShowProfile;
             $profile->birthday = $this->birthday;
             $profile->update();
 
-
             $user->city_id = $this->cityId;
-            $user->password = Yii::$app->getSecurity()->generatePasswordHash($this->newPassword);
+            if ($this->newPassword !== '') {
+                $user->password = Yii::$app->getSecurity()->generatePasswordHash($this->newPassword);
+            }
             $user->email = $this->email;
             $user->update();
-            // todo добавить остальные поля формы
+
 
             $transaction->commit();
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $transaction->rollBack();
             throw new TaskForceException("Ошибка обновления данных. " . $e->getMessage());
         }

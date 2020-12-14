@@ -2,8 +2,13 @@
 
 namespace frontend\models;
 
+use TaskForce\Exception\FileException;
+use Yii;
+use yii\base\Exception;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\helpers\FileHelper;
+use yii\web\UploadedFile;
 
 /**
  * This is the model class for table "work".
@@ -27,6 +32,46 @@ class Work extends ActiveRecord
     public static function tableName()
     {
         return 'work';
+    }
+
+    public static function findAllFiles($dir): array
+    {
+        $root = scandir($dir);
+        $result = [];
+        foreach($root as $value)
+        {
+            if($value === '.' || $value === '..') {continue;}
+            if(is_file("$dir/$value")) {$result[]="$dir/$value";continue;}
+            foreach(self::findAllFiles("$dir/$value") as $item)
+            {
+                $result[]=$item;
+            }
+        }
+        return $result;
+    }
+
+    public static function saveFile(?UploadedFile $file)
+    {
+        $ds = DIRECTORY_SEPARATOR;
+        $upload = Yii::$app->params['uploadsDir'].$ds.Yii::$app->params['worksDir'];
+        $uploadDir = $upload . $ds . Yii::$app->user->getId();
+        $countFiles = count(self::findAllFiles($uploadDir));
+        if ($countFiles >   Yii::$app->params['maxWorksFiles']-1) {
+            throw new  Exception('Error');
+        }
+        try {
+            FileHelper::createDirectory($uploadDir);
+        } catch (Exception $e) {
+            throw new FileException(sprintf('Error create directory: %s', $e->getMessage()));
+        }
+
+        $fileName = $file->name;
+        if (file_exists($uploadDir . $fileName)) {
+            $fileName = $file->baseName . '-' . uniqid() . '.' . $file->extension;
+        }
+        $file->saveAs($uploadDir . $ds . $fileName);
+
+        return $fileName;
     }
 
     /**

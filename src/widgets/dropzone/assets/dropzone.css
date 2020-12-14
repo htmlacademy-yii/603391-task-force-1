@@ -393,3 +393,31 @@
         border-left: 6px solid transparent;
         border-right: 6px solid transparent;
         border-bottom: 6px solid #be2626; }
+
+.dz-image__size {
+  max-widthwidth: auto ;
+  max-height: 120px;
+}
+
+.dropzone .dz-preview .dz-remove {
+ font-style: normal;
+  text-transform: lowercase;
+  text-decoration: none;
+  font-stretch: expanded;
+  color: grey;
+  font-size: 12px;
+  padding: 5px;
+  transform: scale(1.0);
+  transition-duration: 0.4s;
+}
+
+.dropzone .dz-preview .dz-remove:hover {
+  text-shadow: 0 0 5px rgba(0,0,0,0.2);
+  border-bottom: 0;
+  text-decoration: none;
+  -webkit-transform: scale(1.2);
+  -ms-transform: scale(1.2);
+  transform: scale(1.2);
+  transition-duration: 0.4s;
+}
+

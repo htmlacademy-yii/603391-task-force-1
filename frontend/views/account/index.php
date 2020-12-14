@@ -1,10 +1,8 @@
 <?php
 
 /* @var $this yii\web\View */
-
 /** @var array $cities */
 /** @var AccountForm $modelAccountForm */
-
 /** @var NotificationsFilterForm $modelNotificationsForm */
 
 use frontend\models\forms\AccountForm;
@@ -14,7 +12,6 @@ use TaskForce\widgets\DropZoneWidget;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
-
 ?>
 
 <main class="page-main">
@@ -180,6 +177,7 @@ use yii\widgets\ActiveForm;
                         ->input('password', ['class' => 'input textarea', 'type' => 'password'])
                         ->hint('Длина пароля от 8 символов'); ?>
 
+                    <input type="hidden" name="_csrf-frontend" value="<?= Yii::$app->request->getCsrfToken() ?>"/>
                     <?= $form
                         ->field(
                             $modelAccountForm,

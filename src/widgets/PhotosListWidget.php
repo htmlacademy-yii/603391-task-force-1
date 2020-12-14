@@ -5,7 +5,7 @@ namespace TaskForce\widgets;
 use frontend\models\Work;
 use yii\base\Widget;
 
-class PhotosWidget extends Widget
+class PhotosListWidget extends Widget
 {
 
     public int $userId;

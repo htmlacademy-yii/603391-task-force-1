@@ -9,4 +9,8 @@ class DropzoneWidgetBundle extends AssetBundle {
     public $css = ['dropzone.css'];
     public $js = ['dropzone.js',
     'dropzone.init.js'];
+    public $depends = [
+        'yii\web\YiiAsset',
+    ];
+
 }

@@ -16,7 +16,6 @@ use yii\widgets\Menu;
 $loggedUser = Yii::$app->user->identity;
 AppAsset::register($this);
 ?>
-<div class="table-layout">
     <?php
     $this->beginPage() ?>
     <!DOCTYPE html>
@@ -65,7 +64,6 @@ AppAsset::register($this);
                         );
                     } ?>
                 </div>
-
                 <?php
                 if (Yii::$app->request->pathInfo !== 'signup/index' && $loggedUser): ?>
                     <?= CitySelectorWidget::widget(); ?>
