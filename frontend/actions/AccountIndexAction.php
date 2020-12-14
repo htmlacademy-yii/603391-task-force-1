@@ -9,6 +9,7 @@ use frontend\models\forms\NotificationsFilterForm;
 use frontend\models\User;
 use Yii;
 use yii\base\Action;
+use yii\web\UploadedFile;
 
 class AccountIndexAction extends Action
 {
@@ -23,6 +24,7 @@ class AccountIndexAction extends Action
                 $modelAccountForm->load($post,'AccountForm');
                 $modelCategoriesForm->load($post,'CategoriesFilterForm');
                 $modelNotificationsForm->load($post,'NotificationsFilterForm');
+                $modelAccountForm->avatarFile = UploadedFile::getInstance($modelAccountForm,'avatarFile' );
 
                 if ($modelAccountForm->validate() && $modelAccountForm->saveData()) {
                     $modelCategoriesForm->saveData();

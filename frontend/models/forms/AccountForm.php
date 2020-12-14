@@ -6,20 +6,21 @@ use frontend\models\City;
 use frontend\models\Profile;
 use frontend\models\User;
 use frontend\models\Work;
+use TaskForce\Exception\FileException;
 use TaskForce\Exception\TaskForceException;
 use Yii;
 use yii\base\Exception;
 use yii\base\Model;
 use yii\helpers\FileHelper;
 use yii\web\NotFoundHttpException;
+use yii\web\UploadedFile;
 
 class AccountForm extends Model
 {
     public const NOT_CORRECT_CITY = 'Не допустимый город';
     const LONG_NAME_NOTIFY = 'Наименование должно быть более 30 символов.';
 
-    public $avatarFile = null;
-    public $file = null;
+    public $avatarFile;
     public string $avatar = '';
     public string $name = '';
     public string $email = '';
@@ -103,6 +104,7 @@ class AccountForm extends Model
                 'format' => 'php:Y-m-d',
             ],
             ['avatarFile', 'file', 'extensions' => ['jpg', 'jpeg', 'gif', 'png']],
+            ['avatarFile', 'file', 'skipOnEmpty' => true],
             [['showMyContact', 'dontShowProfile'], 'boolean'],
             [
                 'phone',
@@ -118,7 +120,6 @@ class AccountForm extends Model
                 'tooShort' => self::LONG_NAME_NOTIFY
             ],
             ['info', 'string', 'min' => 30, 'tooShort' => self::LONG_NAME_NOTIFY],
-            ['avatarFile', 'safe'],
             ['birthday', 'date', 'format' => 'yyyy-mm-dd'],
             [
                 ['newPassword', 'repeatPassword'],
@@ -168,14 +169,22 @@ class AccountForm extends Model
      * @param array $file
      * @param int $profileId
      * @return bool
+     * @throws FileException
      * @throws NotFoundHttpException
      */
-    public function uploadAvatar(array $file, int $profileId): bool
+    public function uploadAvatar(object $file, int $profileId): bool
     {
         $userId = Yii::$app->user->identity->getId();
-        $fileName = $userId . '.' . $file[0]->extension;
+        $fileName = $userId . '.' . $file->extension;
         $uploadPath = Yii::getAlias('@frontend') . '/web/uploads/avatars/';
-        $file[0]->saveAs($uploadPath . '/' . $fileName);
+        if (!file_exists($uploadPath)) {
+            try {
+                FileHelper::createDirectory($uploadPath);
+            } catch (Exception $e) {
+                throw new FileException(sprintf('Error create directory: %s', $e->getMessage()));
+            }
+        }
+        $file->saveAs($uploadPath . '/' . $fileName);
 
         $profile = Profile::findOrFail($profileId);
         $profile->avatar = $fileName;
