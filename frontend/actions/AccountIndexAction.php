@@ -6,6 +6,7 @@ use frontend\models\City;
 use frontend\models\forms\AccountForm;
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\NotificationsFilterForm;
+use frontend\models\User;
 use Yii;
 use yii\base\Action;
 
@@ -26,6 +27,7 @@ class AccountIndexAction extends Action
                 if ($modelAccountForm->validate() && $modelAccountForm->saveData()) {
                     $modelCategoriesForm->saveData();
                     $modelNotificationsForm->saveData();
+                    User::updateUserRoleBySpecialisations();
                     return $this->controller->goHome();
                 }
             } else {
