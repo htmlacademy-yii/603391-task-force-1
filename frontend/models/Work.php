@@ -38,26 +38,30 @@ class Work extends ActiveRecord
     {
         $root = scandir($dir);
         $result = [];
-        foreach($root as $value)
-        {
-            if($value === '.' || $value === '..') {continue;}
-            if(is_file("$dir/$value")) {$result[]="$dir/$value";continue;}
-            foreach(self::findAllFiles("$dir/$value") as $item)
-            {
-                $result[]=$item;
+        foreach ($root as $value) {
+            if ($value === '.' || $value === '..') {
+                continue;
+            }
+            if (is_file("$dir/$value")) {
+                $result[] = "$dir/$value";
+                continue;
+            }
+            foreach (self::findAllFiles("$dir/$value") as $item) {
+                $result[] = $item;
             }
         }
+
         return $result;
     }
 
-    public static function saveFile(?UploadedFile $file)
+    public static function saveFile(?UploadedFile $file): string
     {
         $ds = DIRECTORY_SEPARATOR;
-        $upload = Yii::$app->params['uploadsDir'].$ds.Yii::$app->params['worksDir'];
+        $upload = Yii::$app->params['uploadsDir'] . $ds . Yii::$app->params['worksDir'];
         $uploadDir = $upload . $ds . Yii::$app->user->getId();
         $countFiles = count(self::findAllFiles($uploadDir));
-        if ($countFiles >   Yii::$app->params['maxWorksFiles']-1) {
-            throw new  Exception('Error');
+        if ($countFiles > Yii::$app->params['maxWorksFiles'] - 1) {
+            throw new Exception('Error');
         }
         try {
             FileHelper::createDirectory($uploadDir);
@@ -65,13 +69,15 @@ class Work extends ActiveRecord
             throw new FileException(sprintf('Error create directory: %s', $e->getMessage()));
         }
 
-        $fileName = $file->name;
-        if (file_exists($uploadDir . $fileName)) {
-            $fileName = $file->baseName . '-' . uniqid() . '.' . $file->extension;
-        }
-        $file->saveAs($uploadDir . $ds . $fileName);
+        $newFileName =  uniqid() . '.' . $file->extension;
+        $file->saveAs($uploadDir . $ds . $newFileName);
+        $work = new Work();
+        $work->user_id = Yii::$app->user->getId();
+        $work->filename = $file->name;
+        $work->generated_name = $newFileName;
+        $work->save();
 
-        return $fileName;
+        return $newFileName;
     }
 
     /**
@@ -82,7 +88,13 @@ class Work extends ActiveRecord
         return [
             [['user_id'], 'integer'],
             [['filename'], 'string', 'max' => 512],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [
+                ['user_id'],
+                'exist',
+                'skipOnError' => true,
+                'targetClass' => User::class,
+                'targetAttribute' => ['user_id' => 'id']
+            ],
         ];
     }
 
@@ -105,7 +117,7 @@ class Work extends ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
     /**
