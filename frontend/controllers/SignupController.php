@@ -19,17 +19,6 @@ class SignupController extends Controller
     public $layout = 'mini';
 
     /**
-     * @param Action $action
-     * @return bool
-     * @throws BadRequestHttpException
-     */
-    public function beforeAction($action): bool
-    {
-        $this->getTitle();
-        return parent::beforeAction($action);
-    }
-
-    /**
      * @return array|array[]
      */
     public function behaviors(): array

@@ -22,7 +22,7 @@ LandingAsset::register($this);
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <?php
         $this->registerCsrfMetaTags() ?>
-        <title><?= Html::encode($this->title) ?></title>
+        <title><?= Html::encode($this->context->title ?? Yii::$app->params['AppName']) ?></title>
         <?php
         $this->head() ?>
     </head>

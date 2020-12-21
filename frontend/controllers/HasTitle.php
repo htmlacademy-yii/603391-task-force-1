@@ -13,6 +13,7 @@ trait HasTitle
         if ($pageName) {
             $pageName = ' - ' . $pageName;
         }
-        Yii::$app->view->title = Yii::$app->params['AppName'] . $pageName;
+
+        return Yii::$app->params['AppName'] . $pageName;
     }
 }
