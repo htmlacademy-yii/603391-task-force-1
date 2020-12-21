@@ -33,7 +33,7 @@ class TasksFiltersWidget extends Widget
             return null;
         }
 
-        return $this->render('../tasksFilters/view',
+        return $this->render('@widgets/tasksFilters/view',
                              [
                                  'modelCategoriesFilter' => $this->modelCategoriesFilter,
                                  'modelTasksFilter' => $this->modelTasksFilter

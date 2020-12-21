@@ -14,7 +14,7 @@ class DropZoneWidget extends Widget
     public function run(): ?string
     {
         parent::run();
-        return $this->render('../dropzone/view' );
+        return $this->render('@widgets/dropzone/view' );
     }
 
     /**

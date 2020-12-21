@@ -33,7 +33,7 @@ class UsersFiltersWidget extends Widget
             return null;
         }
 
-        return $this->render('../usersFilters/view',
+        return $this->render('@widgets/usersFilters/view',
                              [
                                  'modelCategoriesFilter' => $this->modelCategoriesFilter,
                                  'modelUsersFilter' => $this->modelUsersFilter

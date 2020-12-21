@@ -12,6 +12,6 @@ class ChangeAvatarWidget extends Widget
         parent::run();
         $loggedUser = Yii::$app->user->identity;
         $userAvatar = $loggedUser->getProfiles()->asArray()->one()['avatar'] ?? 'no-avatar.jpg';
-        return $this->render('../account/view', ['loggedUser'=>$loggedUser, 'userAvatar'=>$userAvatar]);
+        return $this->render('@widgets/account/view', ['loggedUser'=>$loggedUser, 'userAvatar'=>$userAvatar]);
     }
 }
