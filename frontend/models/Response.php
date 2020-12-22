@@ -2,6 +2,7 @@
 
 namespace frontend\models;
 
+use TaskForce\Exception\TaskForceException;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -35,7 +36,7 @@ class Response extends ActiveRecord
      * @param ActiveRecord $task
      * @return array
      */
-    public static function findResponsesByTask(ActiveRecord $task): array
+    public static function findByTask(ActiveRecord $task): array
     {
         $currentUserId = Yii::$app->user->identity->getId();
 
@@ -138,9 +139,24 @@ class Response extends ActiveRecord
      * @param int $userId
      * @return array
      */
-    public static function findResponsesByTaskIdUserId(int $taskId, int $userId): array
+    public static function findByTaskIdUserId(int $taskId, int $userId): array
     {
         return self::find()->select('id')
             ->from('response r')->where(['task_id' => $taskId])->andWhere(['user_id' => $userId])->asArray()->all();
+    }
+
+    /**
+     *
+     * @param int $taskId
+     * @return array
+     * @throws TaskForceException
+     */
+    public static function findByTaskIdCurrentUserId(int $taskId): array
+    {
+        $currentUserId = Yii::$app->user->getId();
+
+        return self::find()->select('id')
+            ->from('response r')->where(['task_id' => $taskId])
+            ->andWhere(['user_id' => $currentUserId])->asArray()->all();
     }
 }

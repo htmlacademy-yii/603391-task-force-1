@@ -8,10 +8,8 @@ use TaskForce\Exporter\IExporter;
 use TaskForce\Model\Model;
 use TaskForce\Provider\IProvider;
 
-
 class SqlToCsvConverter
 {
-
     public IProvider $serviceProvider;
     public IExporter $serviceExporter;
     public Model $model;
@@ -71,7 +69,6 @@ class SqlToCsvConverter
 
     private function convertBody(): void
     {
-
         $list = null;
         foreach ($this->serviceProvider->getNextLine() as $csvElements) {
 
@@ -86,9 +83,7 @@ class SqlToCsvConverter
             $list = $this->getFakeData($csvElements);
             $this->serviceExporter->saveData("(%s)", $this->getListValues($list));
             $this->model->count++;
-
         }
-
     }
 
     private function convertFile(): void
@@ -127,11 +122,9 @@ class SqlToCsvConverter
         $template= $symbol.'%s'.$symbol;
 
         foreach ($line_array as $element) {
-
             if (!$symbol) {
                 $template = (is_numeric($element)) ? '%s': "'%s'";
             }
-
             $list .= sprintf($template,$element) ;
             $list .= (next($line_array)) ? ',' : '';
         }

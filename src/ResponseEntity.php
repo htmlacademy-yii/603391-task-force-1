@@ -2,7 +2,6 @@
 
 namespace TaskForce;
 
-
 use Exception;
 use TaskForce\Constant\UserRole;
 use TaskForce\Exception\TaskForceException;

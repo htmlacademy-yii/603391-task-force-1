@@ -3,9 +3,11 @@
 namespace frontend\models\forms;
 
 use frontend\models\Category;
+use frontend\models\City;
 use frontend\models\File;
 use frontend\models\Task;
 use TaskForce\Exception\FileException;
+use TaskForce\GeoCoder;
 use TaskForce\TaskEntity;
 use Yii;
 use yii\base\Exception;
@@ -14,12 +16,18 @@ use yii\helpers\FileHelper;
 
 class CreateTaskForm extends Model
 {
+    public const NOT_CORRECT_CITY = 'Не допустимый город в адресе';
+    public const NOT_CORRECT_LOCATION = 'Не допустимый адрес';
+
     public string $name = '';
     public string $description = '';
     public string $categoryId = '';
-    public array $files = [];
+    public array  $files = [];
     public string $location = '';
-    public int $budget = 0;
+    public string $city = '';
+    public string $lat = '';
+    public string $lng = '';
+    public int    $budget = 0;
     public string $dateEnd = '';
 
     public function attributeLabels()
@@ -30,6 +38,9 @@ class CreateTaskForm extends Model
             'categoryId' => 'Категория',
             'files' => 'Файлы',
             'location' => 'Локация',
+            'city' => 'Город',
+            'lat' => 'Долгота',
+            'lng' => 'Широта',
             'budget' => 'Бюджет',
             'dateEnd' => 'Срок исполнения',
         ];
@@ -57,7 +68,17 @@ class CreateTaskForm extends Model
                 'targetAttribute' => 'id',
                 'message' => 'Введен неверная категория'
             ],
+            [
+                'city',
+                'exist',
+                'targetClass' => City::class,
+                'targetAttribute' => 'city',
+                'message' => self::NOT_CORRECT_CITY
+            ],
             ['files', 'safe'],
+            ['location', 'string', 'max' => 255, 'tooLong' => 'Поле Локация должно быть не более 255 символов.'],
+            ['lat', 'match', 'pattern' => '/^\d{1,2}.\d{6}$/D', 'message' => self::NOT_CORRECT_LOCATION],
+            ['lng', 'match', 'pattern' => '/^\d{1,3}.\d{6}$/D', 'message' => self::NOT_CORRECT_LOCATION],
             ['budget', 'integer', 'min' => 0, 'message' => 'Поле должно быть целым положительным числом.'],
             ['dateEnd', 'date', 'format' => 'yyyy-mm-dd'],
             ['dateEnd', 'isDateInFuture'],
@@ -93,7 +114,25 @@ class CreateTaskForm extends Model
         $task->date_add = date('Y-m-d H:i:s', time());
         $task->status = TaskEntity::STATUS_NEW;
         $task->customer_id = $customerId;
-        $task->save();
+        $task->address = $this->location;
+
+        if ($this->lat && $this->lng && $this->city !== '') {
+            $task->lat = $this->lat;
+            $task->lng = $this->lng;
+            $task->city_id = City::findIdByName($this->city);
+        } else {
+            $geoCoder = new GeoCoder();
+            $coordinates = $geoCoder->getCoordinates($this->location);
+            $task->lat = $coordinates['lat'];
+            $task->lng = $coordinates['lng'];
+            $task->city_id = City::findIdByName($coordinates['city']);
+        }
+
+        try {
+            $task->save();
+        } catch (\Exception $e) {
+            self::addError(' ', $e->getMessage());
+        }
 
         return $task->id;
     }
@@ -113,8 +152,8 @@ class CreateTaskForm extends Model
         }
 
         foreach ($this->files as $file) {
-            $newFilename = substr(md5(microtime() . rand(0, 9999)), 0, 20).'.'.$file->extension;
-            $file->saveAs($dirName . '/' . $newFilename );
+            $newFilename = substr(md5(microtime() . rand(0, 9999)), 0, 20) . '.' . $file->extension;
+            $file->saveAs($dirName . '/' . $newFilename);
 
             $taskFileName = new File();
             $taskFileName->filename = $file->name;
@@ -147,7 +186,4 @@ class CreateTaskForm extends Model
 
         return $taskId;
     }
-
 }
-
-

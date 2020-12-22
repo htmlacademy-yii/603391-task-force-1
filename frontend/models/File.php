@@ -122,7 +122,7 @@ class File extends ActiveRecord
      * @param int $id
      * @return array
      */
-    public static function findFilesByTaskID(int $id): array
+    public static function findByTaskID(int $id): array
     {
         return self::find()->where(['task_id' => $id])->asArray()->all();
     }

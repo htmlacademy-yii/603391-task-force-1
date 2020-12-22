@@ -2,89 +2,28 @@
 
 namespace frontend\controllers;
 
+use frontend\models\Favorite;
 use frontend\models\Opinion;
 use frontend\models\Specialization;
 use frontend\models\Task;
-use frontend\models\User;
 use frontend\models\Work;
 use TaskForce\Constant\UserRole;
 use TaskForce\Exception\TaskForceException;
-use TaskForce\Helpers\Declination;
+use Throwable;
 use Yii;
-use frontend\models\forms\CategoriesFilterForm;
-use frontend\models\forms\UsersFilterForm;
 use frontend\models\Profile;
-use yii\data\Pagination;
+use yii\db\StaleObjectException;
 use yii\web\NotFoundHttpException;
 
 class UsersController extends SecureController
 {
-    /**
-     * @param string $sortType
-     * @return string
-     * @throws TaskForceException
-     */
-    public function actionIndex(string $sortType = ''): string
+    public function actions()
     {
-        $filterRequest = [];
-        $modelCategoriesFilter = new CategoriesFilterForm();
-        $modelCategoriesFilter->init();
-        $modelUsersFilter = new UsersFilterForm();
-
-        if (Yii::$app->request->getIsGet()) {
-            $ids = Yii::$app->request->get();
-            if   (isset($ids['category'])) {
-                $modelCategoriesFilter->setOneCategory($ids['category']);
-                $filterRequest['CategoriesFilterForm']['categories']=$modelCategoriesFilter->getCategoriesState();
-            }
-        }
-
-        if (Yii::$app->request->getIsPost()) {
-            $modelUsersFilter->load(Yii::$app->request->post());
-            $modelCategoriesFilter->updateProperties(
-                (Yii::$app->request->post())['CategoriesFilterForm']['categories']
-            );
-
-            $filterRequest = (Yii::$app->request->post());
-
-            if (strlen($filterRequest['UsersFilterForm']['searchName']) > 0) {
-                $modelCategoriesFilter->init();
-                $modelUsersFilter = new UsersFilterForm();
-            }
-        }
-
-        $modelsUsers = User::findNewExecutors($filterRequest, $sortType);
-
-        $pagination = new Pagination(
-            [
-                'totalCount' => $modelsUsers->count(),
-                'pageSize' => 5,
-                'forcePageParam' => false,
-                'pageSizeParam' => false
-            ]
-        );
-
-        $modelsUsers = $modelsUsers->offset($pagination->offset)->limit($pagination->limit)->all();
-
-        if (!empty($modelsUsers)) {
-            foreach ($modelsUsers as $key => $element) {
-                $modelsUsers[$key]['categories'] = Specialization::findItemsByUserId($element['id']);
-                $modelsUsers[$key]['countTasks'] = Task::findCountTasksByUserId($element['id']);
-                $modelsUsers[$key]['countReplies'] = Opinion::findCountOpinionsByUserId($element['id']);
-                $modelsUsers[$key]['afterTime'] = Declination::getTimeAfter($element['date_login']);
-            }
-        }
-
-        return $this->render(
-            'index',
-            compact(
-                'modelsUsers',
-                'sortType',
-                'modelUsersFilter',
-                'modelCategoriesFilter',
-                'pagination'
-            )
-        );
+        return [
+            'index' => [
+                'class' => 'frontend\actions\UsersIndexAction',
+            ],
+        ];
     }
 
     /**
@@ -97,15 +36,17 @@ class UsersController extends SecureController
      */
     public function actionView(int $id): string
     {
-        $modelUser = Profile::findProfileByUserId($id);
+        $currentUserId = Yii::$app->user->getId();
+        $modelUser = Profile::findByUserId($id);
         if ($modelUser['role'] !== UserRole::EXECUTOR) {
             throw new NotFoundHttpException('Executor profile not found.');
         }
 
-        $modelUser['countTask'] = Task::findCountTasksByUserId($id);
+        $modelUser['countTask'] = Task::findCountByUserId($id);
+        $modelUser['favorite'] = (bool)Favorite::findOne(['favorite_id' => $id, 'user_id' => $currentUserId]);
         $modelsOpinions = Opinion::findOpinionsByUserId($id);
         $countOpinions = Opinion::findCountOpinionsByUserId($id);
-        $specializations = Specialization::findItemsByUserId($id);
+        $specializations = Specialization::findItemsByProfileId($id);
         $works = Work::findWorkFilesByUserId($id);
 
         return $this->render(
@@ -120,4 +61,29 @@ class UsersController extends SecureController
         );
     }
 
+    /**
+     * @param int $userId
+     * @return string
+     * @throws TaskForceException
+     * @throws Throwable
+     * @throws StaleObjectException
+     */
+    public function actionBookmark(int $userId)
+    {
+        $currentUserId = Yii::$app->user->getId();
+        if (!$userId) {
+            throw new TaskForceException('Не задан параметр userId.');
+        }
+        $favorite = Favorite::findOne(['favorite_id' => $userId, 'user_id' => $currentUserId]);
+
+        if ($favorite) {
+            $favorite->delete();
+        } else {
+            $favorite = new Favorite();
+            $favorite->user_id = Yii::$app->user->getId();
+            $favorite->favorite_id = $userId;
+            $favorite->save();
+        }
+        return $this->redirect(['users/view', 'id' => $userId]);
+    }
 }

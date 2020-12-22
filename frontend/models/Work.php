@@ -2,9 +2,13 @@
 
 namespace frontend\models;
 
+use TaskForce\Exception\FileException;
 use Yii;
+use yii\base\Exception;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\helpers\FileHelper;
+use yii\web\UploadedFile;
 
 /**
  * This is the model class for table "work".
@@ -12,17 +16,50 @@ use yii\db\ActiveRecord;
  * @property int $id
  * @property int|null $user_id
  * @property string|null $filename
+ * @property string|null $generated_name
  *
  * @property User $user
  */
 class Work extends ActiveRecord
 {
     /**
+     * @var mixed|string|null
+     */
+
+    /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
         return 'work';
+    }
+
+    public static function saveFile(?UploadedFile $file): string
+    {
+        $ds = DIRECTORY_SEPARATOR;
+        $upload = Yii::$app->params['uploadsDir'] . $ds . Yii::$app->params['worksDir'];
+        $uploadDir = $upload . $ds . Yii::$app->user->getId();
+        $userId = Yii::$app->user->getId();
+        $countFiles = Work::find()->where(['user_id'=>$userId])->count();
+
+        if ($countFiles > Yii::$app->params['maxWorksFiles'] - 1) {
+            throw new Exception('Error');
+        }
+        try {
+            FileHelper::createDirectory($uploadDir);
+        } catch (Exception $e) {
+            throw new FileException(sprintf('Error create directory: %s', $e->getMessage()));
+        }
+
+        $newFileName = uniqid() . '.' . $file->extension;
+        $file->saveAs($uploadDir . $ds . $newFileName);
+        $work = new Work();
+        $work->user_id = Yii::$app->user->getId();
+        $work->filename = $file->name;
+        $work->generated_name = $newFileName;
+        $work->save();
+
+        return $newFileName;
     }
 
     /**
@@ -33,7 +70,13 @@ class Work extends ActiveRecord
         return [
             [['user_id'], 'integer'],
             [['filename'], 'string', 'max' => 512],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [
+                ['user_id'],
+                'exist',
+                'skipOnError' => true,
+                'targetClass' => User::class,
+                'targetAttribute' => ['user_id' => 'id']
+            ],
         ];
     }
 
@@ -56,7 +99,7 @@ class Work extends ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
     /**
@@ -77,5 +120,4 @@ class Work extends ActiveRecord
     {
         return self::find()->where(['user_id' => $id])->asArray()->limit(5)->all();
     }
-
 }

@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 namespace frontend\tests;
 
 /**

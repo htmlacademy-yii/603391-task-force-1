@@ -2,14 +2,16 @@
 
 namespace frontend\models;
 
-
 use frontend\models\forms\TasksFilterForm;
+use TaskForce\Constant\MyTask;
 use TaskForce\Exception\TaskForceException;
 use TaskForce\Helpers\Declination;
+use TaskForce\TaskEntity;
+use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Query;
-
+use yii\web\NotFoundHttpException;
 
 /**
  * This is the model class for table "task".
@@ -22,24 +24,25 @@ use yii\db\Query;
  * @property string $address
  * @property float $lat
  * @property float $lng
+ * @property string $city_id
  * @property int $budget
  * @property string $expire
  * @property string $date_add
  * @property int|null $executor_id
  * @property int $customer_id
- *
  * @property Chat[] $chats
  * @property File[] $files
  * @property Response[] $responses
  * @property Category $category
  * @property User $customer
+ * @property-read ActiveQuery|CategoryQuery $city
  * @property User $executor
  */
 class Task extends ActiveRecord
 {
     use ExceptionOnFindFail;
 
-     /**
+    /**
      * {@inheritdoc}
      */
     public static function tableName()
@@ -53,7 +56,10 @@ class Task extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'description', 'category_id', 'status', 'budget', 'expire', 'date_add', 'customer_id'], 'required'],
+            [
+                ['name', 'description', 'category_id', 'status', 'budget', 'date_add', 'customer_id'],
+                'required'
+            ],
             [['description'], 'string'],
             [['category_id', 'budget', 'executor_id', 'customer_id'], 'integer'],
             [['lat', 'lng'], 'number'],
@@ -61,10 +67,29 @@ class Task extends ActiveRecord
             [['name'], 'string', 'max' => 128],
             [['address'], 'string', 'max' => 255],
             [['status'], 'string', 'max' => 20],
-            [['status'], 'in', 'range' => \TaskForce\TaskEntity::STATUSES],
-            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'id']],
-            [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['customer_id' => 'id']],
-            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['executor_id' => 'id']],
+            [['city_id'], 'integer'],
+            [['status'], 'in', 'range' => TaskEntity::STATUSES],
+            [
+                ['category_id'],
+                'exist',
+                'skipOnError' => true,
+                'targetClass' => Category::class,
+                'targetAttribute' => ['category_id' => 'id']
+            ],
+            [
+                ['customer_id'],
+                'exist',
+                'skipOnError' => true,
+                'targetClass' => User::class,
+                'targetAttribute' => ['customer_id' => 'id']
+            ],
+            [
+                ['executor_id'],
+                'exist',
+                'skipOnError' => true,
+                'targetClass' => User::class,
+                'targetAttribute' => ['executor_id' => 'id']
+            ],
         ];
     }
 
@@ -82,6 +107,7 @@ class Task extends ActiveRecord
             'address' => 'Address',
             'lat' => 'Lat',
             'lng' => 'Lng',
+            'city_id' => 'City ID',
             'budget' => 'Budget',
             'expire' => 'Expire',
             'date_add' => 'Date Add',
@@ -120,7 +146,6 @@ class Task extends ActiveRecord
         return $this->hasMany(Response::class, ['task_id' => 'id']);
     }
 
-
     /**
      * Gets query for [[Category]].
      *
@@ -129,6 +154,16 @@ class Task extends ActiveRecord
     public function getCategory()
     {
         return $this->hasOne(Category::class, ['id' => 'category_id']);
+    }
+
+    /**
+     * Gets query for [[City]].
+     *
+     * @return ActiveQuery|CategoryQuery
+     */
+    public function getCity()
+    {
+        return $this->hasOne(City::class, ['id' => 'city_id']);
     }
 
     /**
@@ -168,6 +203,8 @@ class Task extends ActiveRecord
      */
     public static function findNewTask(array $request = []): Query
     {
+        $isLoggedUser = Yii::$app->user->identity;
+
         $query = new Query();
         $list = [];
         if (isset($request['CategoriesFilterForm']['categories'])) {
@@ -180,34 +217,45 @@ class Task extends ActiveRecord
 
         $query->select(['t.*', 'c.name as cat_name', 'c.icon as icon'])->from('task t')
             ->join('LEFT JOIN', 'category as c', 't.category_id = c.id')
-            ->where(['t.status' => \TaskForce\TaskEntity::STATUS_NEW]);
+            ->where(['t.status' => TaskEntity::STATUS_NEW]);
 
-
-        // todo добавить задания из города пользователя, либо из города, выбранного пользователем в текущей сессии.
-
+        if ($isLoggedUser) {
+            $session = Yii::$app->session;
+            $currentCityId = $session['current_city_id'] ?? $isLoggedUser->city_id;
+            $query->andWhere(
+                [
+                    'or',
+                    ['t.city_id' => Yii::$app->user->identity->city_id],
+                    ['t.city_id' => $currentCityId],
+                    ['t.city_id' => null]
+                ]
+            );
+        }
 
         if (!empty($list)) {
             $categoryList = sprintf('c.id in (%s)', implode(",", $list));
             $query->andWhere($categoryList);
         }
 
-        $searchName = $request['TasksFilterForm']['searchName'] ?? '';
+        $requestFilterForm = $request['TasksFilterForm'] ?? '';
+        $searchName = $requestFilterForm['searchName'] ?? '';
         if (strlen($searchName) > 0) {
             $query->andWhere(['LIKE', 't.name', $searchName, false]);
         }
 
-        if (isset($request['TasksFilterForm']['withoutExecutor'])) {
+        if (isset($requestFilterForm['withoutExecutor'])
+            && $requestFilterForm['withoutExecutor'] === '1') {
             $query->andWhere('t.executor_id IS NULL');
         }
 
-        if (isset($request['TasksFilterForm']['remoteWork'])) {
-
+        if (isset($requestFilterForm['remoteWork'])
+            && $requestFilterForm['remoteWork'] === '1') {
             $query->andWhere('t.lat IS NULL AND t.lng IS NULL');
         }
 
-        if (isset($request['TasksFilterForm']['timeInterval'])
-            && $request['TasksFilterForm']['timeInterval'] !== TasksFilterForm::FILTER_ALL_TIME) {
-            $datetime = TasksFilterForm::timeBeforeInterval($request['TasksFilterForm']['timeInterval']);
+        if (isset($requestFilterForm['timeInterval'])
+            && $requestFilterForm['timeInterval'] !== TasksFilterForm::FILTER_ALL_TIME) {
+            $datetime = TasksFilterForm::timeBeforeInterval($requestFilterForm['timeInterval']);
             $query->andWhere("t.date_add > STR_TO_DATE('$datetime','%Y-%m-%d %H:%i:%s')");
         }
 
@@ -216,19 +264,20 @@ class Task extends ActiveRecord
 
     /**
      * Find Task By ID
-     * @param int $id
+     * @param int|null $id
      * @return array
+     * @throws TaskForceException
+     * @throws NotFoundHttpException
      * @throws TaskForceException
      */
     public static function findTaskTitleInfoByID(int $id = null): ?array
     {
         $query = new Query();
-
-        $query->select(['t.*', 'c.name as cat_name', 'c.icon as icon'])->from('task t')
+        $query->select(['t.*', 'c.name as cat_name', 'c1.city', 'c.icon as icon'])->from('task t')
             ->join('LEFT JOIN', 'category as c', 't.category_id = c.id')
+            ->join('LEFT JOIN', 'city as c1', 't.city_id = c1.id')
             ->where(['t.id' => $id])
             ->limit(1);
-
         $model = $query->one();
 
         if ($model) {
@@ -239,7 +288,6 @@ class Task extends ActiveRecord
             throw new NotFoundHttpException("Задание с ID $id не найдено");
         }
 
-
         return $model;
     }
 
@@ -248,12 +296,25 @@ class Task extends ActiveRecord
      * @return int|null
      * @throws TaskForceException
      */
-    public static function findCountTasksByUserId(int $id): ?int
+    public static function findCountByUserId(int $id): ?int
     {
         if ($id && ($id < 1)) {
             throw new TaskForceException('Не задан ID пользователя');
         }
 
-        return self::find()->where(['id' => $id])->andWhere(['status' => \TaskForce\TaskEntity::STATUS_COMPLETE])->count();
+        return self::find()->where(['id' => $id])->andWhere(['status' => TaskEntity::STATUS_COMPLETE])->count();
+    }
+
+     public static function getTaskByStatus(string $filterRequest)
+    {
+        $userId = Yii::$app->user->identity->getId();
+
+        return self::find()->select(['t.*', 'c.name as cat_name', 'u.name as user_name', 'p.avatar','p.rate'])
+            ->from('task t')
+            ->join('LEFT JOIN', 'category as c', 't.category_id = c.id')
+            ->join('LEFT JOIN', 'user as u', 't.customer_id = u.id')
+            ->join('LEFT JOIN', 'profile as p', 't.customer_id = p.user_id')
+            ->where(['or', ['t.customer_id' => $userId], ['t.executor_id' => $userId]])
+            ->andWhere(['status' => MyTask::STATUS_BY_FILTER[$filterRequest]])->asArray()->all();
     }
 }

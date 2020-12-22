@@ -1,8 +1,6 @@
 <?php
 
-
 namespace frontend\models\forms;
-
 
 use DateTime;
 use Exception;
@@ -11,7 +9,6 @@ use yii\base\Model;
 
 class TasksFilterForm extends Model
 {
-
     public const FILTER_DAY = 'day';
     public const FILTER_WEEK = 'week';
     public const FILTER_MONTH = 'month';
@@ -93,6 +90,4 @@ class TasksFilterForm extends Model
 
         return $date->format('Y-m-d h:i:s');
     }
-
-
 }

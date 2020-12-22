@@ -2,13 +2,8 @@
 
 namespace frontend\models;
 
-
-use TaskForce\Constant\UserRole;
-use TaskForce\Exception\TaskForceException;
-use TaskForce\SortingUsers;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
-use yii\db\Query;
 
 /**
  * This is the model class for table "profile".
@@ -25,9 +20,13 @@ use yii\db\Query;
  * @property int $rate
  * @property string $show
  * @property User $user
+ * @property boolean $show_it
+ * @property boolean $show_only_executor
  */
 class Profile extends ActiveRecord
 {
+    use ExceptionOnFindFail;
+
     /**
      * {@inheritdoc}
      */
@@ -48,6 +47,7 @@ class Profile extends ActiveRecord
             [['about'], 'string'],
             [['address', 'skype', 'messenger', 'avatar'], 'string', 'max' => 255],
             [['phone'], 'string', 'max' => 11],
+            [['show_it','show_only_executor'], 'boolean'],
 
             [
                 ['user_id'],
@@ -55,7 +55,6 @@ class Profile extends ActiveRecord
                 'skipOnError' => true,
                 'targetClass' => User::class,
                 'targetAttribute' => ['user_id' => 'id']
-
             ]
         ];
     }
@@ -76,10 +75,10 @@ class Profile extends ActiveRecord
             'messenger' => 'Messenger',
             'avatar' => 'Avatar',
             'rate' => 'Rate',
-
+            'show_it'=>'Show my contact',
+            'show_only_executor'=>'Dont show profile',
         ];
     }
-
 
     /**
      * Gets query for [[User]].
@@ -100,20 +99,20 @@ class Profile extends ActiveRecord
         return new ProfileQuery(get_called_class());
     }
 
-
-
     /**
      * @param int $id
      * @return array|null
      */
-    public static function findProfileByUserId(int $id): ?array
+    public static function findByUserId(int $id): ?array
     {
         return self::find()
-            ->select('u.role,p.id as profile_id, p.user_id, p.birthday, p.avatar, p.rate, u.email, u.date_login, u.name, u.date_add')
+            ->select(
+                'u.role,p.about, p.id as profile_id, p.user_id, p.birthday,p.phone, p.messenger, p.skype,
+             p.avatar, p.rate, u.email, u.city_id, u.date_login, u.name, u.date_add, p.show_it, p.show_only_executor'
+            )
             ->from('profile p')
             ->join('LEFT JOIN', 'user as u', 'p.user_id = u.id')
-            ->where(['u.id' => $id])
-
+            ->where(['p.user_id' => $id])
             ->limit(1)
             ->asArray()->one();
     }
@@ -132,5 +131,4 @@ class Profile extends ActiveRecord
             ->limit(1)
             ->asArray()->one();
     }
-
 }

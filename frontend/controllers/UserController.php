@@ -4,11 +4,12 @@ namespace frontend\controllers;
 
 use Yii;
 use yii\web\Controller;
+use yii\web\Response;
 
 class UserController extends Controller
 {
-    /**
-     * @return \yii\web\Response
+     /**
+     * @return Response
      */
     public function actionLogout()
     {
@@ -16,5 +17,4 @@ class UserController extends Controller
 
         return $this->goHome();
     }
-
 }

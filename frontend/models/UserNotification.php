@@ -2,7 +2,6 @@
 
 namespace frontend\models;
 
-use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -11,7 +10,6 @@ use yii\db\ActiveRecord;
  *
  * @property int $user_id
  * @property int $notification_id
- *
  * @property Notification $notification
  * @property User $user
  */
@@ -53,7 +51,7 @@ class UserNotification extends ActiveRecord
     /**
      * Gets query for [[Notification]].
      *
-     * @return ActiveQuery|NotifiQuery
+     * @return ActiveQuery|NotificationQuery
      */
     public function getNotification()
     {

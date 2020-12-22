@@ -1,0 +1,47 @@
+.five-rate {
+    color: #ff7f50; }
+.five-rate span {
+    background-image: url("/img/Star-rate.png"); }
+
+.three-rate {
+    color: #c71d1d; }
+.three-rate span {
+    background-image: url("/img/three-rate.png"); }
+
+.five-stars__rate span {
+    display: inline-block;
+    background-image: url("/img/big-star.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px; }
+.five-stars__rate span.star-disabled {
+    background-image: url("/img/big-star-disabled.png"); }
+
+.five-stars__rate .star-disabled:hover {
+    width: 20px;
+    height: 20px; }
+
+.five-stars__rate {
+    padding-left: 0;
+    margin-bottom: 5px; }
+
+.card__review-rate p {
+    font-weight: 700;
+    font-size: 45px;
+    margin: 0; }
+
+.big-rate {
+    position: relative;
+    padding-right: 55px; }
+
+.big-rate span {
+    position: absolute;
+    content: "";
+    width: 25px;
+    height: 25px;
+    background-position: center;
+    background-repeat: no-repeat;
+    top: 16px;
+    left: 30px; }

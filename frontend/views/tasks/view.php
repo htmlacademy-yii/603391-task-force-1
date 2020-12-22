@@ -1,7 +1,6 @@
 <?php
 
 /* @var $this yii\web\View */
-
 /** @var TasksFilterForm $modelTasksFilter */
 /** @var CategoriesFilterForm $modelCategoriesFilter */
 /** @var array $modelTask */
@@ -12,10 +11,13 @@
 /** @var bool $existsUserResponse */
 /** @var array $availableActions */
 
+use frontend\assets\TaskViewAsset;
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\CompleteTaskForm;
 use frontend\models\forms\ResponseTaskForm;
 use frontend\models\forms\TasksFilterForm;
+use TaskForce\widgets\RatingWidget;
+use TaskForce\widgets\YandexMapWidget;
 use TaskForce\Actions\CancelAction;
 use TaskForce\Actions\CompleteAction;
 use TaskForce\Actions\RefuseAction;
@@ -26,11 +28,8 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
-$this->title = 'TaskForce - Задачи';
+TaskViewAsset::register($this);
 $currentUserId = Yii::$app->user->getId();
-
-$this->registerJSFile('/js/main.js');
-
 ?>
 <main class="page-main">
     <div class="main-container page-container">
@@ -55,37 +54,38 @@ $this->registerJSFile('/js/main.js');
                         <h3 class="content-view__h3">Общее описание</h3>
                         <p><?= $modelTask['description'] ?></p>
                     </div>
-                    <div class="content-view__attach">
-                        <h3 class="content-view__h3">Вложения</h3>
-                        <?php
-                        /** @var array $modelsFiles */
-                        if (count($modelsFiles) == 0) {
-                            echo 'отсутствуют';
-                        }
-                        foreach ($modelsFiles as $key => $file):?>
-                            <a href="<?= Url::to(['site/file', 'id' => $file['id']]) ?>"
-                               title="<?= $file['filename'] ?>">
+                    <?php
+                    /** @var array $modelsFiles */
+                    if (count($modelsFiles) > 0):?>
+                        <div class="content-view__attach">
+                            <h3 class="content-view__h3">Вложения</h3>
+                            <?php
+                            foreach ($modelsFiles as $key => $file):?>
+                                <a href="<?= Url::to(['site/file', 'id' => $file['id']]) ?>"
+                                   title="<?= $file['filename'] ?>">
+                                    <?= (strlen($file['filename']) > 30)
+                                        ? (substr($file['filename'], 0, 30) . '...')
+                                        : $file['filename'] ?></a>
+                            <?php
+                            endforeach; ?>
+                        </div>
+                    <?php
+                    endif;
 
-                                <?= (strlen($file['filename']) > 30)
-                                    ? (substr($file['filename'], 0, 30) . '...')
-                                    : $file['filename'] ?></a>
-                        <?php
-                        endforeach; ?>
-                    </div>
-                    <div class="content-view__location">
-                        <h3 class="content-view__h3">Расположение</h3>
-                        <div class="content-view__location-wrapper">
-                            <div class="content-view__map">
-                                <a href="#"><img src="../../img/map.jpg" width="361" height="292"
-                                                 alt="Москва, Новый арбат, 23 к. 1"></a>
-                            </div>
-                            <div class="content-view__address">
-                                <span class="address__town">Москва</span><br>
-                                <span><?= $modelTask['address'] ?></span>
-                                <p>Вход под арку, код домофона 1122</p>
+                    if ((int)$modelTask['lat'] !== 0 && (int)$modelTask['lng'] !== 0):?>
+                        <div class="content-view__location">
+                            <h3 class="content-view__h3">Расположение</h3>
+                            <div class="content-view__location-wrapper">
+                                 <?= YandexMapWidget::widget(['lat'=>$modelTask['lat'],'lng'=>$modelTask['lng']]);?>
+                                <div class="content-view__address">
+                                    <span class="address__town"><?= $modelTask['city'] ?></span><br>
+                                    <span><?= $modelTask['address'] ?></span>
+                                    <p></p>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    <?php
+                    endif; ?>
                 </div>
                 <div class="content-view__action-buttons">
 
@@ -108,7 +108,6 @@ $this->registerJSFile('/js/main.js');
                             type="button" data-for="complete-form">Завершить</button>';
                                 break;
                             case CancelAction::getTitle():
-
                                 echo '<button class="button button__big-color refusal-button open-modal"
                             type="button" data-for="cancel-form">Отменить</button>';
                                 break;
@@ -133,14 +132,13 @@ $this->registerJSFile('/js/main.js');
                         <div class="content-view__feedback-card">
                             <div class="feedback-card__top">
                                 <a href="<?= Url::to(['users/view', 'id' => $response['user_id']]) ?>">
-                                    <img src="../../img/<?= $response['avatar'] ?>" width="55" height="55" alt="avatar"></a>
-
+                                    <img src="<?= Url::base(
+                                    ) . '/uploads/avatars/' . ($response['avatar'] ?? 'no-avatar.jpg') ?>"
+                                         width="55" height="55" alt="avatar"></a>
                                 <div class="feedback-card__top--name">
                                     <p><a href="<?= Url::to(['users/view', 'id' => $response['user_id']]) ?>"
                                           class="link-regular"><?= $response['name'] ?></a></p>
-                                    <?= str_repeat('<span></span>', $response['rate']); ?>
-                                    <?= str_repeat('<span class="star-disabled"></span>', 5 - $response['rate']); ?>
-                                    <b><?= $response['rate'] ?></b>
+                                    <?= RatingWidget::widget(['rate' => $response['rate'] ?? 0]) ?>
                                 </div>
                                 <span class="new-task__time"><?= Declination::getTimeAfter(
                                         (string)$response['created_at']
@@ -153,13 +151,10 @@ $this->registerJSFile('/js/main.js');
                                 <span><?= $response['price'] ?> ₽</span>
                             </div>
                             <?php
-
-
                             if (Yii::$app->user->identity->role === UserRole::CUSTOMER
                                 && ((int)$modelTask['customer_id']) === $currentUserId
                                 && ($response['status'] === TaskForce\ResponseEntity::STATUS_NEW)
                                 && ($modelTask['status'] === TaskForce\TaskEntity::STATUS_NEW)
-
                             ):?>
                                 <div class="feedback-card__actions">
 
@@ -171,7 +166,6 @@ $this->registerJSFile('/js/main.js');
                                         ],
                                         ['class' => 'button__small-color request-button button']
                                     ) ?>
-
                                     <?= Html::a(
                                         'Отказать',
                                         [
@@ -204,13 +198,12 @@ $this->registerJSFile('/js/main.js');
 
                             echo ($showExecutor) ? 'Исполнтель' : 'Заказчик' ?></h3>
                         <div class="profile-mini__top">
-                            <img src="../../img/<?= $modelTaskUser['avatar'] ?>" width="62" height="62"
+                            <img src="<?= Url::base() . '/uploads/avatars/' . $modelTaskUser['avatar'] ?>" width="62"
+                                 height="62"
                                  alt="Аватар <?= ($showExecutor) ? 'исполнтеля' : 'заказчика' ?>">
                             <div class="profile-mini__name five-stars__rate">
                                 <p><?= $modelTaskUser['name'] ?></p>
-                                <?= str_repeat('<span></span>', $modelTaskUser['rate']); ?>
-                                <?= str_repeat('<span class="star-disabled"></span>', 5 - $modelTaskUser['rate']); ?>
-                                <b><?= $modelTaskUser['rate'] ?></b>
+                                <?= RatingWidget::widget(['rate' => $modelTaskUser['rate']]) ?>
                             </div>
                         </div>
                         <p class="info-customer"><span><?= $modelTaskUser['countTask'] ?> заданий</span>
@@ -226,31 +219,15 @@ $this->registerJSFile('/js/main.js');
                         endif; ?>
                     </div>
                 </div>
-                <div class="connect-desk__chat">
-                    <h3>Переписка</h3>
-                    <div class="chat__overflow">
-                        <div class="chat__message chat__message--out">
-                            <p class="chat__message-time">10.05.2019, 14:56</p>
-                            <p class="chat__message-text">Привет. Во сколько сможешь
-                                приступить к работе?</p>
-                        </div>
-                        <div class="chat__message chat__message--in">
-                            <p class="chat__message-time">10.05.2019, 14:57</p>
-                            <p class="chat__message-text">На задание
-                                выделены всего сутки, так что через час</p>
-                        </div>
-                        <div class="chat__message chat__message--out">
-                            <p class="chat__message-time">10.05.2019, 14:57</p>
-                            <p class="chat__message-text">Хорошо. Думаю, мы справимся</p>
-                        </div>
-                    </div>
-                    <p class="chat__your-message">Ваше сообщение</p>
-                    <form class="chat__form">
-                        <textarea class="input textarea textarea-chat" rows="2" name="message-text"
-                                  placeholder="Текст сообщения"></textarea>
-                        <button class="button chat__button" type="submit">Отправить</button>
-                    </form>
-                </div>
+                <?php
+                if ((((int)$modelTask['customer_id']) === $currentUserId
+                        || ((int)$modelTask['executor_id']) === $currentUserId)
+                    && ($modelTask['executor_id'] !== null)
+                ): ?>
+                <div id="chat-container">
+                    <chat class="connect-desk__chat" task="<?=$modelTask['id']?>"></chat>
+                <?php
+                endif; ?>
             </section>
         <?php
         endif; ?>
@@ -279,7 +256,6 @@ $this->registerJSFile('/js/main.js');
             'text',
             [
                 'class' => 'response-form-payment input input-middle input-money',
-
             ]
         );
 

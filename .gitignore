@@ -42,7 +42,7 @@ phpunit.phar
 /backend/web/index-test.php
 /backend/web/robots.txt
 /backend/web/.htaccess
-/frontend/web/assets/*
+/frontend/web/uploads/*
 
 .DS_Stores
 *.ai
@@ -52,4 +52,4 @@ phpunit.phar
 *.sublime*
 vendor
 read.me
-/frontend/web/uploads/
+

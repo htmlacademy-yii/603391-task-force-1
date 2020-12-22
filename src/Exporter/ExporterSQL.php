@@ -46,5 +46,4 @@ class ExporterSQL implements IExporter
             throw new FileException('Error write to file.');
         }
     }
-
 }

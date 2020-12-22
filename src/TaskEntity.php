@@ -24,7 +24,6 @@ class TaskEntity
     public const ACTION_RESPOND = Actions\ResponseAction::class;
     public const ACTION_FAILED = Actions\FailedAction::class;
 
-
     public const ACTIONS = [
         self::ACTION_CANCEL,
         self::ACTION_ASSIGN,
@@ -46,7 +45,14 @@ class TaskEntity
         self::ACTION_ASSIGN => self::STATUS_IN_WORK,
         self::ACTION_REFUSE => self::STATUS_FAILED,
         self::ACTION_FAILED => self::STATUS_FAILED
+    ];
 
+    public const STATUS_TO_NAME = [
+        self::STATUS_CANCEL => 'Отменено',
+        self::STATUS_COMPLETE => 'Завершено',
+        self::STATUS_IN_WORK => 'В работе',
+        self::STATUS_NEW => 'Новое',
+        self::STATUS_FAILED => 'Просрочено'
     ];
 
     public const STATUSES = [
@@ -176,9 +182,10 @@ class TaskEntity
 
         try {
             $opinion->insert();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw new TaskForceException('Ошибка создания отзыва. ' . $e->getMessage());
         }
+
         return true;
     }
 

@@ -2,7 +2,6 @@
 
 namespace frontend\models;
 
-use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
@@ -19,6 +18,8 @@ use yii\helpers\ArrayHelper;
  */
 class City extends ActiveRecord
 {
+    use ExceptionOnFindFail;
+
     /**
      * {@inheritdoc}
      */
@@ -80,5 +81,8 @@ class City extends ActiveRecord
         return ArrayHelper::map(City::find()->asArray()->all(), 'id', 'city');
     }
 
-
+    public static function findIdByName(?string $city): ?int
+    {
+        return City::find()->select('id')->where(['city' => $city])->limit(1)->one()['id'] ?? null;
+    }
 }

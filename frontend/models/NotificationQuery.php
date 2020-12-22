@@ -9,7 +9,7 @@ use yii\db\ActiveQuery;
  *
  * @see Notification
  */
-class NotifiQuery extends ActiveQuery
+class NotificationQuery extends ActiveQuery
 {
     /**
      * {@inheritdoc}

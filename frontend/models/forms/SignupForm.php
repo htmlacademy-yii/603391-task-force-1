@@ -2,6 +2,7 @@
 
 namespace frontend\models\forms;
 
+use Exception;
 use frontend\models\City;
 use frontend\models\Profile;
 use frontend\models\User;
@@ -57,7 +58,7 @@ class SignupForm extends Model
             return null;
         }
         $transaction = Yii::$app->db->beginTransaction();
-//        try {
+        try {
             $user = new User();
             $user->email = $this->email;
             $user->name = $this->username;
@@ -71,11 +72,11 @@ class SignupForm extends Model
             $profile->save();
 
             $transaction->commit();
-//        }
-//        catch (\Exception $e) {
-//            $transaction->rollBack();
-//            throw new TaskForceException("Ошибка регистрации пользователя. " . $e->getMessage());
-//        }
+        }
+        catch (Exception $e) {
+            $transaction->rollBack();
+            throw new TaskForceException("Ошибка регистрации пользователя. " . $e->getMessage());
+        }
 
         return true;
     }
