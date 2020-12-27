@@ -18,7 +18,7 @@ $this->beginPage() ?>
     <meta charset="<?= Yii::$app->charset ?>">
     <?php
     $this->registerCsrfMetaTags() ?>
-    <title><?= Html::encode($this->title) ?></title>
+    <title><?= Html::encode($this->context->title ?? Yii::$app->params['AppName']) ?></title>
     <?php
     $this->head() ?>
 </head>
