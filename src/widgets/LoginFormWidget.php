@@ -14,6 +14,6 @@ class LoginFormWidget extends Widget
         parent::run();
         $this->loginForm = new LoginForm();
 
-        return $this->render('../loginForm/view', ['loginForm'=> $this->loginForm ]);
+        return $this->render('@widgets/loginForm/view', ['loginForm'=> $this->loginForm ]);
     }
 }

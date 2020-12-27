@@ -10,6 +10,6 @@ class BulbWidget extends Widget
     {
         parent::run();
 
-        return $this->render('../bulb/view');
+        return $this->render('@widgets/bulb/view');
     }
 }
