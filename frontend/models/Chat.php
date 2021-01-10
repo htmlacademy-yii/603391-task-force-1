@@ -9,14 +9,13 @@ use yii\db\ActiveRecord;
  * This is the model class for table "chat".
  *
  * @property int $id
- * @property int $consumer_id
- * @property int $executor_id
+ * @property int $user_id
  * @property int $task_id
  * @property string $message
  * @property string $created_at
  *
  * @property Task $task
- * @property User $consumer
+ * @property User $customer
  * @property User $executor
  */
 class Chat extends ActiveRecord
@@ -35,13 +34,12 @@ class Chat extends ActiveRecord
     public function rules()
     {
         return [
-            [['consumer_id', 'executor_id', 'task_id', 'message'], 'required'],
-            [['consumer_id', 'executor_id', 'task_id'], 'integer'],
+            [['user_id', 'task_id', 'message'], 'required'],
+            [['user_id', 'task_id'], 'integer'],
             [['message'], 'string'],
             [['created_at'], 'safe'],
             [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Task::class, 'targetAttribute' => ['task_id' => 'id']],
-            [['consumer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['consumer_id' => 'id']],
-            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['executor_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
@@ -52,8 +50,7 @@ class Chat extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'consumer_id' => 'Consumer ID',
-            'executor_id' => 'Executor ID',
+            'user_id' => 'User ID',
             'task_id' => 'Task ID',
             'message' => 'Message',
             'created_at' => 'Created At',
@@ -77,17 +74,7 @@ class Chat extends ActiveRecord
      */
     public function getConsumer()
     {
-        return $this->hasOne(User::class, ['id' => 'consumer_id']);
-    }
-
-    /**
-     * Gets query for [[Executor]].
-     *
-     * @return ActiveQuery|UserQuery
-     */
-    public function getExecutor()
-    {
-        return $this->hasOne(User::class, ['id' => 'executor_id']);
+        return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
     /**
