@@ -30,10 +30,17 @@ use yii\widgets\ActiveForm;
 
 TaskViewAsset::register($this);
 $currentUserId = Yii::$app->user->getId();
+$messageUrl =
+    Url::toRoute(['v1/messages']);
+
+$scriptJS = <<<TAG
+window.messageApiUrl = '$messageUrl';
+TAG;
+$this->registerJs($scriptJS, yii\web\View::POS_BEGIN);
+
 ?>
 <main class="page-main">
     <div class="main-container page-container">
-
         <section class="content-view">
             <div class="content-view__card">
                 <div class="content-view__card-wrapper">
