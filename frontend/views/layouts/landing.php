@@ -5,10 +5,10 @@
 
 use frontend\assets\LandingAsset;
 use TaskForce\widgets\LoginFormWidget;
+use TaskForce\widgets\TFAlertWidget;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
-use common\widgets\Alert;
 
 LandingAsset::register($this);
 $this->beginPage() ?>
@@ -54,23 +54,12 @@ $this->beginBody() ?>
     </footer>
     <?= LoginFormWidget::widget() ?>
 </div>
-<?php
-if (Yii::$app->session->hasFlash('login-error')): ?>
-    <section class="modal enter-form form-modal landing-task" style="display: block">
-        <p>
-            <h3>
-                <?php
-                echo Yii::$app->session->getFlash('login-error'); ?>
-            </h3>
-        </p>
-        <button class="form-modal-close" type="button">Закрыть</button>
-    </section>
-<?
-endif; ?>
+
+<?= TFAlertWidget::widget() ?>
 
 <div class="overlay">
-    <?= Alert::widget() ?>
 </div>
+
 <?php
 $this->endBody() ?>
 </body>
