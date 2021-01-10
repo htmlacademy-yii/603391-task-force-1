@@ -3,7 +3,7 @@
 Vue.component('chat', {
   props: ['task'],
   template: `<div><h3>Переписка</h3>
-             <div class="chat__overflow">
+             <div class="chat__overflow" id="chatScroll">
                <div class="chat__message" v-for="item in messages" :class="{'chat__message--out': item.is_mine}">
                 <p class="chat__message-time">{{ item.published_at }}</p>
                 <p class="chat__message-text">{{ item.message }}</p>
@@ -25,6 +25,10 @@ Vue.component('chat', {
     }
   },
   methods: {
+    scrollDown:function() {
+      const block = document.getElementById("chatScroll");
+      block.scrollTop = block.scrollHeight;
+    },
     sendMessage: function() {
       fetch(this.api_url, {
         method: 'POST',
@@ -37,15 +41,18 @@ Vue.component('chat', {
         if (result.status !== 201) {
           return Promise.reject(new Error('Запрошенный ресурс не существует'));
         }
-
         return result.json();
       })
       .then(msg => {
         this.messages.push(msg);
         this.message = null;
+
       })
       .catch(err => {
         console.error('Не удалось отправить сообщение', err);
+      })
+      .finally(() => {
+        this.scrollDown();
       })
     },
     getMessages: function () {
@@ -54,7 +61,6 @@ Vue.component('chat', {
         if (result.status !== 200) {
           return Promise.reject(new Error('Запрошенный ресурс не существует'));
         }
-
         return result.json();
       })
       .then(messages => {
@@ -62,6 +68,9 @@ Vue.component('chat', {
       })
       .catch(err => {
         console.error('Не удалось получить сообщения чата', err);
+      })
+      .finally(() => {
+        this.scrollDown();
       })
     }
   },
