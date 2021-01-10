@@ -1,8 +1,10 @@
 <?php
 
 /* @var $this yii\web\View */
+
 /** @var array $cities */
 /** @var AccountForm $modelAccountForm */
+
 /** @var NotificationsFilterForm $modelNotificationsForm */
 
 use frontend\models\forms\AccountForm;
@@ -12,6 +14,8 @@ use TaskForce\widgets\DropZoneWidget;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
+use yii\widgets\MaskedInput;
+
 ?>
 
 <main class="page-main">
@@ -38,8 +42,8 @@ use yii\widgets\ActiveForm;
                 <h3 class="div-line">Настройки аккаунта</h3>
                 <div class="account__redaction-section-wrapper">
                     <div class="account__redaction-avatar">
-                        <img src="<?= Url::base() . '/uploads/avatars/' . $modelAccountForm['avatar']?>" width="156"
-                             height="156"  alt="">
+                        <img src="<?= Url::base() . '/uploads/avatars/' . $modelAccountForm['avatar'] ?>" width="156"
+                             height="156" alt="">
                         <?= $form->field(
                             $modelAccountForm,
                             'avatarFile',
@@ -196,15 +200,16 @@ use yii\widgets\ActiveForm;
                             $modelAccountForm,
                             'phone',
                             ['options' => ['tag' => 'div', 'class' => 'account__input']]
-                        )
-                        ->label('Телефон')
-                        ->textInput(
-                            [
-                                'placeholder' => '8 (555) 187 44 87',
+                        )->widget(MaskedInput::class, [
+                            'mask' => '8 (999) 999-99-99',
+                            'options' => [
                                 'class' => 'input textarea',
-                                'type' => 'phone'
+                                'id' => 'phone',
+                            ],
+                            'clientOptions' => [
+                                'clearIncomplete' => true
                             ]
-                        )
+                        ])->label('Телефон')
                     ?>
 
                     <?= $form
