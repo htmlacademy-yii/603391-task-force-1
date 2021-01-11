@@ -11,27 +11,42 @@ return [
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
-    'modules' => [
-        'api' => [
-            'class' => 'frontend\modules\api\Module'
-        ]
-    ],
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-frontend',
             'parsers' => [
-                'application/json' => 'yii\web\JsonParser',
+                'application/json' => [
+                    'class' => \yii\web\JsonParser::class,
+                 ],
+                ],
+        ],
+        'response' => [
+            'formatters' => [
+                \yii\web\Response::FORMAT_JSON => [
+                    'class' => 'yii\web\JsonResponseFormatter',
+                    'prettyPrint' => YII_DEBUG, // используем "pretty" в режиме отладки
+                    'encodeOptions' => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+                ],
             ],
         ],
         'user' => [
             'identityClass' => 'frontend\models\User',
             'enableAutoLogin' => true,
-            'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true],
-            'loginUrl' => array('landing/index'),
+            'enableSession' => true,
+            'identityCookie' => [
+                'name' => '_identity',
+                'httpOnly' => true,
+                'path' => '/',
+                'domain' => '.taskforce.local',
+            ],
         ],
         'session' => [
-            // this is the name of the session cookie used for login on the frontend
             'name' => 'advanced-frontend',
+            'cookieParams' => [
+                'domain' => '.taskforce.local',
+                'httpOnly' => true,
+                'secure' => false,
+            ],
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
