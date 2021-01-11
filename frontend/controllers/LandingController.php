@@ -45,7 +45,7 @@ class LandingController extends Controller
                 Yii::$app->user->login($user);
                 $this->redirect(['tasks/index']);
             } else {
-                Yii::$app->session->setFlash('login-error', "Не верный логин или пароль.");
+                Yii::$app->session->setFlash('error', "Не верный логин или пароль.");
             }
         }
         $this->redirect(['landing/index']);

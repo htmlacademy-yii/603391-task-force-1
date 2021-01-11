@@ -1,8 +1,9 @@
 <?php
+
 return [
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
+        '@npm' => '@vendor/npm-asset',
     ],
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'components' => [
@@ -23,13 +24,14 @@ return [
                 'users/bookmark/<userId:\d+>' => 'users/bookmark',
                 'address/location/<search:\d+>' => 'address/location',
                 '/' => 'landing/index',
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'api/messages']
-                ]
-            ],
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => ['v1/messages', 'v1/tasks'],
+                ],
+            ]
+        ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ]
-
-
     ],
 ];

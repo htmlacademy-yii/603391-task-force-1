@@ -46,6 +46,7 @@ class SignupController extends Controller
             $model->load(Yii::$app->request->post());
 
             if ($model->validate() && $model->register()) {
+                Yii::$app->session->setFlash('success', 'Регистрация завершина.');
                 return $this->goHome();
             }
         }

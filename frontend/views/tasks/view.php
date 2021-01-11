@@ -30,8 +30,8 @@ use yii\widgets\ActiveForm;
 
 TaskViewAsset::register($this);
 $currentUserId = Yii::$app->user->getId();
-$messageUrl =
-    Url::toRoute(['v1/messages']);
+$messageUrl = "{$_SERVER['REQUEST_SCHEME']}://api.{$_SERVER['HTTP_HOST']}" .
+      Url::toRoute(['v1/messages']);
 
 $scriptJS = <<<TAG
 window.messageApiUrl = '$messageUrl';
