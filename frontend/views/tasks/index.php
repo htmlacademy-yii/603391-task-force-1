@@ -35,7 +35,7 @@ use yii\widgets\LinkPager;
                         </p>
                         <b class="new-task__price new-task__price--translation"><?= $task['budget'] ?><b> ₽</b></b>
                         <p class="new-task__place"><?= $task['address'] ?></p>
-                        <span class="new-task__time"><?= $task['afterTime'] ?>  назад</span>
+                        <span class="new-task__time"><?= $task['afterTime'] ?></span>
                     </div>
                 <?php endforeach; ?>
             </div>

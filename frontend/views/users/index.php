@@ -39,7 +39,7 @@ use yii\widgets\LinkPager;
                                 <?= $user['about'] ?>
                             </p>
                         </div>
-                        <span class="new-task__time">Был на сайте  <?= $user['afterTime'] ?> назад</span>
+                        <span class="new-task__time">Был на сайте  <?= $user['afterTime'] ?></span>
                     </div>
                     <div class="link-specialization user__search-link--bottom">
                         <?php
