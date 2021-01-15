@@ -20,7 +20,7 @@ return [
     'components' => [
         'request' => [
             'parsers' => [
-                'application/json' => 'yii/web/JsonParser',
+                'application/json' => 'yii\web\JsonParser',
             ]
         ],
         'response' => [
@@ -39,19 +39,20 @@ return [
             'identityCookie' => [
                 'name' => '_identity',
                 'httpOnly' => true,
+                'domain' =>  $params['mainURL'],
+                'secure' => true,
                 'path' => '/',
-                'domain' => '.taskforce.local',
             ],
         ],
         'session' => [
-            'name' => 'advanced-frontend',
+            'name' => 'advanced',
             'cookieParams' => [
-                'domain' => '.taskforce.local',
+                'domain' => $params['mainURL'],
                 'httpOnly' => true,
-                'secure' => false,
+                'secure' => true,
+                'path' => '/'
             ],
         ],
-
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
@@ -63,12 +64,11 @@ return [
         ],
         'urlManager' => [
             'enablePrettyUrl' => true,
-            'enableStrictParsing' => false,
             'showScriptName' => false,
+            'enableStrictParsing' => false,
             'rules' => [
-                ['class' => 'yii\rest\UrlRule', 'controller' => ['v1/messages', 'v1/tasks'],'pluralize' => false],
+                ['class' => 'yii\rest\UrlRule', 'controller' => ['v1/messages', 'v1/tasks']],
             ],
-
         ],
     ],
     'params' => $params,

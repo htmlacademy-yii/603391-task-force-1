@@ -30,11 +30,13 @@ Vue.component('chat', {
       block.scrollTop = block.scrollHeight;
     },
     sendMessage: function() {
-      fetch(this.api_url, {
+       fetch(this.api_url, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+           'Content-Type': 'application/json',
         },
+        credentials: 'include',
+        withCredentials: true,
         body: JSON.stringify({message: this.message, task_id: this.task})
       })
       .then(result => {
@@ -56,7 +58,10 @@ Vue.component('chat', {
       })
     },
     getMessages: function () {
-      fetch(this.api_url + '?task_id=' + this.task)
+      fetch(this.api_url + '?task_id=' + this.task, {
+        credentials: 'include',
+        withCredentials: true,
+      })
       .then(result => {
         if (result.status !== 200) {
           return Promise.reject(new Error('Запрошенный ресурс не существует'));

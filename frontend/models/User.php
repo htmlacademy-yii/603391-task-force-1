@@ -35,7 +35,9 @@ use yii\db\ActiveQuery;
  * @property Notification[] $notifications
  * @property-read void $authKey
  * @property Work[] $works
+ * @property string $auth_key
  */
+
 class User extends ActiveRecord implements IdentityInterface
 {
     use ExceptionOnFindFail;
@@ -94,14 +96,28 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->getPrimaryKey();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getAuthKey()
     {
-        // Implement getAuthKey() method.
+        return $this->auth_key;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function validateAuthKey($authKey)
     {
-        // Implement validateAuthKey() method.
+        return $this->getAuthKey() === $authKey;
+    }
+
+    /**
+     * Generates "remember me" authentication key
+     */
+    public function generateAuthKey()
+    {
+        $this->auth_key = Yii::$app->security->generateRandomString();
     }
 
     public function validatePassword($password)

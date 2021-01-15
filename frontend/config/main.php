@@ -1,4 +1,8 @@
 <?php
+
+use yii\web\JsonParser;
+use yii\web\Response;
+
 $params = array_merge(
     require __DIR__ . '/../../common/config/params.php',
     require __DIR__ . '/../../common/config/params-local.php',
@@ -13,16 +17,15 @@ return [
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
         'request' => [
-            'csrfParam' => '_csrf-frontend',
             'parsers' => [
                 'application/json' => [
-                    'class' => \yii\web\JsonParser::class,
+                    'class' => JsonParser::class,
                  ],
                 ],
         ],
         'response' => [
             'formatters' => [
-                \yii\web\Response::FORMAT_JSON => [
+                Response::FORMAT_JSON => [
                     'class' => 'yii\web\JsonResponseFormatter',
                     'prettyPrint' => YII_DEBUG, // используем "pretty" в режиме отладки
                     'encodeOptions' => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
@@ -35,17 +38,21 @@ return [
             'enableSession' => true,
             'identityCookie' => [
                 'name' => '_identity',
-                'httpOnly' => true,
                 'path' => '/',
-                'domain' => '.taskforce.local',
+                'httpOnly' => true,
+                'domain' => $params['mainURL'],
+                'sameSite' => 'None',
+                'secure' => true
             ],
+            'loginUrl' => array('landing/index'),
         ],
         'session' => [
-            'name' => 'advanced-frontend',
+            'name' => 'advanced',
             'cookieParams' => [
-                'domain' => '.taskforce.local',
+                'domain' => $params['mainURL'],
                 'httpOnly' => true,
-                'secure' => false,
+                'secure' => true,
+                'path' => '/',
             ],
         ],
         'log' => [
@@ -60,6 +67,25 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
+            'urlManager' => [
+                'enablePrettyUrl' => true,
+                'showScriptName' => false,
+                'enableStrictParsing' => false,
+                'rules' => [
+                    'users' => 'users/index',
+                    'tasks' => 'tasks/index',
+                    'task' => '/task/create',
+                    'tasks/view/<id:\d+>' => 'tasks/view',
+                    'site/file/<id:\d+>' => 'site/file',
+                    'site/city/<cityId:\d+>' => 'site/city',
+                    'users/view/<id:\d+>' => 'users/view',
+                    'users/<sortType:\d+>' => 'users/index',
+                    'my-list/<filter:\d+>' => 'my-list/index',
+                    'users/bookmark/<userId:\d+>' => 'users/bookmark',
+                    'address/location/<search:\d+>' => 'address/location',
+                    '/' => 'landing/index',
+                ]
+            ],
     ],
     'params' => $params,
 ];

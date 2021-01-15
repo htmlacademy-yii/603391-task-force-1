@@ -30,9 +30,7 @@ use yii\widgets\ActiveForm;
 
 TaskViewAsset::register($this);
 $currentUserId = Yii::$app->user->getId();
-$messageUrl = "{$_SERVER['REQUEST_SCHEME']}://api.{$_SERVER['HTTP_HOST']}" .
-      Url::toRoute(['v1/messages']);
-
+$messageUrl = Yii::$app->params['apiURL'] .  Url::toRoute(['v1/messages']);
 $scriptJS = <<<TAG
 window.messageApiUrl = '$messageUrl';
 TAG;
@@ -51,7 +49,7 @@ $this->registerJs($scriptJS, yii\web\View::POS_BEGIN);
                             <span>Размещено в категории
                                     <a href="<?= Url::to(['tasks/index/', 'category' => $modelTask['category_id']]) ?>"
                                        class="link-regular"><?= $modelTask['cat_name'] ?></a>
-                                    <?= $modelTask['afterTime'] ?> назад</span>
+                                    <?= $modelTask['afterTime'] ?></span>
                         </div>
                         <b class="new-task__price new-task__price--<?= $modelTask['icon'] ?> content-view-price"><?= $modelTask['budget'] ?>
                             <b> ₽</b></b>
@@ -149,7 +147,7 @@ $this->registerJs($scriptJS, yii\web\View::POS_BEGIN);
                                 </div>
                                 <span class="new-task__time"><?= Declination::getTimeAfter(
                                         (string)$response['created_at']
-                                    ) ?> назад</span>
+                                    ) ?></span>
                             </div>
                             <div class="feedback-card__content">
                                 <p>

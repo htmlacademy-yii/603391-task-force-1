@@ -6,14 +6,34 @@ use frontend\models\Task;
 use api\modules\v1\models\Message;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\filters\Cors;
 use yii\rest\ActiveController;
 use yii\web\ForbiddenHttpException;
 use yii\web\ServerErrorHttpException;
 
 class MessagesController extends ActiveController
 {
-
     public $modelClass = Message::class;
+    public $enableCsrfValidation = false;
+
+    function behaviors()
+    {
+        $behaviors = parent::behaviors();
+
+        return array_merge(
+            $behaviors,
+            [
+                'corsFilter' => [
+                    'class' => Cors::class,
+                    'cors' => [
+                        'Access-Control-Request-Method' => ['GET, POST, OPTIONS'],
+                        'Access-Control-Allow-Credentials' => true,
+                        'Access-Control-Max-Age' => 3600,
+                    ]
+                ],
+            ]
+        );
+    }
 
     public function actions()
     {
@@ -44,21 +64,17 @@ class MessagesController extends ActiveController
 
     public function actionCreate()
     {
-        $request = Yii::$app->request->post();
+        $request = Yii::$app->request;
         $userId = Yii::$app->user->identity->getId();
-        $taskId = $request['task_id'];
-
-        $task = Task::findOrFail($taskId, 'Task not found with id #' . $taskId);
-
+        $taskId = $request->post('task_id');
+        $task = Task::findOrFail( $taskId,"Task with ID $taskId not found  ");
         if (!($userId === $task->executor_id || $userId === $task->customer_id)) {
             throw new ForbiddenHttpException('No access rights ' . $userId);
         }
-
         $chatMessage = new $this->modelClass;
-        $chatMessage->message = $request['message'];
+        $chatMessage->message = $request->post('message');
         $chatMessage->task_id = $taskId;
         $chatMessage->user_id = (int)$userId;
-
         if ($chatMessage->save()) {
             $chatMessage->refresh();
             $response = Yii::$app->getResponse();
@@ -69,5 +85,4 @@ class MessagesController extends ActiveController
 
         return $chatMessage;
     }
-
 }
