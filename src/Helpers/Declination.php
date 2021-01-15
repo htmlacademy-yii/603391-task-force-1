@@ -4,7 +4,7 @@ namespace TaskForce\Helpers;
 
 use DateTime;
 use Exception;
-use TaskForce\Exception\TaskForceException;
+use Yii;
 
 class Declination
 {
@@ -47,32 +47,10 @@ class Declination
     /**
      * @param string|null $time
      * @return string
-     * @throws TaskForceException
+     * @throws Exception
      */
     public static function getTimeAfter(?string $time): string
     {
-        $now = new DateTime();
-
-        try {
-            $sourceTime = new DateTime($time);
-        } catch (Exception $e) {
-            throw new TaskForceException($e);
-        }
-        $dateInterval = $now->diff($sourceTime);
-
-        $units = [
-            [$dateInterval->y, ['год', 'года', 'лет']],
-            [$dateInterval->m, ['месяц', 'месяца', 'месяцев']],
-            [$dateInterval->d, ['день', 'дня', 'дней']],
-            [$dateInterval->h, ['час', 'часа', 'часов']],
-            [$dateInterval->i, ['минуту', 'минуты', 'минут']]
-        ];
-
-        foreach ($units as $unit) {
-            if ($unit[0] >= 1) {
-                return sprintf('%2d %s', $unit[0], $unit[1][self::caseType($unit[0])]);
-            }
-        }
-        return 'менее минуты';
+        return  Yii::$app->formatter->asRelativeTime(new DateTime($time));
     }
 }
