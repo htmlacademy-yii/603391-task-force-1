@@ -99,10 +99,10 @@ class Profile extends ActiveRecord
     }
 
     /**
-     * @param int $id
+     * @param int $userId
      * @return array|null
      */
-    public static function findByUserId(int $id): ?array
+    public static function findByUserId(int $userId): ?array
     {
         return self::find()
             ->select(
@@ -113,7 +113,7 @@ class Profile extends ActiveRecord
             ->from('profile p')
             ->join('LEFT JOIN', 'user as u', 'p.user_id = u.id')
             ->join('LEFT JOIN', 'city as c', 'u.city_id = c.id')
-            ->where(['p.user_id' => $id])
+            ->where(['p.user_id' => $userId])
             ->limit(1)
             ->asArray()->one();
     }

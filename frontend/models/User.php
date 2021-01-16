@@ -5,7 +5,6 @@ namespace frontend\models;
 use TaskForce\Constant\UserRole;
 use TaskForce\SortingUsers;
 use Yii;
-use yii\base\InvalidConfigException;
 use yii\db\ActiveRecord;
 use yii\db\Query;
 use yii\web\IdentityInterface;
@@ -146,47 +145,6 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * Gets query for [[Favorites]].
-     *
-     * @return ActiveQuery|FavoriteQuery
-     */
-    public function getFavorites()
-    {
-        return $this->hasMany(Favorite::class, ['user_id' => 'id']);
-    }
-
-    /**
-     * Gets query for [[Favorites0]].
-     *
-     * @return ActiveQuery|FileQuery
-     * @throws InvalidConfigException
-     */
-    public function getFavorites0()
-    {
-        return $this->hasMany(File::class, ['id' => 'favorite_id'])->viaTable('favorite', ['user_id' => 'id']);
-    }
-
-    /**
-     * Gets query for [[Opinions]].
-     *
-     * @return ActiveQuery|OpinionQuery
-     */
-    public function getOpinions()
-    {
-        return $this->hasMany(Opinion::class, ['executor_id' => 'id']);
-    }
-
-    /**
-     * Gets query for [[Opinions0]].
-     *
-     * @return ActiveQuery|OpinionQuery
-     */
-    public function getOpinions0()
-    {
-        return $this->hasMany(Opinion::class, ['owner_id' => 'id']);
-    }
-
-    /**
      * Gets query for [[Profiles]].
      *
      * @return ActiveQuery|ProfileQuery
@@ -197,26 +155,6 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * Gets query for [[Tasks]].
-     *
-     * @return ActiveQuery|TaskQuery
-     */
-    public function getTasks()
-    {
-        return $this->hasMany(Task::class, ['customer_id' => 'id']);
-    }
-
-    /**
-     * Gets query for [[Tasks0]].
-     *
-     * @return ActiveQuery|TaskQuery
-     */
-    public function getTasks0()
-    {
-        return $this->hasMany(Task::class, ['executor_id' => 'id']);
-    }
-
-    /**
      * Gets query for [[UserNotifications]].
      *
      * @return ActiveQuery|UserNotificationQuery
@@ -224,20 +162,6 @@ class User extends ActiveRecord implements IdentityInterface
     public function getUserNotifications()
     {
         return $this->hasMany(UserNotification::class, ['user_id' => 'id']);
-    }
-
-    /**
-     * Gets query for [[Notifications]].
-     *
-     * @return ActiveQuery|NotificationQuery
-     * @throws InvalidConfigException
-     */
-    public function getNotifications()
-    {
-        return $this->hasMany(Notification::class, ['id' => 'notification_id'])->viaTable(
-            'user_notification',
-            ['user_id' => 'id']
-        );
     }
 
     /**
@@ -385,13 +309,14 @@ class User extends ActiveRecord implements IdentityInterface
 
     public static function updateUserRoleBySpecialisations()
     {
-        $user = Yii::$app->user->identity;
-        $profileId = Profile::findByUserId($user->getId());
+        $userId = Yii::$app->user->identity->getId();
+        $profileId = (int)Profile::findByUserId($userId)['profile_id'];
+        $user = User::findOne($userId);
         $specialisations = Specialization::findItemsByProfileId((int)$profileId);
-        if (count($specialisations)) {
-            $user->role = UserRole::EXECUTOR;
-        } else {
+        if (count($specialisations) === 0) {
             $user->role = UserRole::CUSTOMER;
+        } else {
+            $user->role = UserRole::EXECUTOR;
         }
         $user->update();
     }

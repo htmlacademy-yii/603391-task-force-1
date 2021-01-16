@@ -97,7 +97,7 @@ class CategoriesFilterForm extends Model
     public function saveData()
     {
         $profileId = Profile::findByUserId(yii::$app->user->id)['profile_id'];
-        Specialization::deleteAll(['profile_id' => (int)$profileId]);
+        Specialization::deleteAll('profile_id = :profileId',[':profileId' => (int)$profileId]);
         foreach ($this->categories as $name => $value) {
             if ((bool)$value) {
                $spec = new Specialization();
@@ -106,7 +106,5 @@ class CategoriesFilterForm extends Model
                $spec->save();
             }
         }
-
-
     }
 }
