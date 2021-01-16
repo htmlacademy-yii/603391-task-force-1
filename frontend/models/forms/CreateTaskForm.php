@@ -144,7 +144,7 @@ class CreateTaskForm extends Model
      */
     public function uploadFiles(int $taskId): ?bool
     {
-        $dirName = Yii::getAlias('@frontend/web/uploads/') . $taskId;
+        $dirName = Yii::getAlias('@frontend/web/uploads/tasks/') . $taskId;
         try {
             FileHelper::createDirectory($dirName);
         } catch (Exception $e) {
