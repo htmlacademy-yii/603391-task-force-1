@@ -17,6 +17,7 @@ return [
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
         'request' => [
+            'csrfParam' => '_csrf-frontend',
             'parsers' => [
                 'application/json' => [
                     'class' => JsonParser::class,
