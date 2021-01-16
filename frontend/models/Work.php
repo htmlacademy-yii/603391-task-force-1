@@ -36,23 +36,21 @@ class Work extends ActiveRecord
 
     public static function saveFile(?UploadedFile $file): string
     {
-        $ds = DIRECTORY_SEPARATOR;
-        $upload = Yii::$app->params['uploadsDir'] . $ds . Yii::$app->params['worksDir'];
-        $uploadDir = $upload . $ds . Yii::$app->user->getId();
         $userId = Yii::$app->user->getId();
+        $ds = DIRECTORY_SEPARATOR;
+        $workDir = Yii::$app->params['uploadsDir'] . $ds . Yii::$app->params['worksDir'];
+        $uploadUserDir = $workDir . $ds . $userId;
         $countFiles = Work::find()->where(['user_id'=>$userId])->count();
-
         if ($countFiles > Yii::$app->params['maxWorksFiles'] - 1) {
-            throw new Exception('Error');
+            throw new Exception('Limit of files is exceeded');
         }
         try {
-            FileHelper::createDirectory($uploadDir);
+            FileHelper::createDirectory($uploadUserDir);
         } catch (Exception $e) {
             throw new FileException(sprintf('Error create directory: %s', $e->getMessage()));
         }
-
         $newFileName = uniqid() . '.' . $file->extension;
-        $file->saveAs($uploadDir . $ds . $newFileName);
+        $file->saveAs($uploadUserDir . $ds . $newFileName);
         $work = new Work();
         $work->user_id = Yii::$app->user->getId();
         $work->filename = $file->name;

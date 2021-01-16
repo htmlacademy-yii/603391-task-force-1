@@ -26,7 +26,6 @@ class AccountForm extends Model
     public ?int $cityId = null;
     public ?string $birthday = '';
     public ?string $info = '';
-
     public string $newPassword = '';
     public string $repeatPassword = '';
     public string $phone;
@@ -35,7 +34,6 @@ class AccountForm extends Model
     public array $notifications = [];
     public bool $showMyContact = false;
     public bool $dontShowProfile = false;
-
 
     public function init(): void
     {
@@ -108,8 +106,8 @@ class AccountForm extends Model
             [
                 'phone',
                 'match',
-                'pattern' => '/^[0-9]{11}$/',
-                'message' => 'Введите телефон в формате 89231231212'
+                'pattern' =>  "/^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/",
+                'message' => "Введите в формате 8(999)999-99-99"
             ],
             ['info', 'string', 'min' => 30, 'tooShort' => self::LONG_NAME_NOTIFY],
             [
@@ -127,18 +125,6 @@ class AccountForm extends Model
                 'tooShort' => 'Пароль должен быть не менее 8 символов.'
             ],
         ];
-    }
-
-    /**
-     * data validator
-     * @param $attribute
-     */
-    public function isDateInFuture($attribute): void
-    {
-        $isPastDate = strtotime('now') > strtotime($this->$attribute);
-        if ($isPastDate) {
-            $this->addError($attribute, 'Дата не может быть меньше текущей.');
-        }
     }
 
     /**
@@ -165,7 +151,7 @@ class AccountForm extends Model
     }
 
     /**
-     * @param array $file
+     * @param object $file
      * @param int $profileId
      * @return bool
      * @throws FileException
@@ -194,7 +180,7 @@ class AccountForm extends Model
     /**
      * @return int|null
      * @throws NotFoundHttpException|Exception
-     * @throws TaskForceException
+     * @throws TaskForceException|FileException
      */
     public function saveData(): ?int
     {
@@ -211,7 +197,7 @@ class AccountForm extends Model
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $profile->about = $this->info;
-            $profile->phone = $this->phone;
+            $profile->phone = preg_replace('/[^,.0-9]/', '', $this->phone);
             $profile->skype = $this->skype;
             $profile->messenger = $this->telegram;
             $profile->show_it = (bool)$this->showMyContact;
@@ -225,8 +211,6 @@ class AccountForm extends Model
             }
             $user->email = $this->email;
             $user->update();
-
-
             $transaction->commit();
         } catch (Exception $e) {
             $transaction->rollBack();
@@ -235,6 +219,5 @@ class AccountForm extends Model
 
         return true;
     }
-
 
 }

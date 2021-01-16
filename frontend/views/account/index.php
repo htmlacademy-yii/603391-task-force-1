@@ -1,10 +1,8 @@
 <?php
 
 /* @var $this yii\web\View */
-
 /** @var array $cities */
 /** @var AccountForm $modelAccountForm */
-
 /** @var NotificationsFilterForm $modelNotificationsForm */
 
 use frontend\models\forms\AccountForm;
@@ -17,7 +15,6 @@ use yii\widgets\ActiveForm;
 use yii\widgets\MaskedInput;
 
 ?>
-
 <main class="page-main">
     <div class="main-container page-container">
         <section class="account__redaction-wrapper">
@@ -201,15 +198,12 @@ use yii\widgets\MaskedInput;
                             'phone',
                             ['options' => ['tag' => 'div', 'class' => 'account__input']]
                         )->widget(MaskedInput::class, [
-                            'mask' => '8 (999) 999-99-99',
+                            'mask' => '8(999)999-99-99',
                             'options' => [
                                 'class' => 'input textarea',
                                 'id' => 'phone',
                             ],
-                            'clientOptions' => [
-                                'clearIncomplete' => true
-                            ]
-                        ])->label('Телефон')
+                         ])->label('Телефон')
                     ?>
 
                     <?= $form

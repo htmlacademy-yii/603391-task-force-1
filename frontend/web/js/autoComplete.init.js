@@ -1,7 +1,6 @@
 new autoComplete({
     data: {
         src: async () => {
-            const token = "this_is_the_API_token_number";
             const query = document.querySelector("#autoComplete").value;
             const source = await fetch(
                 "/address/location?search="+query
@@ -47,7 +46,6 @@ new autoComplete({
         document.querySelector("#city").value = '';
     },
     onSelection: (feedback) => {
-        console.log(feedback.selection.value);
         document.querySelector("#autoComplete").value = feedback.selection.value.text;
         document.querySelector("#lat").value =  feedback.selection.value.lat ;
         document.querySelector("#lng").value =  feedback.selection.value.lng ;

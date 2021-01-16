@@ -21,10 +21,10 @@ class AccountIndexAction extends Action
             $modelNotificationsForm = new NotificationsFilterForm();
 
             if ($post = Yii::$app->request->post()) {
-                $modelAccountForm->load($post,'AccountForm');
-                $modelCategoriesForm->load($post,'CategoriesFilterForm');
-                $modelNotificationsForm->load($post,'NotificationsFilterForm');
-                $modelAccountForm->avatarFile = UploadedFile::getInstance($modelAccountForm,'avatarFile' );
+                $modelAccountForm->load($post, 'AccountForm');
+                $modelCategoriesForm->load($post, 'CategoriesFilterForm');
+                $modelNotificationsForm->load($post, 'NotificationsFilterForm');
+                $modelAccountForm->avatarFile = UploadedFile::getInstance($modelAccountForm, 'avatarFile');
 
                 if ($modelAccountForm->validate() && $modelAccountForm->saveData()) {
                     $modelCategoriesForm->saveData();

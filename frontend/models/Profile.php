@@ -48,7 +48,6 @@ class Profile extends ActiveRecord
             [['address', 'skype', 'messenger', 'avatar'], 'string', 'max' => 255],
             [['phone'], 'string', 'max' => 11],
             [['show_it','show_only_executor'], 'boolean'],
-
             [
                 ['user_id'],
                 'exist',
