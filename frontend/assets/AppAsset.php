@@ -16,7 +16,8 @@ class AppAsset extends AssetBundle
         'css/style.css',
     ];
     public $js = [
-        'js/city-select.js'
+        'js/city-select.js',
+        'js/notify.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

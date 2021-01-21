@@ -2,9 +2,11 @@
 
 namespace frontend\actions;
 
+use frontend\models\Event;
 use frontend\models\forms\ResponseTaskForm;
 use frontend\models\Response;
 use TaskForce\Actions\ResponseAction;
+use TaskForce\EventEntity;
 use TaskForce\Exception\TaskForceException;
 use TaskForce\TaskEntity;
 use Throwable;
@@ -34,6 +36,11 @@ class TaskResponseAction extends Action
             $responseTaskForm->load($post);
             if ($responseTaskForm->validate() && in_array(ResponseAction::getTitle(), $task->getAvailableActions())) {
                 $responseTaskForm->createResponse($id);
+                $event = new EventEntity(EventEntity::GROUP_REVIEW_ID);
+                $event->user_id = $task->getAssistUserId();
+                $event->task_id = $id;
+                $event->info = 'Новый отклик к заданию';
+                Event::createNotification($event);
             }
         }
 

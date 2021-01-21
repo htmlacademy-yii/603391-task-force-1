@@ -2,13 +2,17 @@
 
 namespace api\modules\v1\controllers;
 
+use frontend\models\Event;
 use frontend\models\Task;
 use api\modules\v1\models\Message;
+use TaskForce\EventEntity;
+use TaskForce\Exception\TaskForceException;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\filters\Cors;
 use yii\rest\ActiveController;
 use yii\web\ForbiddenHttpException;
+use yii\web\NotFoundHttpException;
 use yii\web\ServerErrorHttpException;
 
 class MessagesController extends ActiveController
@@ -62,12 +66,19 @@ class MessagesController extends ActiveController
         );
     }
 
+    /**
+     * @return mixed
+     * @throws ForbiddenHttpException
+     * @throws ServerErrorHttpException
+     * @throws TaskForceException
+     * @throws NotFoundHttpException
+     */
     public function actionCreate()
     {
         $request = Yii::$app->request;
         $userId = Yii::$app->user->identity->getId();
         $taskId = $request->post('task_id');
-        $task = Task::findOrFail( $taskId,"Task with ID $taskId not found  ");
+        $task = Task::findOrFail( $taskId,"Task with ID $taskId not found.");
         if (!($userId === $task->executor_id || $userId === $task->customer_id)) {
             throw new ForbiddenHttpException('No access rights ' . $userId);
         }
@@ -79,6 +90,12 @@ class MessagesController extends ActiveController
             $chatMessage->refresh();
             $response = Yii::$app->getResponse();
             $response->setStatusCode(201);
+            $event = new EventEntity(EventEntity::GROUP_MESSAGE_ID);
+            $event->user_id = (Yii::$app->user->getId() == $task->executor_id)?$task->customer_id:$task->executor_id;
+            $event->task_id = $taskId;
+            $event->info = 'Новое сообщение в чате';
+            Event::createNotification($event);
+
         } else {
             throw new ServerErrorHttpException('Error creating message');
         }

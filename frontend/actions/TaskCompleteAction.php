@@ -2,9 +2,11 @@
 
 namespace frontend\actions;
 
+use frontend\models\Event;
 use frontend\models\forms\CompleteTaskForm;
 use TaskForce\Actions\CompleteAction;
 use TaskForce\Actions\FailedAction;
+use TaskForce\EventEntity;
 use TaskForce\Exception\TaskForceException;
 use TaskForce\TaskEntity;
 use Yii;
@@ -35,6 +37,13 @@ class TaskCompleteAction extends Action
                     }
                     $task->createOpinion($completeTaskForm);
                     $transaction->commit();
+
+                    $event = new EventEntity(EventEntity::GROUP_TASK_ID);
+                    $event->user_id = $task->getAssistUserId();
+                    $event->task_id = $id;
+                    $event->info = 'Завершение задания';
+                    Event::createNotification($event);
+
                     $this->controller->goHome();
                 } catch (Exception $e) {
                     $transaction->rollBack();

@@ -184,7 +184,7 @@ footer {
   cursor: pointer;
   fill: #e0e0e0; }
 
-.header__lightbulb:hover {
+.header__lightbulb:hover, .header__lightbulb-white {
   background-image: url("../img/lightbulb-white.png");
   width: 30px;
   height: 30px; }
@@ -196,7 +196,7 @@ footer {
   display: none;
   position: absolute;
   top: 83px;
-  right: 106px;
+  right: 153px;
   z-index: 10;
   background-color: #ffffff;
   padding-left: 10px;

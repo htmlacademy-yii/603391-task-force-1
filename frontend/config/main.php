@@ -76,6 +76,7 @@ return [
                     'users' => 'users/index',
                     'tasks' => 'tasks/index',
                     'task' => '/task/create',
+                    'events' => '/events/clear',
                     'tasks/view/<id:\d+>' => 'tasks/view',
                     'site/file/<id:\d+>' => 'site/file',
                     'site/city/<cityId:\d+>' => 'site/city',
