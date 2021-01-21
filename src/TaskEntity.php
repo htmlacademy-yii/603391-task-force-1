@@ -166,6 +166,15 @@ class TaskEntity
     }
 
     /**
+     * @return int
+     */
+    public function getOwnerUserId(): int
+    {
+        return (Yii::$app->user->identity->getId() == $this->model->executor_id)
+            ? $this->model->executor_id : $this->model->customer_id;
+    }
+
+    /**
      * @param CompleteTaskForm $completeTaskForm
      * @return bool
      * @throws TaskForceException

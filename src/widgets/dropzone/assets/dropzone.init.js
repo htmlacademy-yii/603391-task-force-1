@@ -1,6 +1,5 @@
 Dropzone.autoDiscover = false;
 const siteURL = document.location.protocol +'//'+ document.location.host;
-console.log(siteURL);
 var dropzone = new Dropzone("#dropzone", {
     url: siteURL+'/work/add',
     addRemoveLinks: true,
@@ -22,13 +21,12 @@ var dropzone = new Dropzone("#dropzone", {
 `,
     accept: function (file, done) {
         if (done) {
-            done()
+            done();
         } else {
             file.previewElement.remove();
         }
     },
     error: function (file, message, xhr) {
-        console.log(message);
         file.previewElement.remove(file);
     },
     removedfile: function (file) {
@@ -64,7 +62,7 @@ var dropzone = new Dropzone("#dropzone", {
                     thisDropzone.emit("addedfile", mockFile);
                     thisDropzone.emit("thumbnail", mockFile, siteURL+"/uploads/works/" + value.id + '/' + value.name);
                     thisDropzone.emit("complete", mockFile);
-                })
+                });
             },
             error: function (xhr, status, error) {
                 file.previewElement.remove();

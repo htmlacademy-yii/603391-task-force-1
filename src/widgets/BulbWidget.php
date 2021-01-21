@@ -2,6 +2,8 @@
 
 namespace TaskForce\widgets;
 
+use frontend\models\Event;
+use Yii;
 use yii\base\Widget;
 
 class BulbWidget extends Widget
@@ -10,6 +12,10 @@ class BulbWidget extends Widget
     {
         parent::run();
 
-        return $this->render('@widgets/bulb/view');
+        if ($isLoggedUser = Yii::$app->user->identity) {
+            $eventsCount = Event::findEvents($isLoggedUser->id);
+        }
+
+        return $this->render('@widgets/bulb/view', compact('eventsCount'));
     }
 }

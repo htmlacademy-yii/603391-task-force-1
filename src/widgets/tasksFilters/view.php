@@ -60,18 +60,6 @@ const INPUT_LABEL = '{input}{label}';
         <fieldset class="search-task__categories">
             <legend>Дополнительно</legend>
             <?php
-
-            foreach ($modelTasksFilter->checkboxesLabels() as $key => $value) {
-                echo $form->field(
-                    $modelTasksFilter,
-                    $key,
-                    ['template' => INPUT_LABEL]
-                )->checkbox(
-                    ['class' => VISUALLY_HIDDEN_CHECKBOX_INPUT, 'id' => $key],
-                    false
-                )->label($value, ['for' => $key, 'class' => false]);
-            }
-
             foreach ($modelTasksFilter->checkboxesLabels() as $key => $value) {
                 echo $form->field(
                     $modelTasksFilter,
@@ -95,8 +83,7 @@ const INPUT_LABEL = '{input}{label}';
             ['for' => 'timeInterval', 'class' => 'search-task__name']
         )
             ->dropDownList(
-                $modelTasksFilter::getIntervalList()
-                ,
+                $modelTasksFilter::getIntervalList(),
                 [
                     'class' => "multiple-select input",
                     'id' => 'sa',
