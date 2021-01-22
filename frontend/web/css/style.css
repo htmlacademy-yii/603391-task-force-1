@@ -28,52 +28,52 @@ footer {
 
 @font-face {
   font-family: MyriadPro;
-  src: url(../fonts/MyriadPro-Light.woff);
+  src: url(../fonts/MyriadPro-Light.woff)  format('woff');
   font-weight: 300; }
 
 @font-face {
   font-family: MyriadPro;
-  src: url(../fonts/MyriadPro-Regular.ttf);
+  src: url(../fonts/MyriadPro-Regular.ttf)  format('ttf');
   font-weight: 400; }
 
 @font-face {
   font-family: MyriadPro;
-  src: url(../fonts/MyriadPro-Semibold.woff);
+  src: url(../fonts/MyriadPro-Semibold.woff)  format('woff');
   font-weight: 600; }
 
 @font-face {
   font-family: Roboto;
-  src: url(../fonts/Roboto-Light.ttf);
+  src: url(../fonts/Roboto-Light.ttf)  format('ttf');
   font-weight: 300; }
 
 @font-face {
   font-family: Roboto;
-  src: url(../fonts/Roboto-Regular.ttf);
+  src: url(../fonts/Roboto-Regular.ttf)  format('ttf');
   font-weight: 400; }
 
 @font-face {
   font-family: Roboto;
-  src: url(../fonts/Roboto-Medium.ttf);
+  src: url(../fonts/Roboto-Medium.ttf)  format('ttf');
   font-weight: 500; }
 
 @font-face {
   font-family: Roboto;
-  src: url(../fonts/Roboto-Bold.ttf);
+  src: url(../fonts/Roboto-Bold.ttf)  format('ttf');
   font-weight: 700; }
 
 @font-face {
   font-family: PT Sans;
-  src: url(../fonts/PTSans-Regular.ttf);
+  src: url(../fonts/PTSans-Regular.ttf)  format('ttf');
   font-weight: 400; }
 
 @font-face {
   font-family: PT Sans;
-  src: url(../fonts/PTSans-Italic.ttf);
+  src: url(../fonts/PTSans-Italic.ttf)  format('ttf');
   font-style: italic; }
 
 @font-face {
   font-family: PT Sans;
-  src: url(../fonts/PTSans-Bold.ttf);
+  src: url(../fonts/PTSans-Bold.ttf)  format('ttf');
   font-weight: 700; }
 
 .visually-hidden {

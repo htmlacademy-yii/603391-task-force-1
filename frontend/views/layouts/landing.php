@@ -49,7 +49,7 @@ $this->beginBody() ?>
     <footer class="page-footer">
         <div class="main-container page-footer__container">
             <?=$this->render('_footerInfo')?>
-            <?=$this->render('_footerCopyRight')?>
+            <?=$this->render('_footerCopyright')?>
         </div>
     </footer>
     <?= LoginFormWidget::widget() ?>
