@@ -48,8 +48,8 @@ class AccountForm extends Model
         $this->telegram = $profile['messenger'] ?? '';
         $this->phone = $profile['phone'] ?? '';
         $this->avatar = $profile['avatar'] ?? '';
-        $this->showMyContact = (bool)$profile['show_it'];
-        $this->dontShowProfile = (bool)$profile['show_only_executor'];
+        $this->showMyContact =  $profile['show_it'] ?? '' ;
+        $this->dontShowProfile = $profile['show_only_executor'] ?? '';
     }
 
     public function attributeLabels(): array

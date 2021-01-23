@@ -1,6 +1,7 @@
 <?php
 
 /* @var $this yii\web\View */
+/** @var array $modelsTasks */
 
 use yii\helpers\Url;
 
@@ -101,14 +102,13 @@ use yii\helpers\Url;
             <div class="landing-bottom-container">
                 <h2>Последние задания на сайте</h2>
                 <?php
-                /** @var array $modelsTasks */
                 foreach ($modelsTasks as $task): ?>
                     <div class="landing-task">
                         <div class="landing-task-top task-<?= $task['icon'] ?>"></div>
                         <div class="landing-task-description">
                             <h3><a href="#" class="link-regular"><?= $task['name'] ?></a></h3>
-                            <p><?= (strlen($task['description']) > 60) ?
-                                    (substr($task['description'], 1, 60) . '…') : $task['description']
+                            <p><?= (strlen($task['description']) > 50) ?
+                                    (mb_substr($task['description'], 0, 50, 'UTF-8') . '…') : $task['description']
                                 ?></p>
                         </div>
                         <div class="landing-task-info">
@@ -123,8 +123,9 @@ use yii\helpers\Url;
                 endforeach; ?>
             </div>
             <div class="landing-bottom-container">
-                    <button  onclick="window.location.href = '<?= Url::to('tasks/index')?>'"
-                     type="button" class="button red-button">смотреть все задания</button>
+                <button onclick="window.location.href = '<?= Url::to('tasks/index') ?>'"
+                        type="button" class="button red-button">смотреть все задания
+                </button>
             </div>
         </div>
     </div>

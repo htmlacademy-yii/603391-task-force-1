@@ -5,6 +5,7 @@ namespace frontend\models\forms;
 use frontend\models\Category;
 use frontend\models\Profile;
 use frontend\models\Specialization;
+use TaskForce\Exception\TaskForceException;
 use Yii;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
@@ -31,7 +32,7 @@ class CategoriesFilterForm extends Model
     public function load($data, $formName = null)
     {
         if ($formName) {
-        $this->categories = $data[$formName]['categories'];
+            $this->categories = $data[$formName]['categories'];
             return true;
         }
 
@@ -61,11 +62,17 @@ class CategoriesFilterForm extends Model
 
     public function loadSpec(): void
     {
-        $profileId = (Yii::$app->user->identity->getProfiles()->asArray()->one()['id']);
+        $userId = Yii::$app->user->identity->id;
+        $profileId = Profile::findByUserId($userId);
+
+        if (!$profileId) {
+            throw new TaskForceException('Профиль пользователя не найден.');
+        }
+
         $this->categoriesId = ArrayHelper::map(Category::find()->select(['id', 'name'])->all(), 'id', 'name');
         $spec = Specialization::find()->select(['category_id'])
-                                     ->where(['profile_id'=>$profileId])->asArray()
-                                     ->all();
+            ->where(['profile_id' => $profileId])->asArray()
+            ->all();
         $this->init();
         foreach ($spec as $element) {
             $this->categories[$element['category_id']] = '1';
@@ -97,13 +104,13 @@ class CategoriesFilterForm extends Model
     public function saveData()
     {
         $profileId = Profile::findByUserId(yii::$app->user->id)['profile_id'];
-        Specialization::deleteAll('profile_id = :profileId',[':profileId' => (int)$profileId]);
+        Specialization::deleteAll('profile_id = :profileId', [':profileId' => (int)$profileId]);
         foreach ($this->categories as $name => $value) {
             if ((bool)$value) {
-               $spec = new Specialization();
-               $spec->profile_id = $profileId;
-               $spec->category_id = $name;
-               $spec->save();
+                $spec = new Specialization();
+                $spec->profile_id = $profileId;
+                $spec->category_id = $name;
+                $spec->save();
             }
         }
     }

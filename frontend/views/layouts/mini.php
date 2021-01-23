@@ -35,8 +35,7 @@ LandingAsset::register($this);
             <div class="main-container page-header__container">
                 <div class="page-header__logo">
                     <a href="<?= Url::to(['landing/index']) ?>">
-                        <?= $this->render('_logo',['class'=>'page-header__logo-image']);?>
-
+                        <?= $this->render('_logo', ['class' => 'page-header__logo-image']); ?>
                     </a>
                 </div>
             </div>
@@ -48,12 +47,27 @@ LandingAsset::register($this);
         </main>
         <footer class="page-footer">
             <div class="main-container page-footer__container">
-                <?= $this->render('_footerInfo');?>
-                <?= $this->render('_footerCopyright');?>
+                <?= $this->render('_footerInfo'); ?>
+                <?= $this->render('_footerCopyright'); ?>
+                <?php
+                if (Yii::$app->controller->id === 'signup'): ?>
+                    <div class="clipart-woman">
+                        <img src="<?= Url::to('/img/clipart-woman.png') ?>" width="238" height="450" alt="">
+                    </div>
+                    <div class="clipart-message">
+                        <div class="clipart-message-text">
+                            <h2>Знаете ли вы, что?</h2>
+                            <p>После регистрации вам будет доступно более
+                                двух тысяч заданий из двадцати разных категорий.</p>
+                            <p>В среднем, наши исполнители зарабатывают
+                                от 500 рублей в час.</p>
+                        </div>
+                    </div>
+                <?php
+                endif; ?>
             </div>
         </footer>
     </div>
-
     <?php
     $this->endBody() ?>
     </body>

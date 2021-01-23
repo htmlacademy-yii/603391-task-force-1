@@ -4,21 +4,11 @@
 /** @var SignupForm $model */
 /** @var array $cities */
 
-use frontend\models\City;
 use frontend\models\forms\SignupForm;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
-
-$loggedUser = Yii::$app->user->identity;
-$selectedCity = $loggedUser->city_id ?? 0;
-if ($loggedUser) {
-    $userAvatar = $loggedUser->getProfiles()->asArray()->one()['avatar'] ?? 'no-avatar.jpg';
-    $cities = City::getList();
-}
-
 ?>
-
 <main class="page-main">
     <div class="main-container page-container">
         <section class="registration__user">

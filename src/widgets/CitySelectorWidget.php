@@ -26,5 +26,4 @@ class CitySelectorWidget extends Widget
 
         return $this->render('@widgets/citySelector/view', ['cities' => $this->cityList, 'currentCityId' => $this->currentCityId]);
     }
-
 }
