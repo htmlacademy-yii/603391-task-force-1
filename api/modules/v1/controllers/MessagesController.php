@@ -90,8 +90,9 @@ class MessagesController extends ActiveController
             $chatMessage->refresh();
             $response = Yii::$app->getResponse();
             $response->setStatusCode(201);
+
             $event = new EventEntity(EventEntity::GROUP_MESSAGE_ID);
-            $event->user_id = (Yii::$app->user->getId() == $task->executor_id)?$task->customer_id:$task->executor_id;
+            $event->user_id = (Yii::$app->user->identity->getId() == $task->executor_id)?$task->customer_id:$task->executor_id;
             $event->task_id = $taskId;
             $event->info = 'Новое сообщение в чате';
             Event::createNotification($event);

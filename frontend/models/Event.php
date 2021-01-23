@@ -128,10 +128,10 @@ class Event extends ActiveRecord
      */
     public static function sendEmailNotification(Event $event): void
     {
-        $addressee = User::findOrFail($event->user_id)->asArray()->one();
+        $addressee = User::findOrFail((int)$event->user_id, 'User not found');
         Yii::$app->mailer->compose()
             ->setFrom(Yii::$app->params['senderEmail'])
-            ->setTo($addressee['email'])
+            ->setTo($addressee->email)
             ->setSubject('Уведомление с сайта ' . Yii::$app->params['AppName'])
             ->setTextBody($event->info)
             ->setHtmlBody(sprintf('<b>%s</b>' , $event->info))
