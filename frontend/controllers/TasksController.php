@@ -8,6 +8,8 @@ use frontend\models\forms\ResponseTaskForm;
 use frontend\models\Profile;
 use frontend\models\Response;
 use Exception;
+use frontend\models\User;
+use TaskForce\Constant\UserRole;
 use TaskForce\TaskEntity;
 use yii;
 use frontend\models\Task;
@@ -41,16 +43,17 @@ class TasksController extends SecureController
         $modelsResponse = Response::findByTask($task->model);
         $ids = ArrayHelper::getColumn($modelsResponse, 'user_id');
         $existsUserResponse = in_array(Yii::$app->user->identity->getId(), $ids);
-        $taskAssistUserId = $task->getAssistUserId();
         $modelsFiles = File::findByTaskID($id);
-        $modelTaskUser = [];
+        $taskAssistUserId = $task->getAssistUserId();
+        $assistUserModel = [];
         if ($taskAssistUserId) {
-            $modelTaskUser = Profile::findByUserId($taskAssistUserId);
-            $modelTaskUser['countTask'] = Task::findCountByUserId($taskAssistUserId);
+            $assistUserModel = Profile::findByUserId($taskAssistUserId);
+            $assistUserModel['countTask'] = Task::findCountByUserId($taskAssistUserId);
+            $assistUserModel['isExecutor'] = (User::findOne($taskAssistUserId)->role === UserRole::EXECUTOR);
         }
 
         return $this->render('view', compact('modelTask', 'modelsFiles', 'modelsResponse',
-                                             'modelTaskUser', 'currentUserRole', 'availableActions',
+                                             'assistUserModel', 'currentUserRole', 'availableActions',
                                              'responseTaskForm', 'completeTaskForm', 'existsUserResponse'));
     }
 }
