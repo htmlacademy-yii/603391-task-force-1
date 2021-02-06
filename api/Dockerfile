@@ -1,4 +1,4 @@
-FROM yiisoftware/yii2-php:7.4-apache
+FROM php:8.0.1-apache
 
 # Change document root for Apache
-RUN sed -i -e 's|/app/web|/app/api/web|g' /etc/apache2/sites-available/000-default.conf
+RUN sed -i -e 's|/var/www/html|/app/api/web|g' /etc/apache2/sites-available/000-default.conf
