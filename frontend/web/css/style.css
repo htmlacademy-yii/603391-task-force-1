@@ -589,9 +589,14 @@ footer {
   max-width: 740px;
   display: flex;
   display: -webkit-box;
+  display: -webkit-flex;
   display: -ms-flexbox;
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
 }
 
 .search-task__categories legend {

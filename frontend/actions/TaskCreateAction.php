@@ -38,6 +38,5 @@ class TaskCreateAction extends Action
         $cities = City::getList();
 
         return $this->controller->render('create', compact('createTaskForm', 'categories', 'cities'));
-
     }
 }

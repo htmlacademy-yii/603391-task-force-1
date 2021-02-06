@@ -159,7 +159,7 @@ class TaskEntity
     /**
      * @return int
      */
-    public function getAssistUserId(): int
+    public function getContractorUserId(): int
     {
         return (Yii::$app->user->identity->getId() == $this->model->customer_id && $this->model->executor_id)
             ? $this->model->executor_id : $this->model->customer_id;
@@ -168,10 +168,17 @@ class TaskEntity
     /**
      * @return int
      */
-    public function getOwnerUserId(): int
+    public function getExecutorUserId(): int
     {
-        return (Yii::$app->user->identity->getId() == $this->model->executor_id)
-            ? $this->model->executor_id : $this->model->customer_id;
+        return $this->model->executor_id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCustomerUserId(): int
+    {
+        return $this->model->customer_id;
     }
 
     /**
@@ -197,6 +204,4 @@ class TaskEntity
 
         return true;
     }
-
 }
-

@@ -4,7 +4,7 @@ namespace frontend\actions;
 
 use frontend\models\Event;
 use TaskForce\Actions\RefuseAction;
-use TaskForce\EventEntity;
+use TaskForce\Constant\NotificationType;
 use TaskForce\Exception\TaskForceException;
 use TaskForce\TaskEntity;
 use Yii;
@@ -25,11 +25,11 @@ class TaskRefuseAction extends Action
         $task = new TaskEntity($id);
         if (Yii::$app->request->getIsPost()
             && $task->applyAction(RefuseAction::class)) {
-            $event = new EventEntity(EventEntity::GROUP_TASK_ID);
-            $event->user_id = $task->getOwnerUserId();
+            $event = new Event();
+            $event->user_id = $task->getCustomerUserId();
             $event->task_id = $id;
             $event->info = self::TASK_REFUSED;
-            Event::createNotification($event);
+            $event->create(NotificationType::TASK_ACTIONS);
             Yii::$app->session->setFlash('failure', self::TASK_REFUSED);
             $this->controller->goHome();
         }

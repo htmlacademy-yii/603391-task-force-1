@@ -3,10 +3,12 @@
 namespace TaskForce;
 
 use Exception;
+use frontend\models\Response;
 use TaskForce\Constant\UserRole;
 use TaskForce\Exception\TaskForceException;
 use Yii;
 use yii\db\ActiveRecord;
+use yii\web\NotFoundHttpException;
 
 class ResponseEntity
 {
@@ -19,12 +21,20 @@ class ResponseEntity
     public ?ActiveRecord $model;
     private ?ActiveRecord $modelTask;
 
+    /**
+     * ResponseEntity constructor.
+     * @param int $id
+     * @throws NotFoundHttpException
+     */
     public function __construct(int $id)
     {
-        $this->model = \frontend\models\Response::findOrFail($id, "Отклик с ID #$id не найден");
+        $this->model = Response::findOrFail($id, "Отклик с ID #$id не найден");
         $this->modelTask = $this->model->task;
     }
 
+    /**
+     * @return bool
+     */
     private function isCustomer(): bool
     {
         if (Yii::$app->user->identity->role === UserRole::CUSTOMER) {
@@ -33,21 +43,34 @@ class ResponseEntity
         return false;
     }
 
+    /**
+     * @return bool
+     */
     private function isNewTaskStatus(): bool
     {
         return ($this->modelTask->status === TaskEntity::STATUS_NEW);
     }
 
+    /**
+     * @return bool
+     */
     private function isNewStatus(): bool
     {
         return ($this->model->status === self::STATUS_NEW);
     }
 
+    /**
+     * @return bool
+     */
     private function isAllowAction(): bool
     {
         return ($this->isCustomer() && $this->isNewTaskStatus() && $this->isNewStatus());
     }
 
+    /**
+     * @return bool
+     * @throws TaskForceException
+     */
     public function confirm(): bool
     {
         if ($this->isAllowAction()) {
@@ -71,6 +94,10 @@ class ResponseEntity
         return false;
     }
 
+    /**
+     * @return bool
+     * @throws TaskForceException
+     */
     public function cancel(): bool
     {
         if ($this->isAllowAction()) {
@@ -85,6 +112,4 @@ class ResponseEntity
 
         return false;
     }
-
 }
-

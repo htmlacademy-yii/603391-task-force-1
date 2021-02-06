@@ -2,42 +2,22 @@
 
 namespace api\modules\v1\controllers;
 
+use api\modules\v1\models\requests\NewMessageRequest;
 use frontend\models\Event;
 use frontend\models\Task;
 use api\modules\v1\models\Message;
-use TaskForce\EventEntity;
+use TaskForce\Constant\NotificationType;
 use TaskForce\Exception\TaskForceException;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\data\ActiveDataProvider;
-use yii\filters\Cors;
-use yii\rest\ActiveController;
-use yii\web\ForbiddenHttpException;
-use yii\web\NotFoundHttpException;
 use yii\web\ServerErrorHttpException;
 
-class MessagesController extends ActiveController
+class MessagesController extends ApiController
 {
+    const NEW_MESSAGE = 'Новое сообщение в чате';
     public $modelClass = Message::class;
     public $enableCsrfValidation = false;
-
-    function behaviors()
-    {
-        $behaviors = parent::behaviors();
-
-        return array_merge(
-            $behaviors,
-            [
-                'corsFilter' => [
-                    'class' => Cors::class,
-                    'cors' => [
-                        'Access-Control-Request-Method' => ['GET, POST, OPTIONS'],
-                        'Access-Control-Allow-Credentials' => true,
-                        'Access-Control-Max-Age' => 3600,
-                    ]
-                ],
-            ]
-        );
-    }
 
     public function actions()
     {
@@ -52,7 +32,7 @@ class MessagesController extends ActiveController
         return $actions;
     }
 
-    public function prepareDataProvider()
+    public function prepareDataProvider(): ActiveDataProvider
     {
         return new ActiveDataProvider(
             [
@@ -68,38 +48,39 @@ class MessagesController extends ActiveController
 
     /**
      * @return mixed
-     * @throws ForbiddenHttpException
      * @throws ServerErrorHttpException
      * @throws TaskForceException
-     * @throws NotFoundHttpException
+     * @throws InvalidConfigException
      */
     public function actionCreate()
     {
-        $request = Yii::$app->request;
-        $userId = Yii::$app->user->identity->getId();
-        $taskId = $request->post('task_id');
-        $task = Task::findOrFail( $taskId,"Task with ID $taskId not found.");
-        if (!($userId === $task->executor_id || $userId === $task->customer_id)) {
-            throw new ForbiddenHttpException('No access rights ' . $userId);
+        $model = new NewMessageRequest();
+        $model->load(Yii::$app->getRequest()->getBodyParams(), '');
+        if (!$model->validate()) {
+            foreach ($model->getErrors() as $key => $value) {
+                throw new ServerErrorHttpException($key . ': ' . $value[0]);
+            }
         }
+
         $chatMessage = new $this->modelClass;
-        $chatMessage->message = $request->post('message');
-        $chatMessage->task_id = $taskId;
-        $chatMessage->user_id = (int)$userId;
-        if ($chatMessage->save()) {
-            $chatMessage->refresh();
-            $response = Yii::$app->getResponse();
-            $response->setStatusCode(201);
+        $chatMessage->message = $model->message;
+        $chatMessage->task_id = $model->task_id;
+        $chatMessage->user_id = Yii::$app->user->identity->getId();
 
-            $event = new EventEntity(EventEntity::GROUP_MESSAGE_ID);
-            $event->user_id = (Yii::$app->user->identity->getId() == $task->executor_id)?$task->customer_id:$task->executor_id;
-            $event->task_id = $taskId;
-            $event->info = 'Новое сообщение в чате';
-            Event::createNotification($event);
-
-        } else {
+        if (!$chatMessage->save()) {
             throw new ServerErrorHttpException('Error creating message');
         }
+        $chatMessage->refresh();
+        $response = Yii::$app->getResponse();
+        $response->setStatusCode(201);
+
+        $task = Task::findOne($model->task_id);
+        $event = new Event();
+        $event->user_id = (Yii::$app->user->identity->getId()
+            == $task->executor_id) ? $task->customer_id : $task->executor_id;
+        $event->task_id = $model->task_id;
+        $event->info = self::NEW_MESSAGE;
+        $event->create(NotificationType::NEW_MESSAGE);
 
         return $chatMessage;
     }

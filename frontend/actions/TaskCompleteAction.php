@@ -6,15 +6,18 @@ use frontend\models\Event;
 use frontend\models\forms\CompleteTaskForm;
 use TaskForce\Actions\CompleteAction;
 use TaskForce\Actions\FailedAction;
-use TaskForce\EventEntity;
+use TaskForce\Constant\NotificationType;
 use TaskForce\Exception\TaskForceException;
 use TaskForce\TaskEntity;
 use Yii;
 use yii\base\Action;
 use yii\db\Exception;
+use yii\web\NotFoundHttpException;
 
 class TaskCompleteAction extends Action
 {
+    const COMPLEATE_TASK = 'Завершение задания';
+
     /**
      * @param int $id
      * @return string
@@ -38,11 +41,11 @@ class TaskCompleteAction extends Action
                     $task->createOpinion($completeTaskForm);
                     $transaction->commit();
 
-                    $event = new EventEntity(EventEntity::GROUP_TASK_ID);
-                    $event->user_id = $task->getAssistUserId();
+                    $event = new Event();
+                    $event->user_id = $task->getExecutorUserId();
                     $event->task_id = $id;
-                    $event->info = 'Завершение задания';
-                    Event::createNotification($event);
+                    $event->info = self::COMPLEATE_TASK;
+                    $event->create(NotificationType::TASK_ACTIONS);
 
                     $this->controller->goHome();
                 } catch (Exception $e) {

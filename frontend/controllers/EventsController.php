@@ -12,9 +12,6 @@ class EventsController extends SecureController
      */
     public function actionClear(): void
     {
-        if (!$userId = Yii::$app->user->getId()) {
-            return;
-        }
-        Event::updateAll(['viewed' => 1], "user_id=$userId");
+        Event::updateAll(['viewed' => 1],  ['=', 'user_id', Yii::$app->user->getId()]);
     }
 }

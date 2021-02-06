@@ -21,15 +21,11 @@ use yii\helpers\Url;
 ?>
 <main class="page-main">
     <div class="main-container page-container">
-
         <?= $this->render('_filters_menu-toggle', ['currentFilter' => $currentFilter]) ?>
-
-
         <section class="my-list">
             <div class="my-list__wrapper">
                 <h1>Мои задания</h1>
                 <?php
-
                 foreach ($modelTasks as $modelTask):?>
                     <div class="new-task__card">
                         <div class="new-task__title">
@@ -59,15 +55,17 @@ use yii\helpers\Url;
                         <div class="feedback-card__top ">
                             <a href="<?= Url::to(['users/view', 'id' => $modelTask['customer_id']]) ?>">
                                 <img src="<?= Url::base(
-                                ) . '/uploads/avatars/' . ($response['avatar'] ?? 'no-avatar.jpg') ?>" width="36"
+                                ) . '/uploads/avatars/' . ($modelTask['avatar'] ?? 'no-avatar.jpg') ?>" width="36"
                                      height="36" alt="avatar">
                             </a>
                             <div class="feedback-card__top--name my-list__bottom">
                                 <p class="link-name"><a href="#" class="link-regular"><?= $modelTask['user_name'] ?></a>
                                 </p>
+                                <?php if ($modelTask['cnt']>0):?>
                                 <a href="<?= Url::to(['tasks/view', 'id' => $modelTask['id']]) ?>"
-                                   class="my-list__bottom-chat  my-list__bottom-chat--new"><b><?= $modelTask['messages'] ?? 0 ?></b></a>
-                                <?= RatingWidget::widget(['rate' => $modelTask['rate']]) ?>
+                                   class="my-list__bottom-chat  my-list__bottom-chat--new"><b><?= $modelTask['cnt'] ?? 0 ?></b></a>
+                                <? endif; ?>
+                                <?= RatingWidget::widget(['rate' => $modelTask['rate'] ?? 0]) ?>
                             </div>
                         </div>
                     </div>

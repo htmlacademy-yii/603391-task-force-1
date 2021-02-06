@@ -44,12 +44,12 @@ class TasksController extends SecureController
         $ids = ArrayHelper::getColumn($modelsResponse, 'user_id');
         $existsUserResponse = in_array(Yii::$app->user->identity->getId(), $ids);
         $modelsFiles = File::findByTaskID($id);
-        $taskAssistUserId = $task->getAssistUserId();
+        $taskContractorUserId = $task->getContractorUserId();
         $assistUserModel = [];
-        if ($taskAssistUserId) {
-            $assistUserModel = Profile::findByUserId($taskAssistUserId);
-            $assistUserModel['countTask'] = Task::findCountByUserId($taskAssistUserId);
-            $assistUserModel['isExecutor'] = (User::findOne($taskAssistUserId)->role === UserRole::EXECUTOR);
+        if ($taskContractorUserId) {
+            $assistUserModel = Profile::findByUserId($taskContractorUserId);
+            $assistUserModel['countTask'] = Task::findCountByUserId($taskContractorUserId);
+            $assistUserModel['isExecutor'] = (User::findOne($taskContractorUserId)->role === UserRole::EXECUTOR);
         }
 
         return $this->render('view', compact('modelTask', 'modelsFiles', 'modelsResponse',

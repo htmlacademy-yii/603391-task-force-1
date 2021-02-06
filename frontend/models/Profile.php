@@ -2,6 +2,7 @@
 
 namespace frontend\models;
 
+use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -131,5 +132,13 @@ class Profile extends ActiveRecord
             ->where(['p.id' => $id])
             ->limit(1)
             ->asArray()->one();
+    }
+
+
+    public static function currentProfile()
+    {
+        $userId = Yii::$app->user->identity->getId();
+
+        return (int)Profile::findByUserId($userId)['profile_id'];
     }
 }

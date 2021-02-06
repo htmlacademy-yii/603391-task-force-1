@@ -307,11 +307,15 @@ class User extends ActiveRecord implements IdentityInterface
         return $query;
     }
 
+    public static function currentUser()
+    {
+        return  User::findOrFail(Yii::$app->user->identity->getId(), 'Пользователь не найден');
+    }
+
     public static function updateUserRoleBySpecialisations()
     {
-        $userId = Yii::$app->user->identity->getId();
-        $profileId = (int)Profile::findByUserId($userId)['profile_id'];
-        $user = User::findOne($userId);
+        $profileId = Profile::currentProfile();
+        $user = User::currentUser();
         $specialisations = Specialization::findItemsByProfileId((int)$profileId);
         if (count($specialisations) === 0) {
             $user->role = UserRole::CUSTOMER;
@@ -320,4 +324,5 @@ class User extends ActiveRecord implements IdentityInterface
         }
         $user->update();
     }
+
 }

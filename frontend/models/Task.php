@@ -4,8 +4,10 @@ namespace frontend\models;
 
 use frontend\models\forms\TasksFilterForm;
 use TaskForce\Constant\MyTask;
+use TaskForce\Constant\NotificationType;
 use TaskForce\Exception\TaskForceException;
 use TaskForce\Helpers\Declination;
+use TaskForce\ResponseEntity;
 use TaskForce\TaskEntity;
 use Yii;
 use yii\db\ActiveQuery;
@@ -266,9 +268,7 @@ class Task extends ActiveRecord
      * Find Task By ID
      * @param int|null $id
      * @return array
-     * @throws TaskForceException
      * @throws NotFoundHttpException
-     * @throws TaskForceException
      */
     public static function findTaskTitleInfoByID(int $id = null): ?array
     {
@@ -305,16 +305,39 @@ class Task extends ActiveRecord
         return self::find()->where(['id' => $id])->andWhere(['status' => TaskEntity::STATUS_COMPLETE])->count();
     }
 
-     public static function getTaskByStatus(string $filterRequest)
+    public static function getTaskByStatus(string $filterRequest): array
     {
-        $userId = Yii::$app->user->identity->getId();
+        $userId = Yii::$app->user->identity->id;
 
-        return self::find()->select(['t.*', 'c.name as cat_name', 'u.name as user_name', 'p.avatar','p.rate'])
+        $countReviews = Event::find()
+            ->select('r.task_id, count(*) AS cnt')
+            ->from('event as r')
+            ->where(['notification_id' => NotificationType::NEW_MESSAGE])
+            ->andWhere(['viewed'=>0])
+            ->andWhere(['user_id'=>$userId])
+            ->groupBy('task_id');
+
+        return self::find()->select(['t.*','cr.cnt', 'c.name as cat_name', 'u.name as user_name', 'p.avatar', 'p.rate'])
             ->from('task t')
             ->join('LEFT JOIN', 'category as c', 't.category_id = c.id')
-            ->join('LEFT JOIN', 'user as u', 't.customer_id = u.id')
-            ->join('LEFT JOIN', 'profile as p', 't.customer_id = p.user_id')
+            ->join('LEFT JOIN', 'user as u', 't.executor_id = u.id')
+            ->join('LEFT JOIN', 'profile as p', 't.executor_id = p.user_id')
+            ->join('LEFT JOIN', ['cr' => $countReviews], 't.id = cr.task_id')
             ->where(['or', ['t.customer_id' => $userId], ['t.executor_id' => $userId]])
-            ->andWhere(['status' => MyTask::STATUS_BY_FILTER[$filterRequest]])->asArray()->all();
+            ->andWhere(['status' => MyTask::STATUS_BY_FILTER[$filterRequest]])
+            ->asArray()
+            ->all();
+    }
+
+    /**
+     * @param int $taskId
+     * @return array|null
+     * @throws NotFoundHttpException
+     */
+    public static function getBothUsers(int $taskId): array
+    {
+        $task = self::findOrFail($taskId);
+
+        return [$task->customer_id, $task->executor_id];
     }
 }

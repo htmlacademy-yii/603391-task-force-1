@@ -7,7 +7,7 @@ use yii\db\ActiveQuery;
 /**
  * This is the ActiveQuery class for [[Notification]].
  *
- * @see Notification
+ * @see NotificationType
  */
 class NotificationQuery extends ActiveQuery
 {

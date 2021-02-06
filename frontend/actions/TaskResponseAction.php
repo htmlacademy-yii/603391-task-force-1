@@ -6,7 +6,7 @@ use frontend\models\Event;
 use frontend\models\forms\ResponseTaskForm;
 use frontend\models\Response;
 use TaskForce\Actions\ResponseAction;
-use TaskForce\EventEntity;
+use TaskForce\Constant\NotificationType;
 use TaskForce\Exception\TaskForceException;
 use TaskForce\TaskEntity;
 use Throwable;
@@ -15,6 +15,8 @@ use yii\base\Action;
 
 class TaskResponseAction extends Action
 {
+    const NEW_REVIEW = 'Новый отклик к заданию';
+
     /**
      * @param int $id
      * @return string
@@ -36,11 +38,11 @@ class TaskResponseAction extends Action
             $responseTaskForm->load($post);
             if ($responseTaskForm->validate() && in_array(ResponseAction::getTitle(), $task->getAvailableActions())) {
                 $responseTaskForm->createResponse($id);
-                $event = new EventEntity(EventEntity::GROUP_REVIEW_ID);
-                $event->user_id = $task->getAssistUserId();
+                $event = new Event();
+                $event->user_id = $task->getCustomerUserId();
                 $event->task_id = $id;
-                $event->info = 'Новый отклик к заданию';
-                Event::createNotification($event);
+                $event->info = self::NEW_REVIEW;
+                $event->create(NotificationType::NEW_REVIEW);
             }
         }
 

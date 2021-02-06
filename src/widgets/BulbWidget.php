@@ -13,7 +13,7 @@ class BulbWidget extends Widget
         parent::run();
 
         if ($isLoggedUser = Yii::$app->user->identity) {
-            $eventsCount = Event::findEvents($isLoggedUser->id);
+            $eventsCount = Event::findEventsForUser($isLoggedUser->id);
         }
 
         return $this->render('@widgets/bulb/view', compact('eventsCount'));

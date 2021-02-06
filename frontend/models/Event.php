@@ -2,13 +2,13 @@
 
 namespace frontend\models;
 
-use TaskForce\EventEntity;
+use TaskForce\Constant\NotificationType;
 use TaskForce\Exception\TaskForceException;
+use TaskForce\EventNotificationService;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
-use yii\web\NotFoundHttpException;
 
 /**
  * This is the model class for table "event".
@@ -21,7 +21,7 @@ use yii\web\NotFoundHttpException;
  * @property string|null $info
  * @property int|null $viewed
  *
- * @property Notification $notification
+ * @property NotificationType $notification
  * @property Task $task
  * @property User $user
  */
@@ -108,7 +108,7 @@ class Event extends ActiveRecord
      * @param int $userId
      * @return array
      */
-    public static function findEvents(int $userId): array
+    public static function findEventsForUser(int $userId): array
     {
         return self::find()
             ->select(['notification_id,task_id, user_id, t.name as title,info, COUNT(*) AS cnt'])
@@ -123,38 +123,34 @@ class Event extends ActiveRecord
     }
 
     /**
-     * @param Event $event
-     * @throws NotFoundHttpException
-     */
-    public static function sendEmailNotification(Event $event): void
-    {
-        $addressee = User::findOrFail((int)$event->user_id, 'User not found');
-        Yii::$app->mailer->compose()
-            ->setFrom(Yii::$app->params['senderEmail'])
-            ->setTo($addressee->email)
-            ->setSubject('Уведомление с сайта ' . Yii::$app->params['AppName'])
-            ->setTextBody($event->info)
-            ->setHtmlBody(sprintf('<b>%s</b>' , $event->info))
-            ->send();
-    }
-
-    /**
-     * @param EventEntity $eventEntity
+     * @param int $typeId
      * @throws TaskForceException
-     * @throws NotFoundHttpException
      */
-    public static function createNotification(EventEntity $eventEntity): void
+    public function create(int $typeId): void
     {
-        $event = new Event();
-        $event->user_id = $eventEntity->user_id;
-        $event->notification_id = $eventEntity->group_id;
-        $event->info = $eventEntity->info;
-        $event->task_id = $eventEntity->task_id;
-        $event->viewed = 0;
-        $event->date = new Expression('NOW()');
-        if (!$event->save()) {
+        if (!in_array($typeId, NotificationType::LIST)) {
+            throw new TaskForceException('Не верный тип уведомления');
+        }
+        $this->notification_id = $typeId;
+        $this->viewed = 0;
+        $this->date = new Expression('NOW()');
+
+        if (!$this->save()) {
             throw new TaskForceException('Ошибка создания уведомления.');
         }
-        self::sendEmailNotification($event);
+
+        EventNotificationService::sendEmail($this);
+    }
+
+    public static function findNewMessagesByTask(int $taskId): int
+    {
+        return self::find()->where(
+            [
+                'user_id' => Yii::$app->user->identity->getId(),
+                'task_id' => $taskId,
+                'viewed' => false,
+                'notification_id' => NotificationType::NEW_MESSAGE
+            ]
+        )->count();
     }
 }

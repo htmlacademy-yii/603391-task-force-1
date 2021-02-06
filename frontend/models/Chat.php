@@ -68,11 +68,11 @@ class Chat extends ActiveRecord
     }
 
     /**
-     * Gets query for [[Consumer]].
+     * Gets query for [[Customer]].
      *
      * @return ActiveQuery|UserQuery
      */
-    public function getConsumer()
+    public function getCustomer()
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }

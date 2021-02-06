@@ -3,13 +3,12 @@
 namespace api\modules\v1\controllers;
 
 use api\modules\v1\models\TaskList;
-use yii\rest\ActiveController;
 
-class TasksController extends ActiveController
+class TasksController extends ApiController
 {
     public $modelClass = TaskList::class;
 
-    public function actions()
+    public function actions(): array
     {
         $actions = parent::actions();
         unset(

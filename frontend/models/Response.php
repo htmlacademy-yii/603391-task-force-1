@@ -2,7 +2,7 @@
 
 namespace frontend\models;
 
-use TaskForce\Exception\TaskForceException;
+use TaskForce\ResponseEntity;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -59,7 +59,7 @@ class Response extends ActiveRecord
             [['description', 'user_id', 'task_id'], 'required'],
             [['task_id', 'user_id', 'price'], 'integer'],
             [['description', 'status'], 'string'],
-            [['status'], 'in', 'range' => \TaskForce\ResponseEntity::LIST],
+            [['status'], 'in', 'range' => ResponseEntity::LIST],
             [
                 ['task_id'],
                 'exist',
@@ -149,7 +149,6 @@ class Response extends ActiveRecord
      *
      * @param int $taskId
      * @return array
-     * @throws TaskForceException
      */
     public static function findByTaskIdCurrentUserId(int $taskId): array
     {
