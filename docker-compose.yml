@@ -32,17 +32,16 @@ services:
       # Mount source-code for development
       - ./:/app
 
-  db:
+  mysql:
     image: mariadb:10.3
     ports:
-      - 22222:3306
+      - 3306:3306
     environment:
       - MYSQL_ROOT_PASSWORD=verysecret
       - MYSQL_DATABASE=task_force
       - MYSQL_USER=root
       - MYSQL_PASSWORD=secret
     restart: always
-
 
   adminer:
     image: adminer
