@@ -44,7 +44,6 @@ class YandexMapWidget extends Widget
                     zoom: 17,
                 });
             });
-        ymaps.ready(init);
         MAPJS;
         $mapJS = sprintf($mapJS, $this->lat, $this->lng);
         $view->registerJS($mapJS);

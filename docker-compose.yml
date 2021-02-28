@@ -42,15 +42,15 @@ services:
       - ./:/app
       - ./docker/nginx/Logs:/var/log/nginx/
     links:
-      - php-fpm
+      - frontend
     networks:
       - app-network
 
-  php-fpm:
+  frontend:
     build:
       context: .
       dockerfile: ./docker/php/php-fpm.Dockerfile
-    container_name: php-fpm
+    container_name: frontend
     restart: unless-stopped
     volumes:
       - ~/.composer-docker/cache:/root/.composer/cache:delegated

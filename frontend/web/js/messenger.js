@@ -35,8 +35,8 @@ Vue.component('chat', {
         headers: {
            'Content-Type': 'application/json',
         },
-        credentials: 'include',
-        withCredentials: true,
+        // credentials: 'include',
+        // withCredentials: true,
         body: JSON.stringify({message: this.message, task_id: this.task})
       })
       .then(result => {
