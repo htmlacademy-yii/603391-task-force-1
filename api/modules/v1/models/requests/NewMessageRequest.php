@@ -46,6 +46,9 @@ class NewMessageRequest extends Model
             return;
         }
         $userId = Yii::$app->user->id;
+        if (!$userId) {
+            $this->addError($attribute, 'Пользователь не аутентифицирован.');
+        }
         if (!$userId || !in_array($userId, Task::getBothUsers($this->$attribute))) {
             $this->addError($attribute, 'Нет прав на задачу.');
         }

@@ -39,7 +39,7 @@ return [
             'identityCookie' => [
                 'name' => '_identity',
                 'httpOnly' => true,
-                'domain' =>  $params['mainURL'],
+                'domain' =>  '.' . $params['mainURL'],
                 'secure' => true,
                 'path' => '/',
             ],
@@ -47,7 +47,7 @@ return [
         'session' => [
             'name' => 'advanced',
             'cookieParams' => [
-                'domain' => $params['mainURL'],
+                'domain' => '.' . $params['mainURL'],
                 'httpOnly' => true,
                 'secure' => true,
                 'path' => '/'

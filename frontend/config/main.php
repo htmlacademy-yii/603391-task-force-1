@@ -17,6 +17,8 @@ return [
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
         'request' => [
+            'csrfCookie' => [
+                'domain' => '.' . $params['mainURL']],
             'csrfParam' => '_csrf-frontend',
             'parsers' => [
                 'application/json' => [
@@ -41,7 +43,7 @@ return [
                 'name' => '_identity',
                 'path' => '/',
                 'httpOnly' => true,
-                'domain' => $params['mainURL'],
+                'domain' => '.' . $params['mainURL'],
                 'sameSite' => 'None',
                 'secure' => true
             ],
@@ -50,7 +52,7 @@ return [
         'session' => [
             'name' => 'advanced',
             'cookieParams' => [
-                'domain' => $params['mainURL'],
+                'domain' => '.' . $params['mainURL'],
                 'httpOnly' => true,
                 'secure' => true,
                 'path' => '/',
