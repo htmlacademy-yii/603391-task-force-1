@@ -40,17 +40,17 @@ services:
       - "443:443"
     volumes:
       - ./:/app
-      - ./docker/nginx/Logs:/var/log/nginx/
+      - ./docker/nginx/logs:/var/log/nginx/
     links:
-      - frontend
+      - php-fpm
     networks:
       - app-network
 
-  frontend:
+  php-fpm:
     build:
       context: .
       dockerfile: ./docker/php/php-fpm.Dockerfile
-    container_name: frontend
+    container_name: php-fpm
     restart: unless-stopped
     volumes:
       - ~/.composer-docker/cache:/root/.composer/cache:delegated
