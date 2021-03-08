@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS `task_force`;
-USE `task_force`;
+CREATE DATABASE IF NOT EXISTS task_force CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE task_force;
 
 CREATE TABLE IF NOT EXISTS `status` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
