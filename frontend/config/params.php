@@ -5,4 +5,5 @@ return [
     'uploadsDir' => 'uploads',
     'worksDir' => 'works',
     'maxWorksFiles' => 6,
+    'maxTasksInLanding' => 4,
 ];
