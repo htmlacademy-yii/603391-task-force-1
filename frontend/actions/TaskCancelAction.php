@@ -7,6 +7,7 @@ use TaskForce\Exception\TaskForceException;
 use TaskForce\TaskEntity;
 use Yii;
 use yii\base\Action;
+use yii\web\NotFoundHttpException;
 
 class TaskCancelAction extends Action
 {
@@ -16,13 +17,14 @@ class TaskCancelAction extends Action
      * @param int $id
      * @return string
      * @throws TaskForceException
+     * @throws NotFoundHttpException
      */
     public function run(int $id)
     {
         $task = new TaskEntity($id);
         if (Yii::$app->request->getIsPost()
-            && $task->applyAction(CancelAction::class)) {
-            Yii::$app->session->setFlash('failure', self::TASK_CANCELED);
+            && $task->applyAction(action: CancelAction::class)) {
+            Yii::$app->session->setFlash(key: 'failure', value: self::TASK_CANCELED);
             $this->controller->goHome();
         }
 

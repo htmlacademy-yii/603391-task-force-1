@@ -8,15 +8,11 @@ use Yii;
 
 class Declination
 {
-    public string $firstForm = '';
-    public string $secondForm = '';
-    public string $thirdForm = '';
-
-    public function __construct(string $first, string $second, string $third)
-    {
-        $this->firstForm = $first;
-        $this->secondForm = $second;
-        $this->thirdForm = $third;
+    public function __construct(
+        public string $first = '',
+        public string $second = '',
+        public string $third = ''
+    ) {
     }
 
     private function getWordsList(): array
@@ -31,6 +27,7 @@ class Declination
     public static function caseType(?int $n): int
     {
         $form = ($n % 10 >= 2 && $n % 10 <= 4 && ($n % 100 < 10 || $n % 100 >= 20) ? 1 : 2);
+
         return ($n % 10 == 1 && $n % 100 != 11) ? 0 : $form;
     }
 
@@ -41,6 +38,7 @@ class Declination
     public function getWord(?int $value = 0): string
     {
         $caseWords = $this->getWordsList();
+
         return ' ' . $caseWords[self::caseType($value)];
     }
 

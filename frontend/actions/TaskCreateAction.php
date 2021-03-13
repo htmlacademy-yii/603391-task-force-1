@@ -16,20 +16,20 @@ class TaskCreateAction extends Action
      * @return string
      * @throws FileException
      */
-    public function run()
+    public function run(): string
     {
         $userId = Yii::$app->user->getId();
         $createTaskForm = new CreateTaskForm();
 
         if ($request = Yii::$app->request->post()) {
             $createTaskForm->load($request);
-            $createTaskForm->files = UploadedFile::getInstances($createTaskForm, 'files');
+            $createTaskForm->files = UploadedFile::getInstances(model: $createTaskForm, attribute: 'files');
             if ($createTaskForm->validate()) {
                 $taskId = $createTaskForm->saveData($userId);
                 if ($taskId) {
-                    $this->controller->redirect('tasks/view' . '/' . $taskId);
+                    $this->controller->redirect(url: 'tasks/view' . '/' . $taskId);
                 } else {
-                    $createTaskForm->addError('', 'Задача не создана, попробуйте позже.');
+                    $createTaskForm->addError(attribute: '', error:'Задача не создана, попробуйте позже.');
                 }
             }
         }

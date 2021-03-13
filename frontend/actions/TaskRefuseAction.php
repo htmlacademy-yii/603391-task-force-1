@@ -9,6 +9,7 @@ use TaskForce\Exception\TaskForceException;
 use TaskForce\TaskEntity;
 use Yii;
 use yii\base\Action;
+use yii\web\NotFoundHttpException;
 
 class TaskRefuseAction extends Action
 {
@@ -18,9 +19,9 @@ class TaskRefuseAction extends Action
      * Refuse Action
      * @param int $id
      * @return string
-     * @throws TaskForceException
+     * @throws TaskForceException|NotFoundHttpException
      */
-    public function run(int $id)
+    public function run(int $id): string
     {
         $task = new TaskEntity($id);
         if (Yii::$app->request->getIsPost()
@@ -29,8 +30,8 @@ class TaskRefuseAction extends Action
             $event->user_id = $task->getCustomerUserId();
             $event->task_id = $id;
             $event->info = self::TASK_REFUSED;
-            $event->create(NotificationType::TASK_ACTIONS);
-            Yii::$app->session->setFlash('failure', self::TASK_REFUSED);
+            $event->create(typeId: NotificationType::TASK_ACTIONS);
+            Yii::$app->session->setFlash(key:'failure', value: self::TASK_REFUSED);
             $this->controller->goHome();
         }
 

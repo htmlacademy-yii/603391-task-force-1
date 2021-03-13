@@ -21,7 +21,7 @@ class TaskCompleteAction extends Action
     /**
      * @param int $id
      * @return string
-     * @throws TaskForceException
+     * @throws TaskForceException|NotFoundHttpException
      */
     public function run(int $id)
     {
@@ -48,7 +48,7 @@ class TaskCompleteAction extends Action
                     $event->create(NotificationType::TASK_ACTIONS);
 
                     $this->controller->goHome();
-                } catch (Exception $e) {
+                } catch (Exception) {
                     $transaction->rollBack();
                 }
             }

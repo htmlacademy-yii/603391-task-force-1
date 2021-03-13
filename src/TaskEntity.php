@@ -10,6 +10,7 @@ use TaskForce\Constant\UserRole;
 use TaskForce\Exception\TaskForceException;
 use Throwable;
 use Yii;
+use yii\web\NotFoundHttpException;
 
 /**
  * Class Task
@@ -68,6 +69,11 @@ class TaskEntity
     private ?int $customerId;
     private string $status;
 
+    /**
+     * TaskEntity constructor.
+     * @param int $taskId
+     * @throws NotFoundHttpException
+     */
     public function __construct(int $taskId)
     {
         $this->model = Task::findOrFail($taskId, "Task with ID #$taskId not found.");
@@ -77,7 +83,7 @@ class TaskEntity
     }
 
     /**
-     * @return array|string[]
+     * @return array
      */
     public static function getAllStatuses(): array
     {
@@ -85,7 +91,7 @@ class TaskEntity
     }
 
     /**
-     * @return array|string[]
+     * @return array
      */
     public static function getAllActions(): array
     {

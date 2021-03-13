@@ -23,7 +23,7 @@ class TaskResponseAction extends Action
      * @throws TaskForceException
      * @throws Throwable
      */
-    public function run(int $id)
+    public function run(int $id): string
     {
         $task = new TaskEntity($id);
         $existResponse = Response::findByTaskIdCurrentUserId($id);

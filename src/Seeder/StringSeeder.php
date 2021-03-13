@@ -4,11 +4,8 @@ namespace TaskForce\Seeder;
 
 class StringSeeder extends Seeder
 {
-    private string $string;
-
-    public function __construct(string $value)
+    public function __construct(private string $string)
     {
-        $this->string =  $value;
     }
 
     public function getData(): string

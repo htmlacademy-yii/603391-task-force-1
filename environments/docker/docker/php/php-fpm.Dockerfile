@@ -1,4 +1,4 @@
-FROM php:8.0.2-fpm
+FROM php:8.0.3-fpm
 RUN docker-php-ext-install pdo_mysql
 RUN apt-get update
 RUN apt-get -y install  mc
