@@ -9,9 +9,9 @@ use Yii;
 class Declination
 {
     public function __construct(
-        public string $first = '',
-        public string $second = '',
-        public string $third = ''
+        public string $firstForm = '',
+        public string $secondForm = '',
+        public string $thirdForm = ''
     ) {
     }
 

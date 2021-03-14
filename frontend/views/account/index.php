@@ -58,7 +58,7 @@ use yii\widgets\MaskedInput;
                             ->field(
                                 $modelAccountForm,
                                 'name',
-                                ['options' => ['tag' => 'div', 'class' => 'account__input account__input--name']]
+                                ['options' => ['tag' => 'div', 'class' => 'field-container account__input account__input--name']]
                             )
                             ->label('Ваше имя')
                             ->textInput(
@@ -73,7 +73,7 @@ use yii\widgets\MaskedInput;
                             ->field(
                                 $modelAccountForm,
                                 'email',
-                                ['options' => ['tag' => 'div', 'class' => 'account__input account__input--email']]
+                                ['options' => ['tag' => 'div', 'class' => 'field-container account__input account__input--email']]
                             )
                             ->label('Электронная почта')
                             ->textInput(
@@ -88,7 +88,7 @@ use yii\widgets\MaskedInput;
                             ->field(
                                 $modelAccountForm,
                                 'cityId',
-                                ['options' => ['tag' => 'div', 'class' => 'account__input account__input--name']]
+                                ['options' => ['tag' => 'div', 'class' => 'field-container account__input account__input--address']]
                             )
                             ->label('Город')
                             ->dropDownList(
@@ -104,7 +104,7 @@ use yii\widgets\MaskedInput;
                             ->field(
                                 $modelAccountForm,
                                 'birthday',
-                                ['options' => ['tag' => 'div', 'class' => 'account__input account__input--date']]
+                                ['options' => ['tag' => 'div', 'class' => 'field-container account__input account__input--date']]
                             )
                             ->label('День рождения')
                             ->textInput(
@@ -120,7 +120,7 @@ use yii\widgets\MaskedInput;
                             ->field(
                                 $modelAccountForm,
                                 'info',
-                                ['options' => ['tag' => 'div', 'class' => 'account__input account__input--info']]
+                                ['options' => ['tag' => 'div', 'class' => 'field-container account__input account__input--info']]
                             )
                             ->label('Информация о себе')
                             ->textarea(
@@ -142,7 +142,7 @@ use yii\widgets\MaskedInput;
                                 $modelCategoriesForm,
                                 sprintf('categories[%s]', $key),
                                 [
-                                    'template' => '{input}{label}',
+                                    'template' => '<label class="checkbox__legend">{input}{hint}</label>',
                                     'options' => ['tag' => false]
                                 ]
                             )
@@ -154,10 +154,10 @@ use yii\widgets\MaskedInput;
                                     ],
                                     false
                                 )
-                                ->label(
+                                ->hint(
                                     $label,
-                                    [
-                                        'for' => $key,
+                                    ['tag'=>'span',
+
                                         'class' => false,
                                     ]
                                 ); ?>
@@ -244,7 +244,7 @@ use yii\widgets\MaskedInput;
                                 $modelNotificationsForm,
                                 sprintf('notifications[%s]', $key),
                                 [
-                                    'template' => '{input}{label}',
+                                    'template' => '<label class="checkbox__legend">{input}{hint}</label>',
                                     'options' => ['tag' => false]
                                 ]
                             )
@@ -256,10 +256,10 @@ use yii\widgets\MaskedInput;
                                     ],
                                     false
                                 )
-                                ->label(
+                                ->hint(
                                     $label,
-                                    [
-                                        'for' => 'notification' . $key,
+                                    ['tag'=>'span',
+
                                         'class' => false,
                                     ]
                                 ); ?>
@@ -271,7 +271,7 @@ use yii\widgets\MaskedInput;
                             $modelAccountForm,
                             'showMyContact',
                             [
-                                'template' => '{input}{label}',
+                                'template' => '<label class="checkbox__legend">{input}{hint}</label>',
                                 'options' => ['tag' => false]
                             ]
                         )
@@ -283,19 +283,19 @@ use yii\widgets\MaskedInput;
                                 ],
                                 false
                             )
-                            ->label(
-                                'Показывать мои контакты только заказчику',
-                                [
+                            ->hint(
+                                $label,
+                                ['tag'=>'span',
+
                                     'class' => false,
                                 ]
                             ); ?>
-
 
                         <?= $form->field(
                             $modelAccountForm,
                             'dontShowProfile',
                             [
-                                'template' => '{input}{label}',
+                                'template' => '<label class="checkbox__legend">{input}{hint}</label>',
                                 'options' => ['tag' => false]
                             ]
                         )
@@ -307,9 +307,9 @@ use yii\widgets\MaskedInput;
                                 ],
                                 false
                             )
-                            ->label(
+                            ->hint(
                                 'Не показывать мой профиль',
-                                [
+                                ['tag'=>'span',
                                     'class' => false,
                                 ]
                             ); ?>

@@ -53,7 +53,7 @@ class RemoteEmailValidator extends Validator
             if (is_array($response_data)) {
                 $result = !empty($response_data['mx_found']) && !empty($response_data['smtp_check']);
             }
-        } catch (RequestException $e) {
+        } catch (RequestException) {
             $result = true;
         }
 

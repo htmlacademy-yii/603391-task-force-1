@@ -1,6 +1,6 @@
 <div class="page-footer__info">
     <p class="page-footer__info-copyright">
-        © 2019, ООО «ТаскФорс»
+        © 2020, ООО «ТаскФорс»
         Все права защищены
     </p>
     <p class="page-footer__info-use">

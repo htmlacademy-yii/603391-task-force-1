@@ -8,8 +8,8 @@ use TaskForce\widgets\TasksFiltersWidget;
 use yii\data\Pagination;
 use yii\helpers\Url;
 use yii\widgets\LinkPager;
-
 ?>
+
 <main class="page-main">
     <div class="main-container page-container">
         <section class="new-task">

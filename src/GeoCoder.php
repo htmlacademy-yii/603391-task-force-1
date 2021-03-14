@@ -62,7 +62,7 @@ class GeoCoder
             if (is_array($locations)) {
                 $result = $locations;
             }
-        } catch (RequestException $e) {
+        } catch (RequestException) {
             $result = null;
         }
 

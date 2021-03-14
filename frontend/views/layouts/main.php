@@ -77,9 +77,11 @@ AppAsset::register($this);
         <?= Alert::widget() ?>
         <?= $content ?>
 
+
+
         <footer class="page-footer">
             <div class="main-container page-footer__container">
-                <?= $this->render('_footerInfo'); ?>
+                <?= $this->render('_footerCopyright'); ?>
                 <?php
                 if ($loggedUser->id): ?>
                     <div class="page-footer__links">
@@ -104,7 +106,7 @@ AppAsset::register($this);
                     </div>
                 <?php
                 endif; ?>
-                <?= $this->render('_footerCopyright'); ?>
+                <?= $this->render('_footerInfo'); ?>
             </div>
         </footer>
     </div>

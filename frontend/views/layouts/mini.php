@@ -47,8 +47,8 @@ LandingAsset::register($this);
         </main>
         <footer class="page-footer">
             <div class="main-container page-footer__container">
-                <?= $this->render('_footerInfo'); ?>
                 <?= $this->render('_footerCopyright'); ?>
+                <?= $this->render('_footerInfo'); ?>
                 <?php
                 if (Yii::$app->controller->id === 'signup'): ?>
                     <div class="clipart-woman">

@@ -35,7 +35,7 @@ use yii\widgets\ActiveForm;
                         $modelCategoriesFilter,
                         sprintf('categories[%s]', $key),
                         [
-                            'template' => '{input}{label}'
+                            'template' => '<label class="checkbox__legend">{input}{hint}</label>'
                         ]
                     )
                     ->checkbox(
@@ -45,15 +45,7 @@ use yii\widgets\ActiveForm;
                             'checked' => (bool)$modelCategoriesFilter[$key]
                         ],
                         false
-                    )
-                    ->label(
-                        $label,
-                        [
-                            'for' => $key,
-                            'class' => false,
-                            'tag' => false
-                        ]
-                    );
+                    )->hint($label,['tag' => 'span', 'class' => false]) ;
             } ?>
 
         </fieldset>
@@ -65,11 +57,11 @@ use yii\widgets\ActiveForm;
                 echo $form->field(
                     $modelUsersFilter,
                     $key,
-                    ['template' => '{input}{label}']
+                    ['template' => '<label class="checkbox__legend">{input}{hint}</label>']
                 )->checkbox(
                     ['class' => 'visually-hidden checkbox__input', 'id' => $key],
                     false
-                )->label($value, ['for' => $key, 'class' => false]);
+                )->hint($value,['tag' => 'span', 'class' => false]) ;;
             } ?>
         </fieldset>
         <?php
