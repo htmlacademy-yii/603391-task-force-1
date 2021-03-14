@@ -5,8 +5,8 @@ return [
         'db' => [
             'class' => 'yii\db\Connection',
             'dsn' => 'mysql:host=mariadb;dbname=task_force',
-            'username' => 'root',
-            'password' => 'verysecret',
+            'username' => 'admin',
+            'password' => 'admin',
             'charset' => 'utf8',
         ],
         'mailer' => [
