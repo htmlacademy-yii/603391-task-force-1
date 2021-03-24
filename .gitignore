@@ -43,8 +43,6 @@ phpunit.phar
 /backend/web/robots.txt
 /backend/web/.htaccess
 
-/docker
-/docker-compose.yml
 .DS_Stores
 *.ai
 *.log
@@ -53,5 +51,3 @@ phpunit.phar
 *.sublime*
 vendor
 read.me
-
-/docker/
