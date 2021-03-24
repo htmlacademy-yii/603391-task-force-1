@@ -1,8 +1,0 @@
-#For init project exec:
-
-docker-compose up
-php composer.phar install
-docker-compose exec php-fpm php yii migrate
-
-#after update nginx conf
-#docker-compose exec nginx nginx -s reload
