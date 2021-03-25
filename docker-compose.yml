@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.5'
 
 services:
 
@@ -45,6 +45,22 @@ services:
       - php-fpm
     networks:
       - app-network
+
+
+  composer:
+    image: composer/composer:latest
+    command: install
+    links:
+      - php-fpm
+    volumes:
+      - ./:/app
+    networks:
+          - app-network
+
+  redis:
+    image: redis:3.2
+    ports:
+      - 6379:6379
 
   php-fpm:
     build:
