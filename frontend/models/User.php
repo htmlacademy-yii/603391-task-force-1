@@ -100,7 +100,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getAuthKey()
     {
-        return $this->auth_key;
+        // Implement getAuthKey() method.
     }
 
     /**
@@ -108,7 +108,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function validateAuthKey($authKey)
     {
-        return $this->getAuthKey() === $authKey;
+        // Implement validateAuthKey() method.
     }
 
     /**
