@@ -14,7 +14,7 @@ services:
       - MYSQL_PASSWORD=admin
     restart: always
     volumes:
-      - dbdata:/var/lib/mysql
+#      - dbdata:/var/lib/mysql
       - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
     networks:
       - app-network
@@ -86,6 +86,6 @@ networks:
   app-network:
     driver: bridge
 
-volumes:
-  dbdata:
-    driver: local
+#volumes:
+#  dbdata:
+#    driver: local
