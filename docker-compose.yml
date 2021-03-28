@@ -55,12 +55,18 @@ services:
     volumes:
       - ./:/app
     networks:
-          - app-network
+      - app-network
 
   redis:
     image: redis:3.2
     ports:
       - 6379:6379
+    links:
+      - php-fpm
+    volumes:
+      - ./:/app
+    networks:
+      - app-network
 
   php-fpm:
     build:
