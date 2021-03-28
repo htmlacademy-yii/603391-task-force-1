@@ -3,7 +3,9 @@ version: '3.5'
 services:
 
   mysql:
-    image: mariadb:10.4
+    build:
+      context: .
+      dockerfile: ./docker/mysql/Dockerfile
     container_name: mariadb
     ports:
       - 3306:3306
@@ -13,9 +15,6 @@ services:
       - MYSQL_USER=admin
       - MYSQL_PASSWORD=admin
     restart: always
-    volumes:
-#      - dbdata:/var/lib/mysql
-      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
     networks:
       - app-network
 
