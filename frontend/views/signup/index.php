@@ -3,6 +3,7 @@
 /* @var $this yii\web\View */
 /** @var SignupForm $model */
 /** @var array $cities */
+/** @var string $userCityKey */
 
 use frontend\models\forms\SignupForm;
 use yii\helpers\Html;
@@ -34,9 +35,8 @@ use yii\widgets\ActiveForm;
                 echo $form
                     ->field($model, 'email')
                     ->label('Электронная почта')
-                    ->textarea(
-                        [
-                            'rows' => 1,
+                    ->input('email',
+                            [
                             'placeholder' => 'username@mail.ru',
                             'autofocus' => true,
                         ]
@@ -46,9 +46,7 @@ use yii\widgets\ActiveForm;
                 echo $form
                     ->field($model, 'username')
                     ->label('Ваше имя')
-                    ->textarea(
-                        [
-                            'rows' => 1,
+                    ->input( 'text',                      [
                             'placeholder' => 'Фамилия Имя',
                         ]
                     )
@@ -59,9 +57,12 @@ use yii\widgets\ActiveForm;
                     ->label('Город проживания')
                     ->dropDownList(
                         $cities,
-                        [
+                        ['options' =>
+                            [
+                               $userCityKey => ['selected' => true]
+                            ],
                             'class' => 'multiple-select input town-select registration-town input-wide',
-                            'size' => 1
+                            'size' => 1,
                         ]
                     )
                     ->hint('Укажите город, чтобы находить подходящие задачи');

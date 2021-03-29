@@ -1,22 +1,31 @@
 .input-danger + input {
-    border-color: #FF116E; }
+    border-color: #FF116E;
+}
+
 .input-danger + input + span {
-    color: #FF116E; }
+    color: #FF116E;
+}
 
 .five-rate {
-    color: #ff7f50; }
+    color: #ff7f50;
+}
+
 .five-rate span {
-    background-image: url("../img/star-rate.png"); }
+    background-image: url("../img/star-rate.png");
+}
 
 .three-rate {
-    color: #c71d1d; }
+    color: #c71d1d;
+}
+
 .three-rate span {
-    background-image: url("../img/three-rate.png"); }
+    background-image: url("../img/three-rate.png");
+}
 
 span.input-error {
     color: red;
 }
 
-.input-wide{
+.input-wide {
     width: 100%;
 }
