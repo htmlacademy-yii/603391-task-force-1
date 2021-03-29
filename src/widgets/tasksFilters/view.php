@@ -10,7 +10,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 const VISUALLY_HIDDEN_CHECKBOX_INPUT = 'visually-hidden checkbox__input';
-const INPUT_LABEL = '{input}{label}';
+const INPUT_LABEL = '<label class="checkbox__legend">{input}{hint}</label>';
 ?>
 
 <section class="search-task">
@@ -48,19 +48,12 @@ const INPUT_LABEL = '{input}{label}';
                         ],
                         false
                     )
-                    ->label(
-                        $label,
-                        [
-                            'for' => $key,
-                            'class' => false,
-                        ]
-                    );
+                    ->hint($label,['tag' => 'span', 'class' => false]) ;
             } ?>
         </fieldset>
         <fieldset class="search-task__categories">
             <legend>Дополнительно</legend>
             <?php
-
             foreach ($modelTasksFilter->checkboxesLabels() as $key => $value) {
                 echo $form->field(
                     $modelTasksFilter,
@@ -69,18 +62,7 @@ const INPUT_LABEL = '{input}{label}';
                 )->checkbox(
                     ['class' => VISUALLY_HIDDEN_CHECKBOX_INPUT, 'id' => $key],
                     false
-                )->label($value, ['for' => $key, 'class' => false]);
-            }
-
-            foreach ($modelTasksFilter->checkboxesLabels() as $key => $value) {
-                echo $form->field(
-                    $modelTasksFilter,
-                    $key,
-                    ['template' => INPUT_LABEL]
-                )->checkbox(
-                    ['class' => VISUALLY_HIDDEN_CHECKBOX_INPUT, 'id' => $key],
-                    false
-                )->label($value, ['for' => $key, 'class' => false]);
+                )->hint($value,['tag' => 'span', 'class' => false]) ;
             } ?>
         </fieldset>
         <?= $form->field(
@@ -95,8 +77,7 @@ const INPUT_LABEL = '{input}{label}';
             ['for' => 'timeInterval', 'class' => 'search-task__name']
         )
             ->dropDownList(
-                $modelTasksFilter::getIntervalList()
-                ,
+                $modelTasksFilter::getIntervalList(),
                 [
                     'class' => "multiple-select input",
                     'id' => 'sa',

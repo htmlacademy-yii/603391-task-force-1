@@ -5,10 +5,10 @@
 
 use frontend\assets\LandingAsset;
 use TaskForce\widgets\LoginFormWidget;
+use TaskForce\widgets\TFAlertWidget;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
-use common\widgets\Alert;
 
 LandingAsset::register($this);
 $this->beginPage() ?>
@@ -18,7 +18,7 @@ $this->beginPage() ?>
     <meta charset="<?= Yii::$app->charset ?>">
     <?php
     $this->registerCsrfMetaTags() ?>
-    <title><?= Html::encode($this->title) ?></title>
+    <title><?= Html::encode($this->context->title ?? Yii::$app->params['AppName']) ?></title>
     <?php
     $this->head() ?>
 </head>
@@ -49,28 +49,17 @@ $this->beginBody() ?>
     <footer class="page-footer">
         <div class="main-container page-footer__container">
             <?=$this->render('_footerInfo')?>
-            <?=$this->render('_footerCopyRight')?>
+            <?=$this->render('_footerCopyright')?>
         </div>
     </footer>
     <?= LoginFormWidget::widget() ?>
 </div>
-<?php
-if (Yii::$app->session->hasFlash('login-error')): ?>
-    <section class="modal enter-form form-modal landing-task" style="display: block">
-        <p>
-            <h3>
-                <?php
-                echo Yii::$app->session->getFlash('login-error'); ?>
-            </h3>
-        </p>
-        <button class="form-modal-close" type="button">Закрыть</button>
-    </section>
-<?
-endif; ?>
+
+<?= TFAlertWidget::widget() ?>
 
 <div class="overlay">
-    <?= Alert::widget() ?>
 </div>
+
 <?php
 $this->endBody() ?>
 </body>

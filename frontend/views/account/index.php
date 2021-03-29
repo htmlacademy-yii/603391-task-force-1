@@ -12,8 +12,9 @@ use TaskForce\widgets\DropZoneWidget;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
-?>
+use yii\widgets\MaskedInput;
 
+?>
 <main class="page-main">
     <div class="main-container page-container">
         <section class="account__redaction-wrapper">
@@ -38,8 +39,8 @@ use yii\widgets\ActiveForm;
                 <h3 class="div-line">Настройки аккаунта</h3>
                 <div class="account__redaction-section-wrapper">
                     <div class="account__redaction-avatar">
-                        <img src="<?= Url::base() . '/uploads/avatars/' . $modelAccountForm['avatar']?>" width="156"
-                             height="156"  alt="">
+                        <img src="<?= Url::base() . '/uploads/avatars/' . $modelAccountForm['avatar'] ?>" width="156"
+                             height="156" alt="">
                         <?= $form->field(
                             $modelAccountForm,
                             'avatarFile',
@@ -57,7 +58,7 @@ use yii\widgets\ActiveForm;
                             ->field(
                                 $modelAccountForm,
                                 'name',
-                                ['options' => ['tag' => 'div', 'class' => 'account__input account__input--name']]
+                                ['options' => ['tag' => 'div', 'class' => 'field-container account__input account__input--name']]
                             )
                             ->label('Ваше имя')
                             ->textInput(
@@ -72,7 +73,7 @@ use yii\widgets\ActiveForm;
                             ->field(
                                 $modelAccountForm,
                                 'email',
-                                ['options' => ['tag' => 'div', 'class' => 'account__input account__input--email']]
+                                ['options' => ['tag' => 'div', 'class' => 'field-container account__input account__input--email']]
                             )
                             ->label('Электронная почта')
                             ->textInput(
@@ -87,7 +88,7 @@ use yii\widgets\ActiveForm;
                             ->field(
                                 $modelAccountForm,
                                 'cityId',
-                                ['options' => ['tag' => 'div', 'class' => 'account__input account__input--name']]
+                                ['options' => ['tag' => 'div', 'class' => 'field-container account__input account__input--address']]
                             )
                             ->label('Город')
                             ->dropDownList(
@@ -103,7 +104,7 @@ use yii\widgets\ActiveForm;
                             ->field(
                                 $modelAccountForm,
                                 'birthday',
-                                ['options' => ['tag' => 'div', 'class' => 'account__input account__input--date']]
+                                ['options' => ['tag' => 'div', 'class' => 'field-container account__input account__input--date']]
                             )
                             ->label('День рождения')
                             ->textInput(
@@ -119,7 +120,7 @@ use yii\widgets\ActiveForm;
                             ->field(
                                 $modelAccountForm,
                                 'info',
-                                ['options' => ['tag' => 'div', 'class' => 'account__input account__input--info']]
+                                ['options' => ['tag' => 'div', 'class' => 'field-container account__input account__input--info']]
                             )
                             ->label('Информация о себе')
                             ->textarea(
@@ -141,7 +142,7 @@ use yii\widgets\ActiveForm;
                                 $modelCategoriesForm,
                                 sprintf('categories[%s]', $key),
                                 [
-                                    'template' => '{input}{label}',
+                                    'template' => '<label class="checkbox__legend">{input}{hint}</label>',
                                     'options' => ['tag' => false]
                                 ]
                             )
@@ -153,10 +154,10 @@ use yii\widgets\ActiveForm;
                                     ],
                                     false
                                 )
-                                ->label(
+                                ->hint(
                                     $label,
-                                    [
-                                        'for' => $key,
+                                    ['tag'=>'span',
+
                                         'class' => false,
                                     ]
                                 ); ?>
@@ -196,15 +197,13 @@ use yii\widgets\ActiveForm;
                             $modelAccountForm,
                             'phone',
                             ['options' => ['tag' => 'div', 'class' => 'account__input']]
-                        )
-                        ->label('Телефон')
-                        ->textInput(
-                            [
-                                'placeholder' => '8 (555) 187 44 87',
+                        )->widget(MaskedInput::class, [
+                            'mask' => '8(999)999-99-99',
+                            'options' => [
                                 'class' => 'input textarea',
-                                'type' => 'phone'
-                            ]
-                        )
+                                'id' => 'phone',
+                            ],
+                         ])->label('Телефон')
                     ?>
 
                     <?= $form
@@ -245,7 +244,7 @@ use yii\widgets\ActiveForm;
                                 $modelNotificationsForm,
                                 sprintf('notifications[%s]', $key),
                                 [
-                                    'template' => '{input}{label}',
+                                    'template' => '<label class="checkbox__legend">{input}{hint}</label>',
                                     'options' => ['tag' => false]
                                 ]
                             )
@@ -257,10 +256,10 @@ use yii\widgets\ActiveForm;
                                     ],
                                     false
                                 )
-                                ->label(
+                                ->hint(
                                     $label,
-                                    [
-                                        'for' => 'notification' . $key,
+                                    ['tag'=>'span',
+
                                         'class' => false,
                                     ]
                                 ); ?>
@@ -272,7 +271,7 @@ use yii\widgets\ActiveForm;
                             $modelAccountForm,
                             'showMyContact',
                             [
-                                'template' => '{input}{label}',
+                                'template' => '<label class="checkbox__legend">{input}{hint}</label>',
                                 'options' => ['tag' => false]
                             ]
                         )
@@ -284,19 +283,19 @@ use yii\widgets\ActiveForm;
                                 ],
                                 false
                             )
-                            ->label(
-                                'Показывать мои контакты только заказчику',
-                                [
+                            ->hint(
+                                $label,
+                                ['tag'=>'span',
+
                                     'class' => false,
                                 ]
                             ); ?>
-
 
                         <?= $form->field(
                             $modelAccountForm,
                             'dontShowProfile',
                             [
-                                'template' => '{input}{label}',
+                                'template' => '<label class="checkbox__legend">{input}{hint}</label>',
                                 'options' => ['tag' => false]
                             ]
                         )
@@ -308,9 +307,9 @@ use yii\widgets\ActiveForm;
                                 ],
                                 false
                             )
-                            ->label(
+                            ->hint(
                                 'Не показывать мой профиль',
-                                [
+                                ['tag'=>'span',
                                     'class' => false,
                                 ]
                             ); ?>

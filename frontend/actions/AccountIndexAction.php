@@ -7,12 +7,25 @@ use frontend\models\forms\AccountForm;
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\NotificationsFilterForm;
 use frontend\models\User;
+use TaskForce\Exception\FileException;
+use TaskForce\Exception\TaskForceException;
 use Yii;
 use yii\base\Action;
+use yii\base\Exception;
+use yii\web\NotFoundHttpException;
+use yii\web\Response;
 use yii\web\UploadedFile;
 
 class AccountIndexAction extends Action
 {
+
+    /**
+     * @return string|Response
+     * @throws FileException
+     * @throws TaskForceException
+     * @throws Exception
+     * @throws NotFoundHttpException
+     */
     public function run()
     {
         {
@@ -21,10 +34,13 @@ class AccountIndexAction extends Action
             $modelNotificationsForm = new NotificationsFilterForm();
 
             if ($post = Yii::$app->request->post()) {
-                $modelAccountForm->load($post,'AccountForm');
-                $modelCategoriesForm->load($post,'CategoriesFilterForm');
-                $modelNotificationsForm->load($post,'NotificationsFilterForm');
-                $modelAccountForm->avatarFile = UploadedFile::getInstance($modelAccountForm,'avatarFile' );
+                $modelAccountForm->load($post, formName: 'AccountForm');
+                $modelCategoriesForm->load($post, formName: 'CategoriesFilterForm');
+                $modelNotificationsForm->load($post, formName: 'NotificationsFilterForm');
+                $modelAccountForm->avatarFile = UploadedFile::getInstance(
+                    model: $modelAccountForm,
+                    attribute: 'avatarFile'
+                );
 
                 if ($modelAccountForm->validate() && $modelAccountForm->saveData()) {
                     $modelCategoriesForm->saveData();

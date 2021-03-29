@@ -5,7 +5,7 @@
 /** @var CategoriesFilterForm $modelCategoriesFilter */
 /** @var array $modelTask */
 /** @var array $modelsResponse */
-/** @var array $modelTaskUser */
+/** @var array $assistUserModel */
 /** @var ResponseTaskForm $responseTaskForm */
 /** @var CompleteTaskForm $completeTaskForm */
 /** @var bool $existsUserResponse */
@@ -30,10 +30,15 @@ use yii\widgets\ActiveForm;
 
 TaskViewAsset::register($this);
 $currentUserId = Yii::$app->user->getId();
+$messageUrl = Yii::$app->params['apiURL'] .  Url::toRoute(['v1/messages']);
+$scriptJS = <<<TAG
+window.messageApiUrl = '$messageUrl';
+TAG;
+$this->registerJs($scriptJS, yii\web\View::POS_BEGIN);
+
 ?>
 <main class="page-main">
     <div class="main-container page-container">
-
         <section class="content-view">
             <div class="content-view__card">
                 <div class="content-view__card-wrapper">
@@ -44,7 +49,7 @@ $currentUserId = Yii::$app->user->getId();
                             <span>Размещено в категории
                                     <a href="<?= Url::to(['tasks/index/', 'category' => $modelTask['category_id']]) ?>"
                                        class="link-regular"><?= $modelTask['cat_name'] ?></a>
-                                    <?= $modelTask['afterTime'] ?> назад</span>
+                                    <?= $modelTask['afterTime'] ?></span>
                         </div>
                         <b class="new-task__price new-task__price--<?= $modelTask['icon'] ?> content-view-price"><?= $modelTask['budget'] ?>
                             <b> ₽</b></b>
@@ -95,7 +100,7 @@ $currentUserId = Yii::$app->user->getId();
                             case ResponseAction::getTitle():
                                 if ($existsUserResponse) {
                                     break;
-                                };
+                                }
                                 echo '<button class="button button__big-color response-button open-modal"
                                 type="button" data-for="response-form">Откликнуться</button>';
                                 break;
@@ -142,7 +147,7 @@ $currentUserId = Yii::$app->user->getId();
                                 </div>
                                 <span class="new-task__time"><?= Declination::getTimeAfter(
                                         (string)$response['created_at']
-                                    ) ?> назад</span>
+                                    ) ?></span>
                             </div>
                             <div class="feedback-card__content">
                                 <p>
@@ -186,7 +191,7 @@ $currentUserId = Yii::$app->user->getId();
         </section>
 
         <?php
-        if (!empty($modelTaskUser)): ?>
+        if (!empty($assistUserModel)): ?>
 
             <section class="connect-desk">
                 <div class="connect-desk__profile-mini">
@@ -198,22 +203,22 @@ $currentUserId = Yii::$app->user->getId();
 
                             echo ($showExecutor) ? 'Исполнтель' : 'Заказчик' ?></h3>
                         <div class="profile-mini__top">
-                            <img src="<?= Url::base() . '/uploads/avatars/' . $modelTaskUser['avatar'] ?>" width="62"
+                            <img src="<?= Url::base() . '/uploads/avatars/' . $assistUserModel['avatar'] ?>" width="62"
                                  height="62"
                                  alt="Аватар <?= ($showExecutor) ? 'исполнтеля' : 'заказчика' ?>">
                             <div class="profile-mini__name five-stars__rate">
-                                <p><?= $modelTaskUser['name'] ?></p>
-                                <?= RatingWidget::widget(['rate' => $modelTaskUser['rate']]) ?>
+                                <p><?= $assistUserModel['name'] ?></p>
+                                <?= RatingWidget::widget(['rate' => $assistUserModel['rate']]) ?>
                             </div>
                         </div>
-                        <p class="info-customer"><span><?= $modelTaskUser['countTask'] ?> заданий</span>
+                        <p class="info-customer"><span><?= $assistUserModel['countTask'] ?> заданий</span>
                             <span class="last-"><?= Declination::getTimeAfter(
-                                    $modelTaskUser['date_add']
+                                    $assistUserModel['date_add']
                                 ) ?> на сайте</span>
                         </p>
                         <?php
-                        if ($showExecutor): ?>
-                            <a href="<?= Url::to(['users/view', 'id' => $modelTaskUser['user_id']]) ?>"
+                        if ($assistUserModel['isExecutor']): ?>
+                            <a href="<?= Url::to(['users/view', 'id' => $assistUserModel['user_id']]) ?>"
                                class="link-regular">Смотреть профиль</a>
                         <?php
                         endif; ?>
@@ -304,7 +309,7 @@ $currentUserId = Yii::$app->user->getId();
             'difficult' => 'Возникли проблемы'
         ],
         [
-            'item' => function ($index, $label, $name, $checked, $value) {
+            'item' => function ($label, $name, $checked, $value) {
                 $radio = Html::radio(
                     $name,
                     $checked,

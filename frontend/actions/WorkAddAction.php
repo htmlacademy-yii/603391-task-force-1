@@ -17,9 +17,9 @@ class WorkAddAction extends Action
         $FORM_PARAM = 'file';
         $model = new UploadForm();
         if (Yii::$app->request->post()) {
-            $model->file = UploadedFile::getInstanceByName($FORM_PARAM);
+            $model->file = UploadedFile::getInstanceByName(name: $FORM_PARAM);
             if ($model->validate()) {
-                $fileName = Work::saveFile($model->file);
+                $fileName = Work::saveFile(file: $model->file);
                 $response = [
                     'filename' => $fileName,
                 ];

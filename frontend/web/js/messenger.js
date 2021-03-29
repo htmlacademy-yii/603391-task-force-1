@@ -3,7 +3,7 @@
 Vue.component('chat', {
   props: ['task'],
   template: `<div><h3>Переписка</h3>
-             <div class="chat__overflow">
+             <div class="chat__overflow" id="chatScroll">
                <div class="chat__message" v-for="item in messages" :class="{'chat__message--out': item.is_mine}">
                 <p class="chat__message-time">{{ item.published_at }}</p>
                 <p class="chat__message-text">{{ item.message }}</p>
@@ -20,38 +20,52 @@ Vue.component('chat', {
       console.error("Не передан идентификатор задания (атрибут task) в теге 'chat'")
     }
     else {
-      this.api_url = '/index.php/api/messages';
+      this.api_url = window.messageApiUrl;
       this.getMessages();
     }
   },
   methods: {
+    scrollDown:function() {
+      const block = document.getElementById("chatScroll");
+      block.scrollTop = block.scrollHeight;
+    },
     sendMessage: function() {
-      fetch(this.api_url, {
+       fetch(this.api_url, {
         method: 'POST',
+        headers: {
+           'Content-Type': 'application/json',
+        },
+         credentials: 'include',
+         withCredentials: true,
         body: JSON.stringify({message: this.message, task_id: this.task})
       })
       .then(result => {
         if (result.status !== 201) {
           return Promise.reject(new Error('Запрошенный ресурс не существует'));
         }
-
         return result.json();
       })
       .then(msg => {
         this.messages.push(msg);
         this.message = null;
+
       })
       .catch(err => {
         console.error('Не удалось отправить сообщение', err);
       })
+      .finally(() => {
+        this.scrollDown();
+      })
     },
     getMessages: function () {
-      fetch(this.api_url + '?task_id=' + this.task)
+      fetch(this.api_url + '?task_id=' + this.task, {
+        credentials: 'include',
+        withCredentials: true,
+      })
       .then(result => {
         if (result.status !== 200) {
           return Promise.reject(new Error('Запрошенный ресурс не существует'));
         }
-
         return result.json();
       })
       .then(messages => {
@@ -59,6 +73,9 @@ Vue.component('chat', {
       })
       .catch(err => {
         console.error('Не удалось получить сообщения чата', err);
+      })
+      .finally(() => {
+        this.scrollDown();
       })
     }
   },

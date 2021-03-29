@@ -75,6 +75,6 @@ class Specialization extends ActiveRecord
         return self::find()->select('c.name, c.id')->from('specialization s')
             ->join('LEFT JOIN', 'profile as p', 's.profile_id = p.id')
             ->join('LEFT JOIN', 'category as c', 's.category_id = c.id')
-            ->where(['p.id' => $profileId])->asArray()->all();
+            ->where(['s.profile_id' => $profileId])->asArray()->all();
     }
 }

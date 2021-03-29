@@ -51,19 +51,11 @@ class RatingWidget extends Widget
             return null;
         }
 
-        switch ($this->type) {
-            case self::COLOR_NUMS_TYPE:
-                $html = $this->getColorStarContent();
-                break;
-            case self::STARS_TYPE:
-                $html = $this->getStarsContent();
-                break;
-            default:
-                $html = '';
-                break;
-        }
-
-        return $html;
+        return match($this->type) {
+            self::COLOR_NUMS_TYPE => $this->getColorStarContent(),
+            self::STARS_TYPE => $this->getStarsContent(),
+            default => ''
+            };
     }
 
     /**

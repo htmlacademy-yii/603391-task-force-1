@@ -10,6 +10,7 @@ use TaskForce\Constant\UserRole;
 use TaskForce\Exception\TaskForceException;
 use Throwable;
 use Yii;
+use yii\web\NotFoundHttpException;
 
 /**
  * Class Task
@@ -68,6 +69,11 @@ class TaskEntity
     private ?int $customerId;
     private string $status;
 
+    /**
+     * TaskEntity constructor.
+     * @param int $taskId
+     * @throws NotFoundHttpException
+     */
     public function __construct(int $taskId)
     {
         $this->model = Task::findOrFail($taskId, "Task with ID #$taskId not found.");
@@ -77,7 +83,7 @@ class TaskEntity
     }
 
     /**
-     * @return array|string[]
+     * @return array
      */
     public static function getAllStatuses(): array
     {
@@ -85,7 +91,7 @@ class TaskEntity
     }
 
     /**
-     * @return array|string[]
+     * @return array
      */
     public static function getAllActions(): array
     {
@@ -159,10 +165,26 @@ class TaskEntity
     /**
      * @return int
      */
-    public function getAssistUserId(): int
+    public function getContractorUserId(): int
     {
         return (Yii::$app->user->identity->getId() == $this->model->customer_id && $this->model->executor_id)
             ? $this->model->executor_id : $this->model->customer_id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getExecutorUserId(): int
+    {
+        return $this->model->executor_id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCustomerUserId(): int
+    {
+        return $this->model->customer_id;
     }
 
     /**
@@ -188,6 +210,4 @@ class TaskEntity
 
         return true;
     }
-
 }
-

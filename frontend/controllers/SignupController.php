@@ -6,9 +6,7 @@ use frontend\models\City;
 use frontend\models\forms\SignupForm;
 use TaskForce\Exception\TaskForceException;
 use Yii;
-use yii\base\Action;
 use yii\filters\AccessControl;
-use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\Response;
 
@@ -17,17 +15,6 @@ class SignupController extends Controller
     use HasTitle;
 
     public $layout = 'mini';
-
-    /**
-     * @param Action $action
-     * @return bool
-     * @throws BadRequestHttpException
-     */
-    public function beforeAction($action): bool
-    {
-        $this->getTitle();
-        return parent::beforeAction($action);
-    }
 
     /**
      * @return array|array[]
@@ -59,6 +46,7 @@ class SignupController extends Controller
             $model->load(Yii::$app->request->post());
 
             if ($model->validate() && $model->register()) {
+                Yii::$app->session->setFlash('success', 'Регистрация завершина.');
                 return $this->goHome();
             }
         }

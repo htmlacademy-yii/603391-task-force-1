@@ -81,12 +81,12 @@ TaskCreateAsset::register($this);
                     $createTaskForm,
                     'files[]',
                     [
-                        'options' => ['tag' => 'div', 'for' => 'file', 'class' => 'create__file input'],
+                        'options' => ['tag' => 'div', 'for' => 'file', 'class' => 'create__file link-regular '],
                     ]
                 )
                     ->fileInput(
                         [
-                            'class' => 'dropzone visually-hidden',
+                            'class' => 'visually-hidden',
                             'multiple' => 'true',
                             'id' => 'file'
                         ]

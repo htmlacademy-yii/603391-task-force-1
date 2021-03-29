@@ -24,7 +24,6 @@ class CitySelectorWidget extends Widget
             $this->currentCityId =  $session['current_city_id'] ? $session['current_city_id']: $isLoggedUser->city_id;
         }
 
-        return $this->render('../citySelector/view', ['cities' => $this->cityList, 'currentCityId' => $this->currentCityId]);
+        return $this->render('@widgets/citySelector/view', ['cities' => $this->cityList, 'currentCityId' => $this->currentCityId]);
     }
-
 }

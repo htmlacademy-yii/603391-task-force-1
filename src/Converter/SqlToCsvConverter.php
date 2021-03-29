@@ -47,6 +47,7 @@ class SqlToCsvConverter
         }
     }
 
+
     /**
      * @param Model $model
      * @throws TaskForceException
@@ -62,7 +63,6 @@ class SqlToCsvConverter
 
     private function convertHeader(): void
     {
-
         $this->serviceExporter->saveData("INSERT INTO `%s` ", $this->model->tableName);
         $this->serviceExporter->saveData("(%s) \n  VALUES \n", $this->getListValues($this->model->fields, '`'));
     }
@@ -94,7 +94,7 @@ class SqlToCsvConverter
 
     /**
      * Get fake data.
-     * @param $elements
+     * @param array $elements
      * @return array
      */
     private function getFakeData(array $elements): array
@@ -111,12 +111,7 @@ class SqlToCsvConverter
         return $newArray;
     }
 
-    /**
-     * @param array $line_array
-     * @param string $symbol
-     * @return string
-     */
-    private function getListValues(array $line_array, string $symbol = null): string
+    private function getListValues(array $line_array, ?string $symbol = null): string
     {
         $list = '';
         $template= $symbol.'%s'.$symbol;

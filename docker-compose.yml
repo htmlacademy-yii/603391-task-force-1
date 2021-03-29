@@ -1,38 +1,90 @@
-version: '3.2'
+version: '3.5'
 
 services:
 
-  frontend:
-    build: frontend
-    ports:
-      - 20080:80
-    volumes:
-      # Re-use local composer cache via host-volume
-      - ~/.composer-docker/cache:/root/.composer/cache:delegated
-      # Mount source-code for development
-      - ./:/app
-
-  backend:
-    build: backend
-    ports:
-      - 21080:80
-    volumes:
-      # Re-use local composer cache via host-volume
-      - ~/.composer-docker/cache:/root/.composer/cache:delegated
-      # Mount source-code for development
-      - ./:/app
-
   mysql:
-    image: mysql:5.7
+    build:
+      context: .
+      dockerfile: ./docker/mysql/Dockerfile
+    container_name: mariadb
+    ports:
+      - 3306:3306
     environment:
       - MYSQL_ROOT_PASSWORD=verysecret
-      - MYSQL_DATABASE=yii2advanced
-      - MYSQL_USER=yii2advanced
-      - MYSQL_PASSWORD=secret
+      - MYSQL_DATABASE=task_force
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=admin
+    restart: always
+    networks:
+      - app-network
 
-  #pgsql:
-  #  image: postgres:9.5
-  #  environment:
-  #    - POSTGRES_DB=yii2advanced
-  #    - POSTGRES_USER=yii2advanced
-  #    - POSTGRES_PASSWORD=secret
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - app-network
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./docker/nginx/nginx.Dockerfile
+    container_name: nginx
+    restart: always
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/app
+      - ./docker/nginx/logs:/var/log/nginx/
+    links:
+      - php-fpm
+    networks:
+      - app-network
+
+
+  composer:
+    image: composer/composer:latest
+    command: install
+    links:
+      - php-fpm
+    volumes:
+      - ./:/app
+    networks:
+      - app-network
+
+  redis:
+    image: redis:3.2
+    ports:
+      - 6379:6379
+    links:
+      - php-fpm
+    volumes:
+      - ./:/app
+    networks:
+      - app-network
+
+  php-fpm:
+    build:
+      context: .
+      dockerfile: ./docker/php/php-fpm.Dockerfile
+    container_name: php-fpm
+    restart: unless-stopped
+    volumes:
+      - ~/.composer-docker/cache:/root/.composer/cache:delegated
+      - ./:/app
+    links:
+      - mysql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+#volumes:
+#  dbdata:
+#    driver: local

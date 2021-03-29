@@ -32,19 +32,6 @@ class File extends ActiveRecord
         return 'file';
     }
 
-    public static function forceDownloadTaskFile(int $id): void
-    {
-        $taskFile = self::findOrFail($id, 'The file is not definable.');
-
-        $file = __DIR__ . sprintf('/../web/uploads/%s/%s', $taskFile->task_id, $taskFile->generated_name);
-
-        if (file_exists($file)) {
-            Yii::$app->response->sendFile($file, $taskFile->filename);
-        } else {
-            throw new FileException('File not found.');
-        }
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -125,5 +112,19 @@ class File extends ActiveRecord
     public static function findByTaskID(int $id): array
     {
         return self::find()->where(['task_id' => $id])->asArray()->all();
+    }
+
+
+    public static function forceDownloadTaskFile(int $id): void
+    {
+        $taskFile = self::findOrFail($id, 'The file is not definable.');
+
+        $file = __DIR__ . sprintf('/../web/uploads/%s/%s', $taskFile->task_id, $taskFile->generated_name);
+
+        if (file_exists($file)) {
+            Yii::$app->response->sendFile($file, $taskFile->filename);
+        } else {
+            throw new FileException('File not found.');
+        }
     }
 }

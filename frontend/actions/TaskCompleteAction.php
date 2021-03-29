@@ -2,21 +2,26 @@
 
 namespace frontend\actions;
 
+use frontend\models\Event;
 use frontend\models\forms\CompleteTaskForm;
 use TaskForce\Actions\CompleteAction;
 use TaskForce\Actions\FailedAction;
+use TaskForce\Constant\NotificationType;
 use TaskForce\Exception\TaskForceException;
 use TaskForce\TaskEntity;
 use Yii;
 use yii\base\Action;
 use yii\db\Exception;
+use yii\web\NotFoundHttpException;
 
 class TaskCompleteAction extends Action
 {
+    const COMPLEATE_TASK = 'Завершение задания';
+
     /**
      * @param int $id
      * @return string
-     * @throws TaskForceException
+     * @throws TaskForceException|NotFoundHttpException
      */
     public function run(int $id)
     {
@@ -35,8 +40,15 @@ class TaskCompleteAction extends Action
                     }
                     $task->createOpinion($completeTaskForm);
                     $transaction->commit();
+
+                    $event = new Event();
+                    $event->user_id = $task->getExecutorUserId();
+                    $event->task_id = $id;
+                    $event->info = self::COMPLEATE_TASK;
+                    $event->create(NotificationType::TASK_ACTIONS);
+
                     $this->controller->goHome();
-                } catch (Exception $e) {
+                } catch (Exception) {
                     $transaction->rollBack();
                 }
             }

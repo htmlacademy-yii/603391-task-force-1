@@ -2,6 +2,7 @@
 
 namespace frontend\actions;
 
+use Exception;
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\UsersFilterForm;
 use frontend\models\Opinion;
@@ -23,8 +24,9 @@ class UsersIndexAction extends Action
      * @param string $sortType
      * @return string
      * @throws TaskForceException
+     * @throws Exception
      */
-    public function run(string $sortType = '')
+    public function run(string $sortType = ''): string
     {
         $filterRequest = [];
         $modelCategoriesFilter = new CategoriesFilterForm();
@@ -52,7 +54,7 @@ class UsersIndexAction extends Action
             }
         }
 
-        $modelsUsers = User::findNewExecutors($filterRequest, $sortType);
+        $modelsUsers = User::findNewExecutors(request: $filterRequest,sortType: $sortType);
 
         $pagination = new Pagination(
             [
@@ -75,8 +77,8 @@ class UsersIndexAction extends Action
         }
 
         return $this->controller->render(
-            'index',
-            compact(
+            view: 'index',
+            params: compact(
                 'modelsUsers',
                 'sortType',
                 'modelUsersFilter',

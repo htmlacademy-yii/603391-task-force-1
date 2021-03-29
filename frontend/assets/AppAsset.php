@@ -14,9 +14,11 @@ class AppAsset extends AssetBundle
     public $css = [
         'css/normalize.css',
         'css/style.css',
+        'css/task-force.css',
     ];
     public $js = [
-        'js/city-select.js'
+        'js/city-select.js',
+        'js/notify.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

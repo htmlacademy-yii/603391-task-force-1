@@ -2,6 +2,7 @@
 
 namespace frontend\models;
 
+use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -48,7 +49,6 @@ class Profile extends ActiveRecord
             [['address', 'skype', 'messenger', 'avatar'], 'string', 'max' => 255],
             [['phone'], 'string', 'max' => 11],
             [['show_it','show_only_executor'], 'boolean'],
-
             [
                 ['user_id'],
                 'exist',
@@ -100,19 +100,21 @@ class Profile extends ActiveRecord
     }
 
     /**
-     * @param int $id
+     * @param int $userId
      * @return array|null
      */
-    public static function findByUserId(int $id): ?array
+    public static function findByUserId(int $userId): ?array
     {
         return self::find()
             ->select(
                 'u.role,p.about, p.id as profile_id, p.user_id, p.birthday,p.phone, p.messenger, p.skype,
-             p.avatar, p.rate, u.email, u.city_id, u.date_login, u.name, u.date_add, p.show_it, p.show_only_executor'
+             p.avatar, p.rate, u.email, u.city_id, c.city, u.date_login, u.name, u.date_add,
+              p.show_it, p.show_only_executor'
             )
             ->from('profile p')
             ->join('LEFT JOIN', 'user as u', 'p.user_id = u.id')
-            ->where(['p.user_id' => $id])
+            ->join('LEFT JOIN', 'city as c', 'u.city_id = c.id')
+            ->where(['p.user_id' => $userId])
             ->limit(1)
             ->asArray()->one();
     }
@@ -130,5 +132,13 @@ class Profile extends ActiveRecord
             ->where(['p.id' => $id])
             ->limit(1)
             ->asArray()->one();
+    }
+
+
+    public static function currentProfile()
+    {
+        $userId = Yii::$app->user->identity->getId();
+
+        return (int)Profile::findByUserId($userId)['profile_id'];
     }
 }

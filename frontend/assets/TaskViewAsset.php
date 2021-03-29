@@ -11,4 +11,7 @@ class TaskViewAsset extends AssetBundle
         'js/vue.js',
         'js/messenger.js'
     ];
+    public $depends = [
+        'yii\web\YiiAsset',
+    ];
 }

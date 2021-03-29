@@ -14,6 +14,6 @@ class PhotosListWidget extends Widget
         parent::run();
         $works = Work::find()->where(['user_id'=>$this->userId])->asArray()->all();
 
-        return $this->render('../photos/view', ['works'=> $works, 'userId'=>$this->userId]);
+        return $this->render('@widgets/photos/view', ['works'=> $works, 'userId'=>$this->userId]);
     }
 }

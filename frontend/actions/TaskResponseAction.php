@@ -2,9 +2,11 @@
 
 namespace frontend\actions;
 
+use frontend\models\Event;
 use frontend\models\forms\ResponseTaskForm;
 use frontend\models\Response;
 use TaskForce\Actions\ResponseAction;
+use TaskForce\Constant\NotificationType;
 use TaskForce\Exception\TaskForceException;
 use TaskForce\TaskEntity;
 use Throwable;
@@ -13,13 +15,15 @@ use yii\base\Action;
 
 class TaskResponseAction extends Action
 {
+    const NEW_REVIEW = 'Новый отклик к заданию';
+
     /**
      * @param int $id
      * @return string
      * @throws TaskForceException
      * @throws Throwable
      */
-    public function run(int $id)
+    public function run(int $id): string
     {
         $task = new TaskEntity($id);
         $existResponse = Response::findByTaskIdCurrentUserId($id);
@@ -34,6 +38,11 @@ class TaskResponseAction extends Action
             $responseTaskForm->load($post);
             if ($responseTaskForm->validate() && in_array(ResponseAction::getTitle(), $task->getAvailableActions())) {
                 $responseTaskForm->createResponse($id);
+                $event = new Event();
+                $event->user_id = $task->getCustomerUserId();
+                $event->task_id = $id;
+                $event->info = self::NEW_REVIEW;
+                $event->create(NotificationType::NEW_REVIEW);
             }
         }
 

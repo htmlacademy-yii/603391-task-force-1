@@ -8,10 +8,7 @@ use yii\base\Action;
 
 class WorkListAction extends Action
 {
-    /**
-     * @return false|string
-     */
-    public function run()
+    public function run(): bool|string
     {
         $userId = Yii::$app->user->getId();
         $files = Work::find()->where(['user_id'=>$userId])->all();

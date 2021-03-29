@@ -2,6 +2,7 @@
 
 namespace frontend\actions;
 
+use Exception;
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\TasksFilterForm;
 use frontend\models\Task;
@@ -19,6 +20,7 @@ class TasksIndexAction extends Action
     /**
      * @return string
      * @throws TaskForceException
+     * @throws Exception
      */
     public function run()
     {

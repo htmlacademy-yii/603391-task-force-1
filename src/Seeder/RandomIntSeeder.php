@@ -6,14 +6,10 @@ use Exception;
 
 class RandomIntSeeder extends Seeder
 {
-    private int $from;
-    private int $to;
-
-    public function __construct(int $from, int $to)
-    {
-        $this->from = $from;
-        $this->to = $to;
-    }
+    public function __construct(
+        private int $from,
+        private int $to,
+    ) { }
 
     /**
      * @return int

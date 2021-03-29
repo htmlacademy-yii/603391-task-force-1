@@ -1,20 +1,15 @@
 <?php
 
 /* @var $this yii\web\View */
-/** @var TasksFilterForm $modelTasksFilter */
-/** @var Task $modelsTasks */
-/** @var CategoriesFilterForm $modelCategoriesFilter */
 /** @var Pagination $pagination */
+/** @var array $modelsTasks */
 
-use frontend\models\forms\CategoriesFilterForm;
-use frontend\models\Task;
-use frontend\models\forms\TasksFilterForm;
 use TaskForce\widgets\TasksFiltersWidget;
 use yii\data\Pagination;
 use yii\helpers\Url;
 use yii\widgets\LinkPager;
-
 ?>
+
 <main class="page-main">
     <div class="main-container page-container">
         <section class="new-task">
@@ -35,7 +30,7 @@ use yii\widgets\LinkPager;
                         </p>
                         <b class="new-task__price new-task__price--translation"><?= $task['budget'] ?><b> ₽</b></b>
                         <p class="new-task__place"><?= $task['address'] ?></p>
-                        <span class="new-task__time"><?= $task['afterTime'] ?>  назад</span>
+                        <span class="new-task__time"><?= $task['afterTime'] ?></span>
                     </div>
                 <?php endforeach; ?>
             </div>

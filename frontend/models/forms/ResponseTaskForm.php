@@ -46,7 +46,7 @@ class ResponseTaskForm extends Model
             $response->user_id = $userId;
             $response->insert();
             $transaction->commit();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $transaction->rollBack();
             throw new TaskForceException(
                 "Ошибка создания отклика пользователя ID #$userId для задачи c ID #$taskId"
