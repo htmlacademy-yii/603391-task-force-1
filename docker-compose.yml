@@ -67,6 +67,17 @@ services:
     networks:
       - app-network
 
+  php-cli:
+    build:
+      context: .
+      dockerfile: ./docker/php/php-cli.Dockerfile
+    container_name: php-cli
+    volumes:
+      - ./:/app
+    networks:
+      - app-network
+    command: php ./init --env=Docker --overwrite=All
+
   php-fpm:
     build:
       context: .
@@ -80,6 +91,7 @@ services:
       - mysql
     networks:
       - app-network
+#   command: ["/app/docker/init/wait-for-it.sh","-s","-t","10","mariadb:3306","--","expect -c 'spawn php ./yii migrate; expect \"Apply the above migrations\" {send -- \"yes\r\"}; interact'"]
 
 networks:
   app-network:
