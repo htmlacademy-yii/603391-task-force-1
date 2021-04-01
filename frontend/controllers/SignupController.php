@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use frontend\models\City;
 use frontend\models\forms\SignupForm;
 use TaskForce\Exception\TaskForceException;
+use TaskForce\Helpers\UserData;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
