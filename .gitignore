@@ -51,3 +51,5 @@ phpunit.phar
 *.sublime*
 vendor
 read.me
+
+/api/web/robots.txt
