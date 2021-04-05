@@ -37,9 +37,12 @@
         ->label('Пароль')
         ->input('password');
 
-    echo Html::submitButton('Войти', ['class' => 'button']);
+    echo Html::submitButton('Войти', ['class' => 'button login-button']);
     ActiveForm::end();
     ?>
+
+    <?php echo Html::Button('Войти через VK', ['class' => 'button login-button']); ?>
+
 
     <button class="form-modal-close" type="button">Закрыть</button>
 </section>
