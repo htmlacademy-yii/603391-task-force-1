@@ -18,15 +18,6 @@ services:
     networks:
       - app-network
 
-  adminer:
-    image: adminer
-    container_name: adminer
-    restart: always
-    ports:
-      - 8080:8080
-    networks:
-      - app-network
-
   nginx:
     build:
       context: .
@@ -45,7 +36,6 @@ services:
     networks:
       - app-network
 
-
   composer:
     image: composer/composer:latest
     command: install
@@ -56,11 +46,13 @@ services:
     networks:
       - app-network
 
-  redis:
-    image: redis:3.2
-    ports:
-      - 6379:6379
-    links:
+  php-cli2:
+    build:
+      context: .
+      dockerfile: ./docker/php/php-cli2.Dockerfile
+    container_name: php-cli2
+    depends_on:
+      - mysql
       - php-fpm
     volumes:
       - ./:/app
@@ -72,7 +64,9 @@ services:
       context: .
       dockerfile: ./docker/php/php-fpm.Dockerfile
     container_name: php-fpm
-    restart: unless-stopped
+    restart: always
+    depends_on:
+      - mysql
     volumes:
       - ~/.composer-docker/cache:/root/.composer/cache:delegated
       - ./:/app

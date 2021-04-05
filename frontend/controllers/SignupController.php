@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use frontend\models\City;
 use frontend\models\forms\SignupForm;
 use TaskForce\Exception\TaskForceException;
+use TaskForce\Helpers\UserData;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -35,13 +36,11 @@ class SignupController extends Controller
     }
 
     /**
-     * @return string|Response
      * @throws TaskForceException
      */
-    public function actionIndex()
+    public function actionIndex(): Response|string
     {
         $model = new SignupForm();
-
         if (Yii::$app->request->getIsPost()) {
             $model->load(Yii::$app->request->post());
 
@@ -51,7 +50,9 @@ class SignupController extends Controller
             }
         }
         $cities = City::getList();
+        $userCity = UserData::getCityByIp(Yii::$app->getRequest()->getUserIP());
+        $userCityKey = array_search($userCity, $cities);
 
-        return $this->render('index', compact('model', 'cities'));
+        return $this->render('index', compact('model', 'cities', 'userCityKey'));
     }
 }
