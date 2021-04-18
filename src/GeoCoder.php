@@ -5,6 +5,7 @@ namespace TaskForce;
 use Exception;
 use frontend\models\City;
 use GuzzleHttp\Client;
+
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
@@ -42,7 +43,7 @@ class GeoCoder
      * @return array|null
      * @throws GuzzleException
      */
-    public function findAddressesByRequest(string $userRequest): ?array
+    public function findAddressesByRequest(string $userRequest): array | null
     {
         if (!$userRequest) {
             $userRequest = $this->userCity;
@@ -145,8 +146,6 @@ class GeoCoder
 
     public function getCoordinates($location): ?array
     {
-        return $this->findAddressesByRequest($location)[0];
+        return (isset($this->findAddressesByRequest($location)[0]))?$this->findAddressesByRequest($location)[0]:null;
     }
-
-
 }

@@ -16,6 +16,17 @@ return [
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
+        'authClientCollection' => [
+            'class' => 'yii\authclient\Collection',
+            'clients' => [
+                'vkontakte' => [
+                    'class' => 'yii\authclient\clients\VKontakte',
+                    'clientId' => '7814530',
+                    'clientSecret' => '8GRDcqjZcqoXw02S483V',
+                    'scope' => ['email']
+                ],
+            ],
+        ],
         'request' => [
             'csrfCookie' => [
                 'domain' => '.' . $params['mainURL']],

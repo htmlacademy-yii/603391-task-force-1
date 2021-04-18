@@ -2,26 +2,41 @@
 
 namespace frontend\controllers;
 
+use frontend\components\AuthHandler;
 use frontend\models\File;
 use TaskForce\Exception\FileException;
 use Yii;
+use yii\web\Controller;
 
 /**
  * Site controller
  */
-class SiteController extends SecureController
+class SiteController extends  Controller
 {
     /**
-     * @return array|string[][]
+     * @return array
      */
     public function actions(): array
     {
         return [
             'error' => [
                 'class' => 'yii\web\ErrorAction'
-            ]
+            ],
+            'auth' => [
+                'class' => 'yii\authclient\AuthAction',
+                'successCallback' => [$this, 'onAuthSuccess'],
+            ],
         ];
     }
+
+    /**
+     * @param $client
+     */
+    public function onAuthSuccess($client)
+    {
+        (new AuthHandler($client))->handle();
+    }
+
 
     /**
      * @param int $id

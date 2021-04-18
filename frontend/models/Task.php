@@ -7,7 +7,6 @@ use TaskForce\Constant\MyTask;
 use TaskForce\Constant\NotificationType;
 use TaskForce\Exception\TaskForceException;
 use TaskForce\Helpers\Declination;
-use TaskForce\ResponseEntity;
 use TaskForce\TaskEntity;
 use Yii;
 use yii\db\ActiveQuery;
@@ -324,7 +323,7 @@ class Task extends ActiveRecord
             ->join('LEFT JOIN', 'profile as p', 't.executor_id = p.user_id')
             ->join('LEFT JOIN', ['cr' => $countReviews], 't.id = cr.task_id')
             ->where(['or', ['t.customer_id' => $userId], ['t.executor_id' => $userId]])
-            ->andWhere(['status' => MyTask::STATUS_BY_FILTER[$filterRequest]])
+            ->andWhere(['u.status' => MyTask::STATUS_BY_FILTER[$filterRequest]])
             ->asArray()
             ->all();
     }

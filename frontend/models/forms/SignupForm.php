@@ -2,6 +2,7 @@
 
 namespace frontend\models\forms;
 
+use DateTime;
 use Exception;
 use frontend\models\City;
 use frontend\models\Profile;
@@ -19,7 +20,6 @@ class SignupForm extends Model
     public string $username = '';
     public string $cityId = '';
     public string $password = '';
-
 
     /**
      * {@inheritdoc}
@@ -64,6 +64,9 @@ class SignupForm extends Model
             $user->name = $this->username;
             $user->city_id = $this->cityId;
             $user->password = Yii::$app->getSecurity()->generatePasswordHash($this->password);
+            $user->auth_key =  Yii::$app->security->generateRandomString();
+            $user->generatePasswordResetToken();
+            $user->date_login = new DateTime('now');
             $user->role = UserRole::CUSTOMER;
             $user->save();
 

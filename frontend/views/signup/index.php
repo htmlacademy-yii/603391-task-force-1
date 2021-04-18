@@ -6,6 +6,7 @@
 /** @var string $userCityKey */
 
 use frontend\models\forms\SignupForm;
+use yii\authclient\widgets\AuthChoice;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -15,6 +16,8 @@ use yii\widgets\ActiveForm;
         <section class="registration__user">
             <h1>Регистрация аккаунта</h1>
             <div class="registration-wrapper">
+
+
                 <?php
                 $form = ActiveForm::begin(
                     [
@@ -74,6 +77,10 @@ use yii\widgets\ActiveForm;
                     ->hint('Длина пароля от 8 символов');
 
                 echo Html::submitButton('Создать аккаунт', ['class' => 'button button__registration']);
+                echo '<br>' . AuthChoice::widget([
+                                'baseAuthUrl' => ['site/auth'],
+                                'popupMode' => false,
+                                                  ]);
                 ActiveForm::end();
                 ?>
             </div>
