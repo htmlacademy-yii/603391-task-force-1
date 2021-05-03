@@ -144,8 +144,11 @@ class GeoCoder
         return Json::decode($content);
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function getCoordinates($location): ?array
     {
-        return (isset($this->findAddressesByRequest($location)[0]))?$this->findAddressesByRequest($location)[0]:null;
+        return  $this->findAddressesByRequest($location)[0] ?? null;
     }
 }
