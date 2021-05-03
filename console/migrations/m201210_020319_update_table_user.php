@@ -3,9 +3,9 @@
 use yii\db\Migration;
 
 /**
- * Class m210410_020319_update_table_user
+ * Class m201210_020319_update_table_user
  */
-class m210410_020319_update_table_user extends Migration
+class m201210_020319_update_table_user extends Migration
 {
     public function safeUp()
     {

@@ -14,7 +14,6 @@ class m200924_050950_update_tables_user extends Migration
     {
         $this->addColumn('user','city_id', $this->integer(11)->unsigned()->notNull()
         ->after('id'));
-
     }
 
     /**
@@ -24,6 +23,4 @@ class m200924_050950_update_tables_user extends Migration
     {
         $this->dropColumn('user','city_id');
     }
-
-
 }

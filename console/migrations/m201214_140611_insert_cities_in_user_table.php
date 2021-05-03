@@ -1,4 +1,4 @@
-<?php
+    <?php
 
 use frontend\models\City;
 use frontend\models\User;
@@ -26,6 +26,7 @@ class m201214_140611_insert_cities_in_user_table extends Migration
             $user->city_id = $randomCity;
             $user->role = [UserRole::CUSTOMER, UserRole::EXECUTOR] [random_int(0, 1)];
             $user->password = self::DEFAULT_PASSWORD_123123123;
+            $user->generatePasswordResetToken();
             $user->update();
         }
     }
