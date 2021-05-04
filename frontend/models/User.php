@@ -18,6 +18,7 @@ use yii\db\ActiveQuery;
  * @property string $name
  * @property string $password
  * @property string $role
+ * @property string $password_reset_token
  * @property string $date_add
  * @property string $date_login
  * @property int $city_id;
@@ -41,6 +42,8 @@ class User extends ActiveRecord implements IdentityInterface
 {
     use ExceptionOnFindFail;
 
+    const STATUS_ACTIVE = 11;
+
     /**
      * {@inheritdoc}
      */
@@ -57,7 +60,7 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             [['email', 'name', 'password'], 'required'],
             [['date_add', 'date_login'], 'safe'],
-            [['email', 'name'], 'string', 'max' => 255],
+            [['email', 'name','password_reset_token'], 'string', 'max' => 255],
             [['password'], 'string', 'max' => 64],
             [['role'], 'in', 'range' => UserRole::LIST],
             [['email'], 'unique'],
@@ -325,4 +328,31 @@ class User extends ActiveRecord implements IdentityInterface
         $user->update();
     }
 
+    /**
+     * Generates new password reset token
+     */
+    public function generatePasswordResetToken()
+    {
+        $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
+    }
+
+    public static function isPasswordResetTokenValid($token)
+    {
+        if (empty($token)) {
+            return false;
+        }
+
+        $timestamp = (int) substr($token, strrpos($token, '_') + 1);
+        $expire = Yii::$app->params['user.passwordResetTokenExpire'];
+        return $timestamp + $expire >= time();
+    }
+
+    public static function findByPasswordResetToken($token): ?User
+    {
+        if (!static::isPasswordResetTokenValid($token)) {
+            return null;
+        }
+
+        return static::findOne(['password_reset_token' => $token, 'status' => self::STATUS_ACTIVE]);
+    }
 }

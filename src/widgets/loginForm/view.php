@@ -3,6 +3,7 @@
     <?php
 
     use frontend\models\forms\LoginForm;
+    use yii\authclient\widgets\AuthChoice;
     use yii\helpers\Html;
     use yii\widgets\ActiveForm;
 
@@ -37,9 +38,13 @@
         ->label('Пароль')
         ->input('password');
 
-    echo Html::submitButton('Войти', ['class' => 'button']);
+    echo Html::submitButton('Войти', ['class' => 'button login-button']);
     ActiveForm::end();
-    ?>
+
+    echo AuthChoice::widget([
+                                'baseAuthUrl' => ['site/auth'],
+                                'popupMode' => false,
+                                                  ]) ?>
 
     <button class="form-modal-close" type="button">Закрыть</button>
 </section>

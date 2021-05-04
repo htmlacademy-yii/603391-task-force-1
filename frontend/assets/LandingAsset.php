@@ -14,6 +14,7 @@ class LandingAsset extends AssetBundle
     public $css = [
         'css/normalize.css',
         'css/style.css',
+        'css/task-force.css',
     ];
     public $js = [
         'js/main.js'];

@@ -6,4 +6,5 @@ return [
     'worksDir' => 'works',
     'maxWorksFiles' => 6,
     'maxTasksInLanding' => 4,
+    'user.rememberMeDuration' => 3600*24*7,
 ];
