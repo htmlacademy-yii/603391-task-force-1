@@ -72,8 +72,17 @@ services:
       - ./:/app
     links:
       - mysql
+      - redis
     networks:
       - app-network
+
+  redis:
+    image: redis
+    ports:
+      - "6379"
+    networks:
+      - app-network
+
 
 networks:
   app-network:

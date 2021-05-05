@@ -4,7 +4,6 @@
 /** @var array $modelsTasks */
 
 use yii\helpers\Url;
-
 ?>
 <main>
     <div class="landing-container">
@@ -130,5 +129,3 @@ use yii\helpers\Url;
         </div>
     </div>
 </main>
-
-
