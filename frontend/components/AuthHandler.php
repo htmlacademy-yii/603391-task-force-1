@@ -19,10 +19,10 @@ use yii\helpers\ArrayHelper;
  */
 class AuthHandler
 {
-    const MESSAGE = "Пользователь с тем же адресом электронной почты, что и в аккаунте {client},"
+    private const MESSAGE = "Пользователь с тем же адресом электронной почты, что и в аккаунте {client},"
     . " уже существует, но не связан с ним." .
     "Сначала войдите, используя электронную почту, чтобы привязать аккаунт.";
-    const firstId = 1;
+    private const FIRST_ID = 1;
 
     /**
      * AuthHandler constructor.
@@ -177,7 +177,7 @@ class AuthHandler
     private function createUser(string $city, string $email, string $fullName): User
     {
         $user = new User();
-        $user->city_id = City::findIdByName($city) || self::firstId;
+        $user->city_id = City::findIdByName($city) || self::FIRST_ID;
         $user->email = $email;
         $user->name = $fullName;
         $password = Yii::$app->security->generateRandomString(9);

@@ -19,7 +19,7 @@ class GeoCoder
     public const HTTP_GEOCODE_MAPS_YANDEX_RU = 'http://geocode-maps.yandex.ru/';
     public const MAX_LOCATIONS = 5;
     public const FORMAT_JSON = 'json';
-    private const dayInSeconds = 3600 * 24;
+    private const DAY_IN_SECONDS = 3600 * 24;
     private string $apiKey = '';
     private Client $apiClient;
     private string $userCity;
@@ -180,6 +180,6 @@ class GeoCoder
     {
         $key = md5($key);
         $value = json_encode($data);
-        Yii::$app->cache->set($key, $value, self::dayInSeconds);
+        Yii::$app->cache->set($key, $value, self::DAY_IN_SECONDS);
     }
 }
