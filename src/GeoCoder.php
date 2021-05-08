@@ -10,6 +10,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
 use Yii;
+use yii\caching\TagDependency;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 use yii\web\NotFoundHttpException;
@@ -51,6 +52,7 @@ class GeoCoder
            $data = json_decode($data);
         } else {
            $data = $this->getAddressesByApi($userRequest);
+           $this->saveToCache(key: $userRequest, data: $data);
         }
 
         return $data;
@@ -67,8 +69,8 @@ class GeoCoder
         foreach ($GeoObjects as $item) {
             $pointData = ArrayHelper::getValue($item, 'GeoObject.Point.pos');
             $coords = explode(" ", $pointData);
-            $lat = $coords[1];
             $lng = $coords[0];
+            $lat = $coords[1];
             $city = ArrayHelper::getValue(
                 $item,
                 'GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.'
@@ -167,7 +169,6 @@ class GeoCoder
             $result = null;
             if (is_array($locations)) {
                 $result = $locations;
-                $this->saveToCache(key: $userRequest, data: $result);
             }
         } catch (Exception) {
             $result = null;
@@ -180,6 +181,6 @@ class GeoCoder
     {
         $key = md5($key);
         $value = json_encode($data);
-        Yii::$app->cache->set($key, $value, self::DAY_IN_SECONDS);
+        Yii::$app->cache->set($key, $value, self::DAY_IN_SECONDS, new TagDependency(['tags' => 'geo-coder-locations']));
     }
 }
