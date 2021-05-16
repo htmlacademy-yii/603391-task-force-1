@@ -1,5 +1,6 @@
 <?php
 
+use TaskForce\Redis\RedisCacheWithFallBack;
 use yii\web\JsonParser;
 use yii\web\Response;
 
@@ -17,13 +18,21 @@ return [
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
         'redis' => [
-            'class' => 'yii\redis\Connection',
+            'class' => yii\redis\Connection::class,
             'hostname' => 'redis',
             'port' => 6379,
             'database' => 0,
         ],
-        'cache' => [
+        'redisCache' => [
             'class' => 'yii\redis\Cache',
+        ],
+        'fileCache' => [
+            'class' => 'yii\caching\FileCache',
+        ],
+        'cache' => [
+            'class' => RedisCacheWithFallBack::class,
+            'mainCache' => 'redisCache',
+            'fallBack' => 'fileCache',
         ],
         'authClientCollection' => [
             'class' => 'yii\authclient\Collection',
@@ -94,6 +103,7 @@ return [
                 'enablePrettyUrl' => true,
                 'showScriptName' => false,
                 'enableStrictParsing' => false,
+                'cache' => 'yii\caching\FileCache',
                 'rules' => [
                     'users' => 'users/index',
                     'tasks' => 'tasks/index',

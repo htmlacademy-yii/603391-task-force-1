@@ -46,13 +46,18 @@ class GeoCoder
     {
         $userRequest = $this->prepareRequest($userRequest);
         $key = md5($userRequest);
-        $data = Yii::$app->cache->get($key);
+        try {
+            $data = Yii::$app->cache->get($key);
+        }
+        catch (Exception) {
+            $data = null;
+        }
 
         if ($data) {
-           $data = json_decode($data);
+            $data = json_decode($data);
         } else {
-           $data = $this->getAddressesByApi($userRequest);
-           $this->saveToCache(key: $userRequest, data: $data);
+            $data = $this->getAddressesByApi($userRequest);
+            $this->saveToCache(key: $userRequest, data: $data);
         }
 
         return $data;
@@ -76,9 +81,7 @@ class GeoCoder
                 'GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.'
                 . 'AdministrativeArea.SubAdministrativeArea.Locality.LocalityName'
             );
-
             $text = ArrayHelper::getValue($item, 'GeoObject.metaDataProperty.GeocoderMetaData.text');
-
             if (stripos($text, $this->userCity)) {
                 array_push($locations, ['text' => $text, 'lat' => $lat, 'lng' => $lng, 'city' => $city]);
             }
@@ -148,7 +151,7 @@ class GeoCoder
             $request = $this->userCity;
         }
         //add city to request if not exists
-        if  (!strpos(mb_strtolower($request), mb_strtolower($this->userCity))) {
+        if (!strpos(mb_strtolower($request), mb_strtolower($this->userCity))) {
             $request = $this->userCity . ', ' . $request;
         }
 
@@ -181,6 +184,11 @@ class GeoCoder
     {
         $key = md5($key);
         $value = json_encode($data);
-        Yii::$app->cache->set($key, $value, self::DAY_IN_SECONDS, new TagDependency(['tags' => 'geo-coder-locations']));
+        try {
+            Yii::$app->cache->set($key, $value, self::DAY_IN_SECONDS, new TagDependency(['tags' => 'geo-coder-locations']));
+        }
+        catch (Exception) {
+        }
+
     }
 }
