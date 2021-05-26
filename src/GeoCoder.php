@@ -46,18 +46,24 @@ class GeoCoder
     {
         $userRequest = $this->prepareRequest($userRequest);
         $key = md5($userRequest);
+
+        //read data from cache
         try {
-            $data = Yii::$app->cache->get($key);
+            $jsonData = Yii::$app->cache->get($key);
+            $data = ($jsonData)?json_decode($jsonData):null;
         }
         catch (Exception) {
             $data = null;
         }
 
-        if ($data) {
-            $data = json_decode($data);
-        } else {
-            $data = $this->getAddressesByApi($userRequest);
-            $this->saveToCache(key: $userRequest, data: $data);
+        //read data from api and write to cache
+        if (!$data) {
+            try {
+                $data = $this->getAddressesByApi($userRequest);
+                $this->saveToCache(key: $userRequest, data: $data);
+            }
+            catch (Exception) {
+            }
         }
 
         return $data;
@@ -189,6 +195,5 @@ class GeoCoder
         }
         catch (Exception) {
         }
-
     }
 }
