@@ -19,10 +19,10 @@ use yii\helpers\ArrayHelper;
  */
 class AuthHandler
 {
-    const MESSAGE = "Пользователь с тем же адресом электронной почты, что и в аккаунте {client},"
+    private const MESSAGE = "Пользователь с тем же адресом электронной почты, что и в аккаунте {client},"
     . " уже существует, но не связан с ним." .
     "Сначала войдите, используя электронную почту, чтобы привязать аккаунт.";
-    const firstId = 1;
+    private const FIRST_ID = 1;
 
     /**
      * AuthHandler constructor.
@@ -74,13 +74,7 @@ class AuthHandler
 
     public function addAuthProvider(string $id): void
     {
-        $auth = new Auth(
-            [
-                'user_id' => Yii::$app->user->id,
-                'source' => $this->client->getId(),
-                'source_id' => $id,
-            ]
-        );
+        $auth = $this->createAuth(Yii::$app->user->id, $id);
         if ($auth->save()) {
             Yii::$app->getSession()->setFlash(
                 'success',
@@ -118,7 +112,7 @@ class AuthHandler
      * @throws \yii\base\Exception
      * @throws \yii\db\Exception
      */
-    public function register(string $email, string $city, string $fullName, string $id): Auth
+    public function register(string $email, string $city, string $fullName, string $id): ?Auth
     {
         if ($email !== null && User::find()->where(['email' => $email])->exists()) {
             Yii::$app->getSession()->setFlash(
@@ -126,21 +120,10 @@ class AuthHandler
                 Yii::t('app', self::MESSAGE, ['client' => $this->client->getTitle()]),
             );
         } else {
-            $password = Yii::$app->security->generateRandomString(9);
             $transaction = Yii::$app->db->beginTransaction();
             try {
-                $user = new User();
-                $user->city_id = City::findIdByName($city) || self::firstId;
-                $user->email = $email;
-                $user->name = $fullName;
-                $user->password = Yii::$app->getSecurity()->generatePasswordHash($password);
-                $user->role = UserRole::CUSTOMER;
-                $user->auth_key = Yii::$app->security->generateRandomString();
-                $user->generatePasswordResetToken();
-                $user->save();
-                $profile = new Profile();
-                $profile->user_id = $user->id;
-                $profile->save();
+                $user = $this->createUser($city, $email, $fullName);
+                $this->createProfile($user);
                 $transaction->commit();
             } catch (Exception) {
                 $transaction->rollBack();
@@ -148,13 +131,8 @@ class AuthHandler
             $transaction = User::getDb()->beginTransaction();
 
             if (isset($user->id)) {
-                $auth = new Auth(
-                    [
-                        'user_id' => $user->id,
-                        'source' => $this->client->getId(),
-                        'source_id' => (string)$id,
-                    ]
-                );
+                $auth = $this->createAuth($user->id, $id);
+
                 if ($auth->save()) {
                     $transaction->commit();
                     Yii::$app->user->login($user, Yii::$app->params['user.rememberMeDuration']);
@@ -186,6 +164,54 @@ class AuthHandler
             }
         }
 
-        return $auth;
+        return $auth ?? null;
+    }
+
+    /**
+     * @param string $city
+     * @param string $email
+     * @param string $fullName
+     * @return User
+     * @throws \yii\base\Exception
+     */
+    private function createUser(string $city, string $email, string $fullName): User
+    {
+        $user = new User();
+        $user->city_id = City::findIdByName($city) || self::FIRST_ID;
+        $user->email = $email;
+        $user->name = $fullName;
+        $password = Yii::$app->security->generateRandomString(9);
+        $user->password = Yii::$app->getSecurity()->generatePasswordHash($password);
+        $user->role = UserRole::CUSTOMER;
+        $user->auth_key = Yii::$app->security->generateRandomString();
+        $user->generatePasswordResetToken();
+        $user->save();
+        return $user;
+    }
+
+    /**
+     * @param User $user
+     */
+    private function createProfile(User $user): void
+    {
+        $profile = new Profile();
+        $profile->user_id = $user->id;
+        $profile->save();
+    }
+
+    /**
+     * @param string $user_id
+     * @param string $id
+     * @return Auth
+     */
+    private function createAuth(string $user_id, string $id): Auth
+    {
+        return new Auth(
+            [
+                'user_id' => $user_id,
+                'source' => $this->client->getId(),
+                'source_id' => $id,
+            ]
+        );
     }
 }

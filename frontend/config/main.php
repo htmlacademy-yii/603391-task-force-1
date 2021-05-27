@@ -1,5 +1,8 @@
 <?php
 
+use TaskForce\Redis\RedisCacheWithFallBack;
+use yii\caching\FileCache;
+use yii\redis\Cache;
 use yii\web\JsonParser;
 use yii\web\Response;
 
@@ -13,9 +16,24 @@ $params = array_merge(
 return [
     'id' => 'app-frontend',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'bootstrap' => [
+        'log',
+        'cache'
+    ],
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
+        'cache' => fn(): object => RedisCacheWithFallBack::getConnection(),
+        'redisCache' => [
+            'class' => Cache::class,
+            'redis' => [
+                'hostname' => 'redis',
+                'port' => 6379,
+                'database' => 0,
+            ]
+        ],
+        'fileCache' => [
+            'class' => 'yii\caching\FileCache'
+        ],
         'authClientCollection' => [
             'class' => 'yii\authclient\Collection',
             'clients' => [
@@ -29,13 +47,14 @@ return [
         ],
         'request' => [
             'csrfCookie' => [
-                'domain' => '.' . $params['mainURL']],
+                'domain' => '.' . $params['mainURL']
+            ],
             'csrfParam' => '_csrf-frontend',
             'parsers' => [
                 'application/json' => [
                     'class' => JsonParser::class,
-                 ],
                 ],
+            ],
         ],
         'response' => [
             'formatters' => [
@@ -81,26 +100,27 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-            'urlManager' => [
-                'enablePrettyUrl' => true,
-                'showScriptName' => false,
-                'enableStrictParsing' => false,
-                'rules' => [
-                    'users' => 'users/index',
-                    'tasks' => 'tasks/index',
-                    'task' => '/task/create',
-                    'events' => '/events/clear',
-                    'tasks/view/<id:\d+>' => 'tasks/view',
-                    'site/file/<id:\d+>' => 'site/file',
-                    'site/city/<cityId:\d+>' => 'site/city',
-                    'users/view/<id:\d+>' => 'users/view',
-                    'users/<sortType:\d+>' => 'users/index',
-                    'my-list/<filter:\d+>' => 'my-list/index',
-                    'users/bookmark/<userId:\d+>' => 'users/bookmark',
-                    'address/location/<search:\d+>' => 'address/location',
-                    '/' => 'landing/index',
-                ]
-            ],
+        'urlManager' => [
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+            'enableStrictParsing' => false,
+            'cache' => FileCache::class,
+            'rules' => [
+                'users' => 'users/index',
+                'tasks' => 'tasks/index',
+                'task' => '/task/create',
+                'events' => '/events/clear',
+                'tasks/view/<id:\d+>' => 'tasks/view',
+                'site/file/<id:\d+>' => 'site/file',
+                'site/city/<cityId:\d+>' => 'site/city',
+                'users/view/<id:\d+>' => 'users/view',
+                'users/<sortType:\d+>' => 'users/index',
+                'my-list/<filter:\d+>' => 'my-list/index',
+                'users/bookmark/<userId:\d+>' => 'users/bookmark',
+                'address/location/<search:\d+>' => 'address/location',
+                '/' => 'landing/index',
+            ]
+        ],
     ],
     'params' => $params,
 ];
