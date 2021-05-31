@@ -6,6 +6,7 @@ use frontend\models\City;
 use frontend\models\Profile;
 use frontend\models\User;
 use frontend\models\Work;
+use frontend\validator\RemoteEmailValidator;
 use TaskForce\Exception\FileException;
 use TaskForce\Exception\TaskForceException;
 use Yii;
@@ -86,6 +87,7 @@ class AccountForm extends Model
             ['name', 'string', 'min' => 2, 'tooShort' => 'Имя должно быть не менее 2 символов.'],
             ['name', 'string', 'max' => 128, 'tooLong' => 'Имя должно быть не более 255 символов.'],
             ['email', 'email', 'message' => 'Не корректный email'],
+            ['email', RemoteEmailValidator::class, 'message' => 'Введен несуществующий адрес.'],
             ['cityId', 'integer'],
             ['newPassword', 'compare', 'compareAttribute' => 'repeatPassword'],
             [
