@@ -5,23 +5,22 @@ namespace TaskForce;
 use Exception;
 use frontend\models\City;
 use GuzzleHttp\Client;
-
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
 use Yii;
+use yii\caching\TagDependency;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 use yii\web\NotFoundHttpException;
 
 class GeoCoder
 {
-
     public const HTTP_GEOCODE_MAPS_YANDEX_RU = 'http://geocode-maps.yandex.ru/';
     public const MAX_LOCATIONS = 5;
     public const FORMAT_JSON = 'json';
+    private const DAY_IN_SECONDS = 3600 * 24;
     private string $apiKey = '';
     private Client $apiClient;
     private string $userCity;
@@ -43,31 +42,31 @@ class GeoCoder
      * @return array|null
      * @throws GuzzleException
      */
-    public function findAddressesByRequest(string $userRequest): array | null
+    public function findAddressesByRequest(string $userRequest): array|null
     {
-        if (!$userRequest) {
-            $userRequest = $this->userCity;
-        }
+        $userRequest = $this->prepareRequest($userRequest);
+        $key = md5($userRequest);
 
-        if ( !strpos(mb_strtolower($userRequest), mb_strtolower($this->userCity))){
-            $userRequest = $this->userCity . ', ' .  $userRequest;
-        }
-
+        //read data from cache
         try {
-            $responseData = $this->getResponseData($userRequest);
-            $geoObjects = ArrayHelper::getValue($responseData, 'response.GeoObjectCollection.featureMember');
-            $locations = $this->convertLocations($geoObjects);
-
-
-            $result = null;
-            if (is_array($locations)) {
-                $result = $locations;
-            }
-        } catch (RequestException) {
-            $result = null;
+            $jsonData = Yii::$app->cache->get($key);
+            $data = ($jsonData)?json_decode($jsonData):null;
+        }
+        catch (Exception) {
+            $data = null;
         }
 
-        return $result;
+        //read data from api and write to cache
+        if (!$data) {
+            try {
+                $data = $this->getAddressesByApi($userRequest);
+                $this->saveToCache(key: $userRequest, data: $data);
+            }
+            catch (Exception) {
+            }
+        }
+
+        return $data;
     }
 
     /**
@@ -81,21 +80,18 @@ class GeoCoder
         foreach ($GeoObjects as $item) {
             $pointData = ArrayHelper::getValue($item, 'GeoObject.Point.pos');
             $coords = explode(" ", $pointData);
-            $lat = $coords[1];
             $lng = $coords[0];
+            $lat = $coords[1];
             $city = ArrayHelper::getValue(
                 $item,
                 'GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.'
                 . 'AdministrativeArea.SubAdministrativeArea.Locality.LocalityName'
             );
-
             $text = ArrayHelper::getValue($item, 'GeoObject.metaDataProperty.GeocoderMetaData.text');
-
             if (stripos($text, $this->userCity)) {
                 array_push($locations, ['text' => $text, 'lat' => $lat, 'lng' => $lng, 'city' => $city]);
             }
         }
-
 
         return $locations;
     }
@@ -120,7 +116,7 @@ class GeoCoder
      * @return mixed
      * @throws GuzzleException
      */
-    public function getResponseData(string $userRequest)
+    public function getResponseData(string $userRequest): mixed
     {
         $apiRequest = new Request('GET', 'check');
         $response = $this->apiClient->request(
@@ -149,6 +145,55 @@ class GeoCoder
      */
     public function getCoordinates($location): ?array
     {
-        return  $this->findAddressesByRequest($location)[0] ?? null;
+        return $this->findAddressesByRequest($location)[0] ?? null;
+    }
+
+    private function prepareRequest(string $request): string
+    {
+        $request = trim($request);
+
+        //by default use the city from the user profile
+        if (!$request) {
+            $request = $this->userCity;
+        }
+        //add city to request if not exists
+        if (!strpos(mb_strtolower($request), mb_strtolower($this->userCity))) {
+            $request = $this->userCity . ', ' . $request;
+        }
+
+        return $request;
+    }
+
+    /**
+     * @param string $userRequest
+     * @return array|null
+     * @throws GuzzleException
+     */
+    private function getAddressesByApi(string $userRequest): ?array
+    {
+        try {
+            $responseData = $this->getResponseData($userRequest);
+            $geoObjects = ArrayHelper::getValue($responseData, 'response.GeoObjectCollection.featureMember');
+            $locations = $this->convertLocations($geoObjects);
+            $result = null;
+            if (is_array($locations)) {
+                $result = $locations;
+            }
+        } catch (Exception) {
+            $result = null;
+        }
+
+        return $result;
+    }
+
+    private function saveToCache(string $key, ?array $data): void
+    {
+        $key = md5($key);
+        $value = json_encode($data);
+        try {
+            Yii::$app->cache->set($key, $value, self::DAY_IN_SECONDS, new TagDependency(['tags' => 'geo-coder-locations']));
+        }
+        catch (Exception) {
+        }
     }
 }

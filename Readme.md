@@ -6,3 +6,10 @@
 ---
 Для демонтрации проекта создано окружение Docker.
 
+* init --env=Docker --overwrite=All
+* docker-compose up --build
+
+https://taskforce.local
+
+
+

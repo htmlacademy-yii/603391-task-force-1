@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\validators;
+namespace frontend\validator;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
@@ -31,7 +31,7 @@ class RemoteEmailValidator extends Validator
             $response = $client->send(
                 $request,
                 [
-                    'query' => ['email' => $value, 'access_key' => Yii::$app->params['apiKey']]
+                    'query' => ['email' => $value, 'access_key' => Yii::$app->params['apiLayerKey']]
                 ]
             );
 

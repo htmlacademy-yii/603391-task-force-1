@@ -7,6 +7,7 @@ use Exception;
 use frontend\models\City;
 use frontend\models\Profile;
 use frontend\models\User;
+use frontend\validator\RemoteEmailValidator;
 use TaskForce\Exception\TaskForceException;
 use TaskForce\Constant\UserRole;
 use Yii;
@@ -30,6 +31,7 @@ class SignupForm extends Model
             ['email', 'trim'],
             ['email', 'required', 'message' => self::NOT_FILLED],
             ['email', 'email', 'message' => 'Неверный адрес.'],
+            ['email', RemoteEmailValidator::class, 'message' => 'Введен несуществующий адрес.'],
             ['email', 'unique', 'targetClass' => User::class, 'message' => 'Данный email уже занят.'],
             ['username', 'trim'],
             ['username', 'required', 'message' => self::NOT_FILLED],
@@ -48,8 +50,8 @@ class SignupForm extends Model
 
     /**
      *  Registration users by form data
-     * @return bool
-     * @throws TaskForceException
+     * @return bool|null
+     * @throws \TaskForce\Exception\TaskForceException
      */
 
     public function register(): ?bool
@@ -58,6 +60,7 @@ class SignupForm extends Model
             return null;
         }
         $transaction = Yii::$app->db->beginTransaction();
+        $now = new DateTime('now');
         try {
             $user = new User();
             $user->email = $this->email;
@@ -66,7 +69,7 @@ class SignupForm extends Model
             $user->password = Yii::$app->getSecurity()->generatePasswordHash($this->password);
             $user->auth_key =  Yii::$app->security->generateRandomString();
             $user->generatePasswordResetToken();
-            $user->date_login = new DateTime('now');
+            $user->date_login = $now->format('Y-m-d\TH:i:s.u');
             $user->role = UserRole::CUSTOMER;
             $user->save();
 
