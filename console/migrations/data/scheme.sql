@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS task_force CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+#CREATE DATABASE IF NOT EXISTS task_force CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE task_force;
 
 CREATE TABLE IF NOT EXISTS `status` (
