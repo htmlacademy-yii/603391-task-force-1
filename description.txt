@@ -1,0 +1,12 @@
+A Docker environment has been created to demonstrate the project.
+
+The environment contains the following services:
+NGINX PHP-FPM8, MARIADB 10.4, REDIS, COMPOSER, CERTS, DEMO DATA
+
+Instruction for start up project:
+1) Install Docker engine
+2) init --env=Docker --overwrite=All
+3) docker-compose up --build
+4) add address to host file
+   127.0.0.1 taskforce.local
+5) Start address https://taskforce.local
