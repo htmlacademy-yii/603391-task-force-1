@@ -18,11 +18,16 @@ return [
     'basePath' => dirname(__DIR__),
     'bootstrap' => [
         'log',
-        'cache'
+        'cache',
+        'assetsAutoCompress'
     ],
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
         'cache' => fn(): object => RedisCacheWithFallBack::getConnection(),
+        'assetsAutoCompress' =>
+            [
+                'class' => '\skeeks\yii2\assetsAuto\AssetsAutoCompressComponent',
+            ],
         'redisCache' => [
             'class' => Cache::class,
             'redis' => [
