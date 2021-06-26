@@ -83,16 +83,28 @@ class User extends ActiveRecord implements IdentityInterface
         ];
     }
 
+    /**
+     * @param int|string $id
+     * @return User|IdentityInterface|null
+     */
     public static function findIdentity($id)
     {
         return self::findOne($id);
     }
 
+    /**
+     * @param mixed $token
+     * @param null $type
+     * @return void|IdentityInterface|null
+     */
     public static function findIdentityByAccessToken($token, $type = null)
     {
         // Implement findIdentityByAccessToken() method.
     }
 
+    /**
+     * @return array|int|mixed|string|null
+     */
     public function getId()
     {
         return $this->getPrimaryKey();
@@ -122,6 +134,10 @@ class User extends ActiveRecord implements IdentityInterface
         $this->auth_key = Yii::$app->security->generateRandomString();
     }
 
+    /**
+     * @param $password
+     * @return bool
+     */
     public function validatePassword($password)
     {
         return Yii::$app->security->validatePassword($password, $this->password);
@@ -310,11 +326,18 @@ class User extends ActiveRecord implements IdentityInterface
         return $query;
     }
 
+    /**
+     * @return mixed
+     * @throws \yii\web\NotFoundHttpException
+     */
     public static function currentUser()
     {
         return  User::findOrFail(Yii::$app->user->identity->getId(), 'Пользователь не найден');
     }
 
+    /**
+     * @throws \yii\web\NotFoundHttpException
+     */
     public static function updateUserRoleBySpecialisations()
     {
         $profileId = Profile::currentProfile();
@@ -336,6 +359,10 @@ class User extends ActiveRecord implements IdentityInterface
         $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
     }
 
+    /**
+     * @param $token
+     * @return bool
+     */
     public static function isPasswordResetTokenValid($token)
     {
         if (empty($token)) {
@@ -347,6 +374,10 @@ class User extends ActiveRecord implements IdentityInterface
         return $timestamp + $expire >= time();
     }
 
+    /**
+     * @param $token
+     * @return User|null
+     */
     public static function findByPasswordResetToken($token): ?User
     {
         if (!static::isPasswordResetTokenValid($token)) {

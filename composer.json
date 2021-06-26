@@ -21,7 +21,8 @@
         "guzzlehttp/guzzle": "^7.2",
         "yiisoft/yii2-authclient": "~2.2.0",
         "yiisoft/yii2-redis": "^2.0",
-        "skeeks/yii2-assets-auto-compress": "*"
+        "skeeks/yii2-assets-auto-compress": "*",
+        "ext-curl": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

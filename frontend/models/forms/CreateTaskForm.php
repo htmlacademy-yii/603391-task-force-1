@@ -30,6 +30,9 @@ class CreateTaskForm extends Model
     public int    $budget = 0;
     public string $dateEnd = '';
 
+    /**
+     * @inheritdoc
+     */
     public function attributeLabels()
     {
         return [
@@ -98,11 +101,10 @@ class CreateTaskForm extends Model
     }
 
     /**
-     *  Registration users by form data
      * @param int $customerId
      * @return int|null
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-
     public function saveFields(int $customerId): ?int
     {
         $task = new Task();

@@ -8,6 +8,12 @@ use Yii;
 
 class Declination
 {
+    /**
+     * Declination constructor.
+     * @param string $firstForm
+     * @param string $secondForm
+     * @param string $thirdForm
+     */
     public function __construct(
         public string $firstForm = '',
         public string $secondForm = '',
@@ -15,6 +21,9 @@ class Declination
     ) {
     }
 
+    /**
+     * @return array
+     */
     private function getWordsList(): array
     {
         return array($this->firstForm, $this->secondForm, $this->thirdForm);

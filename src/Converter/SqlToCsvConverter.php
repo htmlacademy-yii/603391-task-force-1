@@ -61,12 +61,18 @@ class SqlToCsvConverter
         $this->convertFile();
     }
 
+    /**
+     * convert Header
+     */
     private function convertHeader(): void
     {
         $this->serviceExporter->saveData("INSERT INTO `%s` ", $this->model->tableName);
         $this->serviceExporter->saveData("(%s) \n  VALUES \n", $this->getListValues($this->model->fields, '`'));
     }
 
+    /**
+     * convert Body
+     */
     private function convertBody(): void
     {
         $list = null;
@@ -86,6 +92,9 @@ class SqlToCsvConverter
         }
     }
 
+    /**
+     * convert File
+     */
     private function convertFile(): void
     {
         $this->convertHeader();
@@ -111,6 +120,11 @@ class SqlToCsvConverter
         return $newArray;
     }
 
+    /**
+     * @param array $line_array
+     * @param string|null $symbol
+     * @return string
+     */
     private function getListValues(array $line_array, ?string $symbol = null): string
     {
         $list = '';
