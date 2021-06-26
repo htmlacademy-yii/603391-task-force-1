@@ -27,7 +27,7 @@ class YandexMapWidget extends Widget
      * Registers the needed JS.
      * @throws InvalidConfigException
      */
-    public function init(): bool
+    public function init()
     {
         parent::init();
         if (!$this->validate()) { return false;}
@@ -55,7 +55,7 @@ class YandexMapWidget extends Widget
      * Map html block
      * @return string|null
      */
-    public function run(): ?string
+    public function run()
     {
         if (!$this->validate()) { return null;}
 
