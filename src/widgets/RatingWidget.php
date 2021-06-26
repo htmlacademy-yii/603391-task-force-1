@@ -43,7 +43,7 @@ class RatingWidget extends Widget
      *
      * @return string|null
      */
-    public function run(): ?string
+    public function run()
     {
         parent::run();
 
@@ -59,6 +59,7 @@ class RatingWidget extends Widget
     }
 
     /**
+     *  @inheritdoc
      *  Register css to widget
      */
     public function init()
@@ -69,7 +70,7 @@ class RatingWidget extends Widget
 
     /**
      * Show 5 colored stars by rate
-     * @return string|null
+     * @return string
      */
     private function getStarsContent(): string
     {

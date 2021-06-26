@@ -6,7 +6,6 @@ use Exception;
 use frontend\models\Response;
 use TaskForce\Exception\TaskForceException;
 use TaskForce\ResponseEntity;
-use Throwable;
 use Yii;
 use yii\base\Model;
 
@@ -30,8 +29,8 @@ class ResponseTaskForm extends Model
 
     /**
      * @param int $taskId
-     * @throws TaskForceException
-     * @throws Throwable
+     * @throws \TaskForce\Exception\TaskForceException
+     * @throws \Throwable
      */
     public function createResponse(int $taskId): void
     {

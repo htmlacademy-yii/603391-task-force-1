@@ -53,7 +53,6 @@ class SignupForm extends Model
      * @return bool|null
      * @throws \TaskForce\Exception\TaskForceException
      */
-
     public function register(): ?bool
     {
         if (!$this->validate()) {
