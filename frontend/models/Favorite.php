@@ -52,17 +52,17 @@ class Favorite extends ActiveRecord
     /**
      * Gets query for [[Favorite]].
      *
-     * @return ActiveQuery|FileQuery
+     * @return ActiveQuery
      */
     public function getFavorite()
     {
-        return $this->hasOne(File::className(), ['id' => 'favorite_id']);
+        return $this->hasOne(File::class, ['id' => 'favorite_id']);
     }
 
     /**
      * Gets query for [[User]].
      *
-     * @return ActiveQuery|UserQuery
+     * @return ActiveQuery
      */
     public function getUser()
     {

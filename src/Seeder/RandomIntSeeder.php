@@ -6,6 +6,11 @@ use Exception;
 
 class RandomIntSeeder extends Seeder
 {
+    /**
+     * RandomIntSeeder constructor.
+     * @param int $from
+     * @param int $to
+     */
     public function __construct(
         private int $from,
         private int $to,
