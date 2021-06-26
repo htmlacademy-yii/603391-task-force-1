@@ -55,7 +55,6 @@ class City extends ActiveRecord
 
     /**
      * Gets query for [[Profiles]].
-     *
      * @return ActiveQuery|ProfileQuery
      */
     public function getProfiles()
@@ -81,6 +80,10 @@ class City extends ActiveRecord
         return ArrayHelper::map(City::find()->asArray()->all(), 'id', 'city');
     }
 
+    /**
+     * @param string|null $city
+     * @return int|null
+     */
     public static function findIdByName(?string $city): ?int
     {
         return City::find()->select('id')->where(['city' => $city])->limit(1)->one()['id'] ?? null;

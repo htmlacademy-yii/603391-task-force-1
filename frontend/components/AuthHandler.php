@@ -13,7 +13,6 @@ use Yii;
 use yii\authclient\ClientInterface;
 use yii\helpers\ArrayHelper;
 
-
 /**
  * AuthHandler handles successful authentication via Yii auth component
  */
@@ -72,9 +71,12 @@ class AuthHandler
         }
     }
 
-    public function addAuthProvider(string $id): void
+    /**
+     * @param string $authProviderId
+     */
+    public function addAuthProvider(string $authProviderId): void
     {
-        $auth = $this->createAuth(Yii::$app->user->id, $id);
+        $auth = $this->createAuth(Yii::$app->user->id, $authProviderId);
         if ($auth->save()) {
             Yii::$app->getSession()->setFlash(
                 'success',
@@ -101,6 +103,9 @@ class AuthHandler
         }
     }
 
+    /**
+     * @param array|Auth $auth
+     */
     public function login(array|Auth $auth): void
     {
         $user = $auth->user;

@@ -36,6 +36,9 @@ class AccountForm extends Model
     public bool $showMyContact = false;
     public bool $dontShowProfile = false;
 
+    /**
+     * Setup initial data
+     */
     public function init(): void
     {
         $userId = Yii::$app->user->identity->getId();
@@ -53,7 +56,10 @@ class AccountForm extends Model
         $this->dontShowProfile = $profile['show_only_executor'] ?? '';
     }
 
-    public function attributeLabels(): array
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
     {
         return [
             'avatarFile' => 'Сменить аватар',
@@ -221,5 +227,4 @@ class AccountForm extends Model
 
         return true;
     }
-
 }

@@ -12,9 +12,9 @@ class CitySelectorWidget extends Widget
     public int $currentCityId = 0;
 
     /**
-     * @return string|null
+     * @inheritdoc
      */
-    public function run(): ?string
+    public function run()
     {
         parent::run();
         $this->cityList = City::getList();
