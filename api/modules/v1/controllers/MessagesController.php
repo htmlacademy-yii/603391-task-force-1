@@ -19,6 +19,9 @@ class MessagesController extends ApiController
     public $modelClass = Message::class;
     public $enableCsrfValidation = false;
 
+    /**
+     * @inheritdoc
+     */
     public function actions()
     {
         $actions = parent::actions();
@@ -32,6 +35,9 @@ class MessagesController extends ApiController
         return $actions;
     }
 
+    /**
+     * @return ActiveDataProvider
+     */
     public function prepareDataProvider(): ActiveDataProvider
     {
         return new ActiveDataProvider(

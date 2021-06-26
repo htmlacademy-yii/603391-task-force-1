@@ -9,7 +9,10 @@ class LoginFormWidget extends Widget
 {
     public LoginForm $loginForm;
 
-    public function run(): ?string
+    /**
+     * @return string|null
+     */
+    public function run()
     {
         parent::run();
         $this->loginForm = new LoginForm();
