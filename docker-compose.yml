@@ -64,11 +64,15 @@ services:
       context: .
       dockerfile: ./docker/php/php-fpm.Dockerfile
     container_name: php-fpm
+    environment:
+      XDEBUG_CONFIG: "remote_host=host.docker.internal remote_enable=1"
+      PHP_IDE_CONFIG: "serverName=Docker"
     restart: always
     depends_on:
       - mysql
     volumes:
       - ~/.composer-docker/cache:/root/.composer/cache:delegated
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/xdebug.ini
       - ./:/app
     links:
       - mysql
