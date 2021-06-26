@@ -7,6 +7,9 @@ use frontend\models\Task;
 
 class TaskList extends Task
 {
+    /**
+     * @inheritdoc
+     */
     public function fields()
     {
         return [

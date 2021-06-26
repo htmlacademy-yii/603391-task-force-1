@@ -16,7 +16,7 @@ class TaskCreateAction extends Action
      * @return string
      * @throws FileException
      */
-    public function run(): string
+    public function run()
     {
         $userId = Yii::$app->user->getId();
         $createTaskForm = new CreateTaskForm();
