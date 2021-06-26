@@ -134,8 +134,10 @@ class Profile extends ActiveRecord
             ->asArray()->one();
     }
 
-
-    public static function currentProfile()
+    /**
+     * @return int
+     */
+    public static function currentProfile(): int
     {
         $userId = Yii::$app->user->identity->getId();
 
