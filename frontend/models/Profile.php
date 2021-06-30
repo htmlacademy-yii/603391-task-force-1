@@ -143,4 +143,15 @@ class Profile extends ActiveRecord
 
         return (int)Profile::findByUserId($userId)['profile_id'];
     }
+
+    /**
+     * @return int
+     */
+    public static function getProfile($id): int
+    {
+        $userId = Yii::$app->user->identity->getId();
+
+        return (int)Profile::findByUserId($userId)['profile_id'];
+    }
+
 }
