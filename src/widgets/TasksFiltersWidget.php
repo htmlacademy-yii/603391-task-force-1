@@ -27,17 +27,18 @@ class TasksFiltersWidget extends Widget
      * Map html block
      * @return string|null
      */
-    public function run(): ?string
+    public function run()
     {
         if (!$this->validate()) {
             return null;
         }
 
-        return $this->render('@widgets/tasksFilters/view',
-                             [
-                                 'modelCategoriesFilter' => $this->modelCategoriesFilter,
-                                 'modelTasksFilter' => $this->modelTasksFilter
-                             ]
+        return $this->render(
+            '@widgets/tasksFilters/view',
+            [
+                'modelCategoriesFilter' => $this->modelCategoriesFilter,
+                'modelTasksFilter' => $this->modelTasksFilter
+            ]
         );
     }
 }
