@@ -18,7 +18,10 @@ class CompleteTaskForm extends Model
     public ?string $comment = null;
     public ?int $rating = null;
 
-    public function rules(): array
+    /**
+     * @inheritdoc
+     */
+    public function rules()
     {
         return [
             ['completion', 'required', 'skipOnEmpty' => false],
@@ -33,7 +36,10 @@ class CompleteTaskForm extends Model
         ];
     }
 
-    public function attributeLabels(): array
+    /**
+     *  @inheritdoc
+     */
+    public function attributeLabels()
     {
         return [
             'completion' => 'Задание выполнено?',

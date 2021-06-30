@@ -2,6 +2,7 @@
 
 namespace frontend\models;
 
+use frontend\models\forms\CategoriesFilterForm;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -20,6 +21,24 @@ class Specialization extends ActiveRecord
     public static function tableName()
     {
         return 'specialization';
+    }
+
+    /**
+     * @param CategoriesFilterForm $instance
+     */
+    public static function saveData(CategoriesFilterForm $instance): void
+    {
+        $profileId = Profile::findByUserId($instance->id)['profile_id'];
+        Specialization::deleteAll('profile_id = :profileId', [':profileId' => (int)$profileId]);
+        foreach ($instance->categories as $name => $value) {
+            if (!$value) {
+                continue;
+            }
+            $specialization = new Specialization();
+            $instance->profile_id = $profileId;
+            $instance->category_id = $name;
+            $specialization->save();
+        }
     }
 
     /**
@@ -49,9 +68,9 @@ class Specialization extends ActiveRecord
     /**
      * Gets query for [[Category]].
      *
-     * @return ActiveQuery|CategoryQuery
+     * @return ActiveQuery
      */
-    public function getCategory()
+    public function getCategory(): ActiveQuery
     {
         return $this->hasOne(Category::class, ['id' => 'category_id']);
     }
@@ -68,9 +87,9 @@ class Specialization extends ActiveRecord
     /**
      *
      * @param int $profileId
-     * @return array|Specialization[]
+     * @return array
      */
-    public static function findItemsByProfileId(int $profileId)
+    public static function findItemsByProfileId(int $profileId): array
     {
         return self::find()->select('c.name, c.id')->from('specialization s')
             ->join('LEFT JOIN', 'profile as p', 's.profile_id = p.id')

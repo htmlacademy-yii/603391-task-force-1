@@ -7,9 +7,7 @@ use frontend\models\forms\ResponseTaskForm;
 use frontend\models\Response;
 use TaskForce\Actions\ResponseAction;
 use TaskForce\Constant\NotificationType;
-use TaskForce\Exception\TaskForceException;
 use TaskForce\TaskEntity;
-use Throwable;
 use Yii;
 use yii\base\Action;
 
@@ -17,13 +15,15 @@ class TaskResponseAction extends Action
 {
     const NEW_REVIEW = 'Новый отклик к заданию';
 
+
     /**
      * @param int $id
-     * @return string
-     * @throws TaskForceException
-     * @throws Throwable
+     * @return \yii\web\Response
+     * @throws \TaskForce\Exception\TaskForceException
+     * @throws \Throwable
+     * @throws \yii\web\NotFoundHttpException
      */
-    public function run(int $id): string
+    public function run(int $id)
     {
         $task = new TaskEntity($id);
         $existResponse = Response::findByTaskIdCurrentUserId($id);
