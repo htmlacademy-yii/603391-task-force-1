@@ -11,7 +11,12 @@ use yii\web\UploadedFile;
 
 class WorkAddAction extends Action
 {
-    public function run(): string
+    /**
+     * @return string
+     * @throws \TaskForce\Exception\FileException
+     * @throws \yii\base\Exception
+     */
+    public function run()
     {
         $response = [];
         $FORM_PARAM = 'file';

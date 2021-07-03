@@ -54,7 +54,7 @@ class Notification extends ActiveRecord
      */
     public function getUserNotifications()
     {
-        return $this->hasMany(UserNotification::className(), ['notification_id' => 'id']);
+        return $this->hasMany(UserNotification::class, ['notification_id' => 'id']);
     }
 
     /**
@@ -64,7 +64,7 @@ class Notification extends ActiveRecord
      */
     public function getUsers()
     {
-        return $this->hasMany(User::className(), ['id' => 'user_id'])->viaTable('user_notification', ['notification_id' => 'id']);
+        return $this->hasMany(User::class, ['id' => 'user_id'])->viaTable('user_notification', ['notification_id' => 'id']);
     }
 
     /**

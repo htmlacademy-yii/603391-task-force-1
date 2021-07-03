@@ -19,6 +19,9 @@ class MessagesController extends ApiController
     public $modelClass = Message::class;
     public $enableCsrfValidation = false;
 
+    /**
+     * @inheritdoc
+     */
     public function actions()
     {
         $actions = parent::actions();
@@ -32,6 +35,9 @@ class MessagesController extends ApiController
         return $actions;
     }
 
+    /**
+     * @return ActiveDataProvider
+     */
     public function prepareDataProvider(): ActiveDataProvider
     {
         return new ActiveDataProvider(
@@ -63,7 +69,7 @@ class MessagesController extends ApiController
         }
 
         $chatMessage = new $this->modelClass;
-        $chatMessage->message = $model->message;
+        $chatMessage->message = strip_tags($model->message);
         $chatMessage->task_id = $model->task_id;
         $chatMessage->user_id = Yii::$app->user->identity->getId();
 

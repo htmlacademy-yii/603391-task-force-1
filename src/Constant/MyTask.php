@@ -36,7 +36,10 @@ class MyTask
 
     public string $currentFilter =  self::FILTER_COMPLETED;
 
-    public static function getName()
+    /**
+     * @return string[]
+     */
+    public static function getName(): array
     {
         return [
             self::FILTER_COMPLETED => self::FILTER_NAME_DONE,

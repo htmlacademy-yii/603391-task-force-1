@@ -9,6 +9,7 @@ use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
+use stdClass;
 use Yii;
 use yii\caching\TagDependency;
 use yii\helpers\ArrayHelper;
@@ -104,10 +105,10 @@ class GeoCoder
     public function findJsonErrors(Request $apiRequest, $response_data): void
     {
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new ServerException("Invalid json format", $apiRequest);
+            throw new ServerException("Invalid json format", $apiRequest, $response_data);
         }
         if ($error = ArrayHelper::getValue($response_data, 'error.info')) {
-            throw new BadResponseException("API error: " . $error, $apiRequest);
+            throw new BadResponseException("API error: " . $error, $apiRequest, $response_data);
         }
     }
 
@@ -116,7 +117,7 @@ class GeoCoder
      * @return mixed
      * @throws GuzzleException
      */
-    public function getResponseData(string $userRequest): mixed
+    public function getResponseData(string $userRequest): array
     {
         $apiRequest = new Request('GET', 'check');
         $response = $this->apiClient->request(
@@ -133,7 +134,7 @@ class GeoCoder
         );
 
         if ($response->getStatusCode() !== 200) {
-            throw new BadResponseException("Response error: " . $response->getReasonPhrase(), $apiRequest);
+            throw new BadResponseException("Response error: " . $response->getReasonPhrase(), $apiRequest, $response);
         }
         $content = $response->getBody()->getContents();
 
@@ -143,7 +144,7 @@ class GeoCoder
     /**
      * @throws GuzzleException
      */
-    public function getCoordinates($location): ?array
+    public function getCoordinates($location): ?stdClass
     {
         return $this->findAddressesByRequest($location)[0] ?? null;
     }
@@ -186,6 +187,10 @@ class GeoCoder
         return $result;
     }
 
+    /**
+     * @param string $key
+     * @param array|null $data
+     */
     private function saveToCache(string $key, ?array $data): void
     {
         $key = md5($key);

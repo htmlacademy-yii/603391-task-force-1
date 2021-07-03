@@ -17,6 +17,9 @@ use yii\helpers\ArrayHelper;
 
 class TasksController extends SecureController
 {
+    /**
+     * @inheritdoc
+     */
     public function actions()
     {
         return [
@@ -54,6 +57,7 @@ class TasksController extends SecureController
 
         return $this->render('view', compact('modelTask', 'modelsFiles', 'modelsResponse',
                                              'assistUserModel', 'currentUserRole', 'availableActions',
-                                             'responseTaskForm', 'completeTaskForm', 'existsUserResponse'));
+                                             'responseTaskForm', 'completeTaskForm', 'existsUserResponse',
+                                             ));
     }
 }

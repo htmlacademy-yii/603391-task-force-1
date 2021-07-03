@@ -4,7 +4,10 @@ namespace frontend\controllers;
 
 class WorkController extends SecureController
 {
-     public function actions()
+    /**
+     * @inheritdoc
+     */
+    public function actions()
     {
         return [
             'add' => [

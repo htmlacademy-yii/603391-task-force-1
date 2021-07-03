@@ -8,6 +8,10 @@ class UserData
     const LANG_RU = '?lang=ru';
     const VALID_IP = "/^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$/";
 
+    /**
+     * @param string $ip
+     * @return string|null
+     */
     static function getCityByIp(string $ip): ?string
     {
         if (self::validateIp($ip)) {
@@ -24,6 +28,10 @@ class UserData
         return $resource['city'] ?? false;
     }
 
+    /**
+     * @param string|null $ip
+     * @return bool
+     */
     static function validateIp (?string $ip): bool {
         return preg_match(self::VALID_IP, $ip) === true;
     }

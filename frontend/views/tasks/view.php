@@ -57,7 +57,7 @@ $this->registerJs($scriptJS, yii\web\View::POS_BEGIN);
                     </div>
                     <div class="content-view__description">
                         <h3 class="content-view__h3">Общее описание</h3>
-                        <p><?= $modelTask['description'] ?></p>
+                        <p><?= strip_tags($modelTask['description']) ?></p>
                     </div>
                     <?php
                     /** @var array $modelsFiles */
@@ -142,7 +142,7 @@ $this->registerJs($scriptJS, yii\web\View::POS_BEGIN);
                                          width="55" height="55" alt="avatar"></a>
                                 <div class="feedback-card__top--name">
                                     <p><a href="<?= Url::to(['users/view', 'id' => $response['user_id']]) ?>"
-                                          class="link-regular"><?= $response['name'] ?></a></p>
+                                          class="link-regular"><?= strip_tags($response['name']) ?></a></p>
                                     <?= RatingWidget::widget(['rate' => $response['rate'] ?? 0]) ?>
                                 </div>
                                 <span class="new-task__time"><?= Declination::getTimeAfter(
@@ -151,7 +151,7 @@ $this->registerJs($scriptJS, yii\web\View::POS_BEGIN);
                             </div>
                             <div class="feedback-card__content">
                                 <p>
-                                    <?= $response['description'] ?>
+                                    <?= strip_tags($response['description']) ?>
                                 </p>
                                 <span><?= $response['price'] ?> ₽</span>
                             </div>
@@ -181,7 +181,7 @@ $this->registerJs($scriptJS, yii\web\View::POS_BEGIN);
                                     ) ?>
 
                                 </div>
-                            <?
+                            <?php
                             endif; ?>
                         </div>
                     <?php

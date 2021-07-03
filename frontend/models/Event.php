@@ -30,7 +30,7 @@ class Event extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName(): string
+    public static function tableName()
     {
         return 'event';
     }
@@ -72,7 +72,7 @@ class Event extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels(): array
+    public function attributeLabels()
     {
         return [
             'id' => 'ID',
@@ -142,6 +142,10 @@ class Event extends ActiveRecord
         EventNotificationService::sendEmail($this);
     }
 
+    /**
+     * @param int $taskId
+     * @return int
+     */
     public static function findNewMessagesByTask(int $taskId): int
     {
         return self::find()->where(

@@ -199,7 +199,7 @@ class TaskEntity
         $opinion->owner_id = $this->model->customer_id;
         $opinion->executor_id = $this->model->executor_id;
         $opinion->rate = $completeTaskForm->rating;
-        $opinion->description = $completeTaskForm->comment;
+        $opinion->description = strip_tags($completeTaskForm->comment);
         $opinion->done = ($completeTaskForm->completion === $completeTaskForm::VALUE_YES);
 
         try {

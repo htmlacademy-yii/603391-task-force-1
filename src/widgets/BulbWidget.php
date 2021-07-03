@@ -8,7 +8,10 @@ use yii\base\Widget;
 
 class BulbWidget extends Widget
 {
-    public function run(): ?string
+    /**
+     * @inheritdoc
+     */
+    public function run()
     {
         parent::run();
 

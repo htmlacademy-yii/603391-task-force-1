@@ -1,7 +1,6 @@
 <?php
 
 /** @var CategoriesFilterForm $modelCategoriesFilter */
-
 /** @var TasksFilterForm $modelTasksFilter */
 
 use frontend\models\forms\CategoriesFilterForm;
@@ -81,7 +80,7 @@ const INPUT_LABEL = '<label class="checkbox__legend">{input}{hint}</label>';
                 [
                     'class' => "multiple-select input",
                     'id' => 'sa',
-                    'value' => TasksFilterForm::FILTER_ALL_TIME
+                    'options'=>[ $modelTasksFilter->timeInterval => ['selected'=>true]]
                 ]
             ); ?>
 
@@ -94,6 +93,5 @@ const INPUT_LABEL = '<label class="checkbox__legend">{input}{hint}</label>';
         <?php
         echo Html::submitButton('Искать', ['class' => 'button']);
         ActiveForm::end(); ?>
-
     </div>
 </section>

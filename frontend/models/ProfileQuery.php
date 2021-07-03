@@ -2,12 +2,14 @@
 
 namespace frontend\models;
 
+use yii\db\ActiveQuery;
+
 /**
  * This is the ActiveQuery class for [[Profile]].
  *
  * @see Profile
  */
-class ProfileQuery extends \yii\db\ActiveQuery
+class ProfileQuery extends ActiveQuery
 {
     /**
      * {@inheritdoc}
@@ -20,7 +22,7 @@ class ProfileQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return Profile|array|null
+     * @return array|\yii\db\ActiveRecord|null
      */
     public function one($db = null)
     {

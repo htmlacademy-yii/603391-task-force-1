@@ -16,7 +16,7 @@ class SiteController extends  Controller
     /**
      * @return array
      */
-    public function actions(): array
+    public function actions()
     {
         return [
             'error' => [
@@ -37,10 +37,9 @@ class SiteController extends  Controller
         (new AuthHandler($client))->handle();
     }
 
-
     /**
      * @param int $id
-     * @throws FileException
+     * @throws FileException|\yii\web\NotFoundHttpException
      */
     public function actionFile(int $id)
     {

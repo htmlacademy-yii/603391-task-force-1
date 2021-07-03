@@ -1,57 +1,50 @@
 <?php
 
 /* @var $this yii\web\View */
+
 /** @var Pagination $pagination */
 /** @var array $modelsTasks */
+/** @var CategoriesFilterForm $modelCategoriesFilter */
+/** @var object $dataProvider */
+/** @var object $modelTasksFilter */
 
+use frontend\models\forms\CategoriesFilterForm;
 use TaskForce\widgets\TasksFiltersWidget;
 use yii\data\Pagination;
-use yii\helpers\Url;
-use yii\widgets\LinkPager;
+use yii\widgets\ListView;
 ?>
 
 <main class="page-main">
     <div class="main-container page-container">
         <section class="new-task">
-            <div class="new-task__wrapper">
-                <h1>Новые задания</h1>
-                <?php foreach ($modelsTasks as $task): ?>
-                    <div class="new-task__card">
-                        <div class="new-task__title">
-                            <a href="<?= Url::to(['tasks/view', 'id' => $task['id']]) ?>" class="link-regular">
-                                <h2><?= $task['name'] ?></h2></a>
-                            <a class="new-task__type link-regular"
-                               href="<?= Url::to(['tasks/index/', 'category' => $task['category_id']]) ?>">
-                                <p><?= $task['cat_name'] ?></p></a>
-                        </div>
-                        <div class="new-task__icon new-task__icon--<?= $task['icon'] ?>"></div>
-                        <p class="new-task_description">
-                            <?= $task['description'] ?>
-                        </p>
-                        <b class="new-task__price new-task__price--translation"><?= $task['budget'] ?><b> ₽</b></b>
-                        <p class="new-task__place"><?= $task['address'] ?></p>
-                        <span class="new-task__time"><?= $task['afterTime'] ?></span>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-            <div class="new-task__pagination">
-                <?
-                echo LinkPager::widget([
-                    'pagination' => $pagination,
-                    'options' => ['class' => 'new-task__pagination-list'],
-                    'maxButtonCount' => 3,
-                    'pageCssClass' => 'pagination__item',
-                    'nextPageCssClass' => 'pagination__item',
-                    'prevPageCssClass' => 'pagination__item',
-                    'activePageCssClass' => 'pagination__item--current',
-                    'nextPageLabel' => '',
-                    'prevPageLabel' => '',
-                    'registerLinkTags' => true
-                ]); ?>
-            </div>
+            <?php
+                echo ListView::widget(
+                    [
+                        'dataProvider' => $dataProvider,
+                        'itemView' => '_oneListElement',
+                        'emptyText' => 'Ничего не найдено',
+                        'emptyTextOptions' => [
+                            'tag' => 'span'
+                        ],
+                        'layout' => '<div class="new-task__wrapper">
+                          <h1>Новые задания</h1>{items}</div><div class="new-task__pagination">{pager}</div>',
+                        'pager' => [
+                            'options' => ['class' => 'new-task__pagination-list'],
+                            'maxButtonCount' => 3,
+                            'pageCssClass' => 'pagination__item',
+                            'nextPageCssClass' => 'pagination__item',
+                            'prevPageCssClass' => 'pagination__item',
+                            'activePageCssClass' => 'pagination__item--current',
+                            'nextPageLabel' => '',
+                            'prevPageLabel' => '',
+                            'registerLinkTags' => true,
+                        ],
+                    ],
+                );
+
+            ?>
         </section>
-
-        <?= TasksFiltersWidget::widget(compact('modelCategoriesFilter', 'modelTasksFilter'))?>
-
+        <?php
+        echo TasksFiltersWidget::widget(compact('modelCategoriesFilter', 'modelTasksFilter')) ?>
     </div>
 </main>

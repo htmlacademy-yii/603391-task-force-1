@@ -9,6 +9,12 @@ assert_options(ASSERT_WARNING, 0);
 assert_options(ASSERT_BAIL, 0);
 
 
+/**
+ * @param $file
+ * @param $line
+ * @param $code
+ * @param null $desc
+ */
 function my_assert_handler($file, $line, $code, $desc = null)
 {
     if ($desc) {

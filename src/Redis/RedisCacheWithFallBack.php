@@ -10,6 +10,9 @@ class RedisCacheWithFallBack
 {
     const REDIS_ADDRESS = 'tcp://redis:6379';
 
+    /**
+     * @return object
+     */
     public static function getConnection(): object
     {
         $isConnected = false;

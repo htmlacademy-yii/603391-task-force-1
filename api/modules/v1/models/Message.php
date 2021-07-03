@@ -7,6 +7,9 @@ use Yii;
 
 class Message extends Chat
 {
+    /**
+     * @inheritdoc
+     */
     public function fields()
     {
         return [

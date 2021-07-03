@@ -67,7 +67,7 @@ class File extends ActiveRecord
     /**
      * Gets query for [[Favorites]].
      *
-     * @return ActiveQuery|FavoriteQuery
+     * @return ActiveQuery
      */
     public function getFavorites()
     {
@@ -115,6 +115,11 @@ class File extends ActiveRecord
     }
 
 
+    /**
+     * @param int $id
+     * @throws FileException
+     * @throws \yii\web\NotFoundHttpException
+     */
     public static function forceDownloadTaskFile(int $id): void
     {
         $taskFile = self::findOrFail($id, 'The file is not definable.');

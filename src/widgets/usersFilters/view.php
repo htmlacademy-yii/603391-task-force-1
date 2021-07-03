@@ -7,7 +7,6 @@ use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\UsersFilterForm;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-
 ?>
 <section class="search-task">
     <div class="search-task__wrapper">
@@ -47,8 +46,8 @@ use yii\widgets\ActiveForm;
                         false
                     )->hint($label,['tag' => 'span', 'class' => false]) ;
             } ?>
-
         </fieldset>
+
         <fieldset class="search-task__categories">
             <legend>Дополнительно</legend>
 
@@ -59,7 +58,7 @@ use yii\widgets\ActiveForm;
                     $key,
                     ['template' => '<label class="checkbox__legend">{input}{hint}</label>']
                 )->checkbox(
-                    ['class' => 'visually-hidden checkbox__input', 'id' => $key],
+                    ['class' => 'visually-hidden checkbox__input', 'id' => $key, 'checked' => (bool)$modelUsersFilter->{$key}],
                     false
                 )->hint($value,['tag' => 'span', 'class' => false]) ;;
             } ?>
@@ -68,7 +67,7 @@ use yii\widgets\ActiveForm;
         echo $form->field($modelUsersFilter, 'searchName', ['template' => '{label}{input}'])
             ->input(
                 'search',
-                ['class' => "input-middle input"]
+                ['class' => "input-middle input", 'value'=> strip_tags($modelUsersFilter->searchName)]
             )
             ->label($modelUsersFilter->attributeLabels()['searchName'], ['class' => "search-task__name"]);
 

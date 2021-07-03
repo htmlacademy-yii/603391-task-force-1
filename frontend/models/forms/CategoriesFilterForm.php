@@ -17,10 +17,15 @@ use yii\helpers\ArrayHelper;
  */
 class CategoriesFilterForm extends Model
 {
-    private ?array $categories = null;
-    private ?array $categoriesId = null;
+    const ENABLE_VALUE = '1';
+    const DISABLE_VALUE = '0';
+    public ?array $categories = null;
+    public ?array $categoriesId = null;
 
-    public function init(string $defaultValue = '0'): void
+    /**
+     * @inheritdoc
+     */
+    public function init(string $defaultValue = self::DISABLE_VALUE)
     {
         $this->categoriesId = ArrayHelper::map(Category::find()->select(['id', 'name'])->all(), 'id', 'name');
 
@@ -29,6 +34,11 @@ class CategoriesFilterForm extends Model
         }
     }
 
+    /**
+     * @param array $data
+     * @param null $formName
+     * @return bool
+     */
     public function load($data, $formName = null)
     {
         if ($formName) {
@@ -39,7 +49,10 @@ class CategoriesFilterForm extends Model
         return false;
     }
 
-    public function __get($name): ?bool
+    /**
+     *  @inheritdoc
+     */
+    public function __get($name)
     {
         if (array_key_exists($name, $this->categories)) {
             return $this->categories[$name];
@@ -48,12 +61,18 @@ class CategoriesFilterForm extends Model
         return null;
     }
 
+    /**
+     * @return array
+     */
     public function getCategoriesState(): array
     {
         return $this->categories;
     }
 
-    public function __set($name, $value): void
+    /**
+     *  @inheritdoc
+     */
+    public function __set($name, $value)
     {
         if (array_key_exists($name, $this->categories)) {
             $this->categories[$name] = $value;
@@ -66,26 +85,26 @@ class CategoriesFilterForm extends Model
     public function loadSpec(): void
     {
         $userId = Yii::$app->user->identity->id;
-        $profileId = Profile::findByUserId($userId);
+        $profile = Profile::findByUserId($userId);
 
-        if (!$profileId) {
+        if (!$profile) {
             throw new TaskForceException('Профиль пользователя не найден.');
         }
 
         $this->categoriesId = ArrayHelper::map(Category::find()->select(['id', 'name'])->all(), 'id', 'name');
         $spec = Specialization::find()->select(['category_id'])
-            ->where(['profile_id' => $profileId])->asArray()
+            ->where(['profile_id' => $profile['profile_id']])->asArray()
             ->all();
         $this->init();
         foreach ($spec as $element) {
-            $this->categories[$element['category_id']] = '1';
+            $this->categories[$element['category_id']] = self::ENABLE_VALUE;
         }
     }
 
     /**
-     * @return array|null
+     * @inheritdoc
      */
-    public function attributeLabels(): ?array
+    public function attributeLabels()
     {
         return $this->categoriesId;
     }
@@ -113,18 +132,4 @@ class CategoriesFilterForm extends Model
         $this->categories[$id] = true;
     }
 
-    public function saveData(): void
-    {
-        $profileId = Profile::findByUserId(yii::$app->user->id)['profile_id'];
-        Specialization::deleteAll('profile_id = :profileId', [':profileId' => (int)$profileId]);
-        foreach ($this->categories as $name => $value) {
-            if (!$value) {
-                continue;
-            }
-            $specialization = new Specialization();
-            $specialization->profile_id = $profileId;
-            $specialization->category_id = $name;
-            $specialization->save();
-        }
-    }
 }
