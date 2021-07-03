@@ -9,6 +9,7 @@ use TaskForce\Exception\TaskForceException;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use yii\db\Query;
 
 class TasksFilterForm extends Model
 {
@@ -74,7 +75,7 @@ class TasksFilterForm extends Model
     public function rules()
     {
         return [
-            [['withoutExecutor', 'remoteWork', 'timeInterval', 'searchName'], 'safe'],
+            [['withoutExecutor', 'remoteWork', 'timeInterval', 'searchName','category'], 'safe'],
             [['searchName'], 'match', 'pattern' => '/^[A-Za-zА-Яа-я0-9ё_\s,]+$/']
         ];
     }
@@ -124,7 +125,18 @@ class TasksFilterForm extends Model
         if (!$this->validate()) {
             return $dataProvider;
         }
+        $this->filterTasks($params, $query);
 
+        return $dataProvider;
+    }
+
+    /**
+     * @param $params
+     * @param \yii\db\Query $query
+     * @throws \TaskForce\Exception\TaskForceException
+     */
+    public function filterTasks($params, Query $query): void
+    {
         $list = [];
         // prepare categories array for search
         if (isset($params['CategoriesFilterForm']['categories'])) {
@@ -155,7 +167,5 @@ class TasksFilterForm extends Model
             $query->andWhere(['category_id' => $params['category']]);
         }
         $query->andFilterWhere(['LIKE', 't.name', $this->searchName]);
-
-        return $dataProvider;
     }
 }

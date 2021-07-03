@@ -184,7 +184,7 @@ class AuthHandler
         $user = new User();
         $user->city_id = City::findIdByName($city) || self::FIRST_ID;
         $user->email = $email;
-        $user->name = $fullName;
+        $user->name = strip_tags($fullName);
         $password = Yii::$app->security->generateRandomString(9);
         $user->password = Yii::$app->getSecurity()->generatePasswordHash($password);
         $user->role = UserRole::CUSTOMER;

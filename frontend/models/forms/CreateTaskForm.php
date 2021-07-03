@@ -108,8 +108,8 @@ class CreateTaskForm extends Model
     public function saveFields(int $customerId): ?int
     {
         $task = new Task();
-        $task->name = $this->name;
-        $task->description = $this->description;
+        $task->name = strip_tags($this->name);
+        $task->description = strip_tags($this->description);
         $task->category_id = $this->categoryId;
         $task->budget = $this->budget;
         $task->expire = ($this->dateEnd === '') ? null : date('Y-m-d H:i:s', strtotime($this->dateEnd));
@@ -125,9 +125,9 @@ class CreateTaskForm extends Model
         } else {
             $geoCoder = new GeoCoder();
             $coordinates = $geoCoder->getCoordinates($this->location);
-            $task->lat = $coordinates['lat'];
-            $task->lng = $coordinates['lng'];
-            $task->city_id = City::findIdByName($coordinates['city']);
+            $task->lat = $coordinates->lat;
+            $task->lng = $coordinates->lng;
+            $task->city_id = City::findIdByName($coordinates->city);
         }
 
         try {
@@ -170,7 +170,7 @@ class CreateTaskForm extends Model
     /**
      * @param int $id
      * @return int|null
-     * @throws FileException
+     * @throws FileException|\GuzzleHttp\Exception\GuzzleException
      */
     public function saveData(int $id): ?int
     {

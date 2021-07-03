@@ -2,14 +2,12 @@
 
 namespace frontend\models\forms;
 
-use frontend\models\Opinion;
-use frontend\models\Specialization;
-use frontend\models\Task;
 use frontend\models\User;
-use TaskForce\Helpers\Declination;
+use TaskForce\Provider\UserActiveDataProvider;
+use TaskForce\SortingUsers;
 use Yii;
 use yii\base\Model;
-use yii\data\ActiveDataProvider;
+use yii\db\Query;
 
 class UsersFilterForm extends Model
 {
@@ -17,11 +15,13 @@ class UsersFilterForm extends Model
     public bool $freeNow = false;
     public bool $onlineNow = false;
     public bool $feedbackExists = false;
-    public bool $searchName = false;
     public bool $isFavorite = false;
+    public string $searchName = '';
+    public string $sortType = '';
+    public ?int $category = null;
 
     /**
-     * @return array|string[]
+     * @return array
      */
     public function checkboxesLabels(): array
     {
@@ -63,21 +63,19 @@ class UsersFilterForm extends Model
     public function rules()
     {
         return [
-            [['freeNow', 'onlineNow', 'feedbackExists', 'isFavorite', 'searchName'], 'safe'],
+            [['freeNow', 'onlineNow', 'feedbackExists', 'isFavorite', 'searchName', 'sortType', 'category'], 'safe'],
             [['searchName'], 'match', 'pattern' => '/^[A-Za-zА-Яа-я0-9ё_\s,]+$/']
         ];
     }
 
     /**
-     * @param $filterRequest
-     * @param string $sortType
-     * @return \yii\data\ActiveDataProvider
+     * @param $params
+     * @return \TaskForce\Provider\UserActiveDataProvider
      */
-    public function search(  $filterRequest, string $sortType = '') : ActiveDataProvider
+    public function search($params): UserActiveDataProvider
     {
-        $query = User::findNewExecutors(request: $filterRequest, sortType: $sortType);
-
-        $dataProvider = new ActiveDataProvider(
+        $query = User::findNewExecutors();
+        $dataProvider = new UserActiveDataProvider(
             [
                 'query' => $query,
                 'Pagination' => [
@@ -86,25 +84,107 @@ class UsersFilterForm extends Model
             ]
         );
 
-        return $dataProvider;
+        $this->load($params);
+        if (!$this->validate()) {
+            return $dataProvider;
+        }
+        $this->applyFilters($params, $query);
+        $query->andFilterWhere(['LIKE', 'u.name', $this->searchName]);
+        $this->applySort($params['sortType'] ?? '', $query);
 
+        return $dataProvider;
     }
 
     /**
-     * @throws \TaskForce\Exception\TaskForceException
-     * @throws \Exception
+     * sorting
+     * @param string $sortType
+     * @param Query $query
+     * @return Query
      */
-    public static function addFields(array $models): array
+    public static function applySort(string $sortType, Query $query): Query
     {
-        $updatedModels = [];
-        foreach ($models as $model) {
-            $model['categories'] = Specialization::findItemsByProfileId($model['profile_id']);
-            $model['countTasks'] = Task::findCountByUserId($model['id']);
-            $model['countReplies'] = Opinion::findCountOpinionsByUserId($model['id']);
-            $model['afterTime'] = Declination::getTimeAfter($model['date_login']);
-            $updatedModels[] = $model;
-         }
+        switch ($sortType) {
+            case SortingUsers::SORT_BY_RATING:
+                $query->orderBy(['rate' => SORT_DESC]);
+                break;
+            case SortingUsers::SORT_BY_COUNT_TASK:
+                $query->orderBy(['task_count' => SORT_DESC]);
+                break;
+            case SortingUsers::SORT_BY_POPULARITY:
+                $query->orderBy(['show' => SORT_DESC]);
+                break;
+            default:
+                $query->orderBy(['date_add' => SORT_DESC]);
+        }
 
-        return $updatedModels;
+        return $query;
+    }
+
+    /**
+     * Apply form filters
+     * @param array $request
+     * @param Query $query
+     * @return Query|null
+     */
+    public static function applyFilters(array $request, Query $query): ?Query
+    {
+        // filter by category
+        if (isset($request['CategoriesFilterForm']['categories'])) {
+
+            $categoriesFilterForm = $request['CategoriesFilterForm'];
+            $list = [];
+            foreach ($categoriesFilterForm['categories'] as $key => $item) {
+                if ($item) {
+                    $list[] = sprintf("'%s'", $key);
+                }
+            }
+
+            $subQuery = (new Query())
+                ->select('category_id')->from('specialization s')
+                ->where('s.profile_id = p.id');
+
+            if (!empty($list)) {
+                $categoryList = sprintf('s.category_id in (%s)', implode(",", $list));
+                $subQuery->andWhere($categoryList);
+                $query->andFilterWhere(['exists', $subQuery]);
+            }
+        }
+
+        if (isset($request['UsersFilterForm'])) {
+            $usersFilters = $request['UsersFilterForm'];
+        } else {
+            return $query;
+        }
+
+        // filtering by 'Free Now'
+        if ((bool)$usersFilters['freeNow']) {
+            $subQuery1 = (new Query())
+                ->select('id')->from('task t')
+                ->where('t.executor_id = p.user_id');
+            $query->andWhere(['not exists', $subQuery1]);
+        }
+
+        // filter by 'Online Now'
+        if ((bool)$usersFilters['onlineNow']) {
+            $query->andWhere('u.date_login > DATE_SUB(NOW(), INTERVAL 30 MINUTE)');
+        }
+
+        // filter by 'Reviews'
+        if ((bool)$usersFilters['feedbackExists']) {
+            $subQuery2 = (new Query())
+                ->select('id')->from('opinion o')
+                ->where('o.executor_id = p.user_id');
+            $query->andWhere(['exists', $subQuery2]);
+        }
+
+        // filter by 'Favorite'
+        if ((bool)$usersFilters['isFavorite']) {
+            $subQuery3 = (new Query())
+                ->select('favorite_id')->from('favorite f')
+                ->where('f.favorite_id = p.user_id');
+            $query->andWhere(['exists', $subQuery3]);
+        }
+
+        return $query;
     }
 }

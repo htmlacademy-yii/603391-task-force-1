@@ -63,7 +63,7 @@ class SignupForm extends Model
         try {
             $user = new User();
             $user->email = $this->email;
-            $user->name = $this->username;
+            $user->name = strip_tags($this->username);
             $user->city_id = $this->cityId;
             $user->password = Yii::$app->getSecurity()->generatePasswordHash($this->password);
             $user->auth_key =  Yii::$app->security->generateRandomString();

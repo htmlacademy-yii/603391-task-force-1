@@ -38,7 +38,7 @@ class ResponseTaskForm extends Model
         $transaction = Yii::$app->db->beginTransaction();
         $userId = Yii::$app->user->getId();
         try {
-            $response->description = $this->comment;
+            $response->description = strip_tags($this->comment);
             $response->price = $this->payment;
             $response->task_id = $taskId;
             $response->status = ResponseEntity::STATUS_NEW;

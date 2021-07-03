@@ -69,7 +69,7 @@ class MessagesController extends ApiController
         }
 
         $chatMessage = new $this->modelClass;
-        $chatMessage->message = $model->message;
+        $chatMessage->message = strip_tags($model->message);
         $chatMessage->task_id = $model->task_id;
         $chatMessage->user_id = Yii::$app->user->identity->getId();
 

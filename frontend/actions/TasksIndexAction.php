@@ -18,23 +18,23 @@ class TasksIndexAction extends Action
         $modelCategoriesFilter->init();
 
         $modelTasksFilter = new TasksFilterForm();
-        $request = Yii::$app->request->get();
-        if (isset($request['category'])) {
-            $modelCategoriesFilter->setOneCategory($request['category']);
+        $getRequest = Yii::$app->request->queryParams;
+        if (isset($getRequest['category'])) {
+            $modelCategoriesFilter->setOneCategory($getRequest['category']);
         }
-        $postRequest = yii::$app->request->post();
-        if ($postRequest) {
+
+        if ($postRequest = yii::$app->request->post()) {
             $modelCategoriesFilter->updateProperties(
                 ($postRequest)['CategoriesFilterForm']['categories']
             );
             $dataProvider = $modelTasksFilter->search($postRequest);
         } else {
-            $dataProvider = $modelTasksFilter->search($request);
+            $dataProvider = $modelTasksFilter->search($getRequest);
         }
 
         return $this->controller->render(
-            'index',
-            compact(
+            view:'index',
+            params: compact(
                 'modelTasksFilter',
                 'modelCategoriesFilter',
                 'dataProvider'

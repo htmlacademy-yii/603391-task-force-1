@@ -3,6 +3,7 @@
 namespace frontend\models;
 
 use frontend\models\forms\CategoriesFilterForm;
+use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -28,15 +29,16 @@ class Specialization extends ActiveRecord
      */
     public static function saveData(CategoriesFilterForm $instance): void
     {
-        $profileId = Profile::findByUserId($instance->id)['profile_id'];
+
+        $profileId = Profile::findByUserId(Yii::$app->user->id)['profile_id'];
         Specialization::deleteAll('profile_id = :profileId', [':profileId' => (int)$profileId]);
         foreach ($instance->categories as $name => $value) {
             if (!$value) {
                 continue;
             }
             $specialization = new Specialization();
-            $instance->profile_id = $profileId;
-            $instance->category_id = $name;
+            $specialization->profile_id = $profileId;
+            $specialization->category_id = $name;
             $specialization->save();
         }
     }

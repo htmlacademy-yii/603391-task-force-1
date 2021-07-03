@@ -9,6 +9,7 @@ use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
+use stdClass;
 use Yii;
 use yii\caching\TagDependency;
 use yii\helpers\ArrayHelper;
@@ -143,7 +144,7 @@ class GeoCoder
     /**
      * @throws GuzzleException
      */
-    public function getCoordinates($location): ?array
+    public function getCoordinates($location): ?stdClass
     {
         return $this->findAddressesByRequest($location)[0] ?? null;
     }

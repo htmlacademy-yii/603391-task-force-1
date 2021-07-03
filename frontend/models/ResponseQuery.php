@@ -22,7 +22,7 @@ class ResponseQuery extends ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return Response|array|null
+     * @return array|\yii\db\ActiveRecord|null
      */
     public function one($db = null)
     {

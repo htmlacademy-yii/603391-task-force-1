@@ -16,6 +16,7 @@ class LandingController extends Controller
     /**
      * @return string
      * @throws TaskForceException
+     * @throws \Exception
      */
     public function actionIndex()
     {

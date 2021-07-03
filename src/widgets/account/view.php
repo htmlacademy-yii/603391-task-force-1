@@ -14,7 +14,7 @@ use yii\helpers\Url;
              alt="Аватар пользователя">
     </a>
     <span class="header__account-name">
-                            <?= $loggedUser->name ?>
+                            <?= strip_tags($loggedUser->name) ?>
                         </span>
 </div>
 
