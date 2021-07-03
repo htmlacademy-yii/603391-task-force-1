@@ -6,6 +6,7 @@ use frontend\models\City;
 use frontend\models\forms\AccountForm;
 use frontend\models\forms\CategoriesFilterForm;
 use frontend\models\forms\NotificationsFilterForm;
+use frontend\models\Specialization;
 use frontend\models\User;
 use TaskForce\Exception\FileException;
 use TaskForce\Exception\TaskForceException;
@@ -43,7 +44,7 @@ class AccountIndexAction extends Action
                 );
 
                 if ($modelAccountForm->validate() && $modelAccountForm->saveData()) {
-                    $modelCategoriesForm->saveData();
+                    Specialization::saveData($modelCategoriesForm);
                     $modelNotificationsForm->saveData();
                     User::updateUserRoleBySpecialisations();
                     return $this->controller->goHome();

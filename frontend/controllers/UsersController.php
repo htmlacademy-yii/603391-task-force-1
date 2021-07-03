@@ -14,9 +14,13 @@ use Yii;
 use frontend\models\Profile;
 use yii\db\StaleObjectException;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
 
 class UsersController extends SecureController
 {
+    /**
+     * @inheritdoc
+     */
     public function actions()
     {
         return [
@@ -63,12 +67,12 @@ class UsersController extends SecureController
 
     /**
      * @param int $userId
-     * @return string
+     * @return \yii\web\Response
      * @throws TaskForceException
      * @throws Throwable
      * @throws StaleObjectException
      */
-    public function actionBookmark(int $userId)
+    public function actionBookmark(int $userId): Response
     {
         $currentUserId = Yii::$app->user->getId();
         if (!$userId) {
@@ -84,6 +88,7 @@ class UsersController extends SecureController
             $favorite->favorite_id = $userId;
             $favorite->save();
         }
+
         return $this->redirect(['users/view', 'id' => $userId]);
     }
 }

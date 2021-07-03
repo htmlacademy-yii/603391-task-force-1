@@ -17,7 +17,6 @@ use yii\db\ActiveRecord;
  * @property string $description
  * @property bool $done
  *
- *
  * @property User $task
  * @property User $executor
  * @property User $owner
@@ -106,11 +105,9 @@ class Opinion extends ActiveRecord
         return new OpinionQuery(get_called_class());
     }
 
-
     /**
-     *
      * @param int $id
-     * @return array|Opinion[]
+     * @return array
      */
     public static function findOpinionsByUserId(int $id): array
     {
@@ -123,9 +120,8 @@ class Opinion extends ActiveRecord
     }
 
     /**
-     *
      * @param int $id
-     * @return int
+     * @return int|null
      */
     public static function findCountOpinionsByUserId(int $id): ?int
     {

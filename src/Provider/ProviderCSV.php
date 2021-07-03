@@ -55,12 +55,18 @@ class ProviderCSV implements IProvider
         $this->isValidColumns = $this->validateColumns($this->distColumns);
     }
 
+    /**
+     * @return array|null
+     */
     public function getHeaderData(): ?array
     {
         $this->fileObject->rewind();
         return $this->fileObject->fgetcsv();
     }
 
+    /**
+     * @return iterable|null
+     */
     public function getNextLine(): ?iterable
     {
         while (!$this->fileObject->eof()) {
@@ -69,6 +75,10 @@ class ProviderCSV implements IProvider
         return null;
     }
 
+    /**
+     * @param array $columns
+     * @return bool
+     */
     public function validateColumns(array $columns): bool
     {
         $result = true;

@@ -10,6 +10,10 @@ class ExporterSQL implements IExporter
 {
     private $sqlFile;
 
+    /**
+     * ExporterSQL constructor.
+     * @param string $sqlFile
+     */
     public function __construct(string $sqlFile)
     {
         $this->sqlFile = fopen($sqlFile, 'w');

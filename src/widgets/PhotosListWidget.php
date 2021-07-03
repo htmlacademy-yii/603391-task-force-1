@@ -9,7 +9,10 @@ class PhotosListWidget extends Widget
 {
     public int $userId;
 
-    public function run(): ?string
+    /**
+     * @return string|null
+     */
+    public function run()
     {
         parent::run();
         $works = Work::find()->where(['user_id'=>$this->userId])->asArray()->all();

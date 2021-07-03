@@ -7,7 +7,10 @@ use Yii;
 
 trait HasTitle
 {
-    public function getTitle()
+    /**
+     * @return string
+     */
+    public function getTitle(): string
     {
         $pageName = Page::ROUTE_TO_TITLE[Yii::$app->controller->id . '/' . Yii::$app->controller->action->id] ?? '';
         if ($pageName) {

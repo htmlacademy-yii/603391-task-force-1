@@ -3,7 +3,7 @@
 namespace frontend\models;
 
 use TaskForce\Constant\UserRole;
-use TaskForce\SortingUsers;
+use TaskForce\Helpers\Declination;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\db\Query;
@@ -37,7 +37,6 @@ use yii\db\ActiveQuery;
  * @property Work[] $works
  * @property string $auth_key
  */
-
 class User extends ActiveRecord implements IdentityInterface
 {
     use ExceptionOnFindFail;
@@ -60,7 +59,7 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             [['email', 'name', 'password'], 'required'],
             [['date_add', 'date_login'], 'safe'],
-            [['email', 'name','password_reset_token'], 'string', 'max' => 255],
+            [['email', 'name', 'password_reset_token'], 'string', 'max' => 255],
             [['password'], 'string', 'max' => 64],
             [['role'], 'in', 'range' => UserRole::LIST],
             [['email'], 'unique'],
@@ -83,20 +82,60 @@ class User extends ActiveRecord implements IdentityInterface
         ];
     }
 
+    /**
+     * @param int|string $id
+     * @return User|IdentityInterface|null
+     */
     public static function findIdentity($id)
     {
         return self::findOne($id);
     }
 
+    /**
+     * @param mixed $token
+     * @param null $type
+     * @return void
+     */
     public static function findIdentityByAccessToken($token, $type = null)
     {
         // Implement findIdentityByAccessToken() method.
     }
 
+    /**
+     * @return array|int|mixed|string|null
+     */
     public function getId()
     {
         return $this->getPrimaryKey();
     }
+
+    /**
+     * @return string
+     * @throws \Exception
+     */
+    public function getAfterTime(): string
+    {
+        return Declination::getTimeAfter($this->date_login);
+    }
+
+    /**
+     * @return int
+     * @throws \Exception
+     */
+    public function getCountReplies(): int
+    {
+        return Opinion::findCountOpinionsByUserId($this->id);
+    }
+
+    /**
+     * @return int
+     * @throws \Exception
+     */
+    public function getCountTasks(): int
+    {
+        return Task::findCountByUserId($this->id);
+    }
+
 
     /**
      * {@inheritdoc}
@@ -122,6 +161,10 @@ class User extends ActiveRecord implements IdentityInterface
         $this->auth_key = Yii::$app->security->generateRandomString();
     }
 
+    /**
+     * @param $password
+     * @return bool
+     */
     public function validatePassword($password)
     {
         return Yii::$app->security->validatePassword($password, $this->password);
@@ -188,12 +231,9 @@ class User extends ActiveRecord implements IdentityInterface
 
     /**
      * Add data
-     * @param array $request request
-     * @param string $sortType sorting type
-     * @return array|null
+     * @return Query|null
      */
-    public static function findNewExecutors(array $request, string $sortType): ?Query
-    {
+    public static function findNewExecutors(): ?Query {
         $countTasks = Task::find()
             ->select('executor_id, count(*) AS task_count')
             ->from('task t')
@@ -208,113 +248,23 @@ class User extends ActiveRecord implements IdentityInterface
             ->join('LEFT JOIN', ['t' => $countTasks], 'p.user_id = t.executor_id')
             ->where(['u.role' => UserRole::EXECUTOR])->andWhere(['not', ['p.id' => null]]);
 
-        $query = self::applyFilters($request, $query);
-
-        return self::applySort($sortType, $query);
-    }
-
-    /**
-     * Apply form filters
-     * @param array $request
-     * @param Query $query
-     * @return Query|null
-     */
-    public static function applyFilters(array $request, Query $query): ?Query
-    {
-        if (!isset($request['UsersFilterForm'])) {
-            return $query;
-        }
-
-        $usersFilters = $request['UsersFilterForm'];
-        if (strlen($usersFilters['searchName']) > 0) {
-            $query->andWhere(['LIKE', 'u.name', $usersFilters['searchName']]);
-
-            return $query;
-        }
-
-        // filter by category
-        $categoriesFilterForm = $request['CategoriesFilterForm'];
-        if (isset($categoriesFilterForm['categories'])) {
-            $list = [];
-            foreach ($categoriesFilterForm['categories'] as $key => $item) {
-                if ($item) {
-                    $list[] = sprintf("'%s'", $key);
-                }
-            }
-
-            $subQuery = (new Query())
-                ->select('category_id')->from('specialization s')
-                ->where('s.profile_id = p.id');
-
-            if (!empty($list)) {
-                $categoryList = sprintf('s.category_id in (%s)', implode(",", $list));
-                $subQuery->andWhere($categoryList);
-                $query->andFilterWhere(['exists', $subQuery]);
-            }
-        }
-
-        // filtering by 'Free Now'
-        if ((bool)$usersFilters['freeNow']) {
-            $subQuery1 = (new Query())
-                ->select('id')->from('task t')
-                ->where('t.executor_id = p.user_id');
-            $query->andWhere(['not exists', $subQuery1]);
-        }
-
-        // filter by 'Online Now'
-        if ((bool)$usersFilters['onlineNow']) {
-            $query->andWhere('u.date_login > DATE_SUB(NOW(), INTERVAL 30 MINUTE)');
-        }
-
-        // filter by 'Reviews'
-        if ((bool)$usersFilters['feedbackExists']) {
-            $subQuery2 = (new Query())
-                ->select('id')->from('opinion o')
-                ->where('o.executor_id = p.user_id');
-            $query->andWhere(['exists', $subQuery2]);
-        }
-
-        // filter by 'Favorite'
-        if ((bool)$usersFilters['isFavorite']) {
-            $subQuery3 = (new Query())
-                ->select('favorite_id')->from('favorite f')
-                ->where('f.favorite_id = p.user_id');
-            $query->andWhere(['exists', $subQuery3]);
-        }
-
         return $query;
     }
 
+
+
     /**
-     * sorting
-     * @param string $sortType
-     * @param Query $query
-     * @return Query
+     * @return mixed
+     * @throws \yii\web\NotFoundHttpException
      */
-    public static function applySort(string $sortType, Query $query): Query
-    {
-        switch ($sortType) {
-            case SortingUsers::SORT_BY_RATING:
-                $query->orderBy(['rate' => SORT_DESC]);
-                break;
-            case SortingUsers::SORT_BY_COUNT_TASK:
-                $query->orderBy(['task_count' => SORT_DESC]);
-                break;
-            case SortingUsers::SORT_BY_POPULARITY:
-                $query->orderBy(['show' => SORT_DESC]);
-                break;
-            default:
-                $query->orderBy(['date_add' => SORT_DESC]);
-        }
-
-        return $query;
-    }
-
     public static function currentUser()
     {
-        return  User::findOrFail(Yii::$app->user->identity->getId(), 'Пользователь не найден');
+        return User::findOrFail(Yii::$app->user->identity->getId(), 'Пользователь не найден');
     }
 
+    /**
+     * @throws \yii\web\NotFoundHttpException
+     */
     public static function updateUserRoleBySpecialisations()
     {
         $profileId = Profile::currentProfile();
@@ -336,17 +286,26 @@ class User extends ActiveRecord implements IdentityInterface
         $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
     }
 
+    /**
+     * @param $token
+     * @return bool
+     */
     public static function isPasswordResetTokenValid($token)
     {
         if (empty($token)) {
             return false;
         }
 
-        $timestamp = (int) substr($token, strrpos($token, '_') + 1);
+        $timestamp = (int)substr($token, strrpos($token, '_') + 1);
         $expire = Yii::$app->params['user.passwordResetTokenExpire'];
+
         return $timestamp + $expire >= time();
     }
 
+    /**
+     * @param $token
+     * @return User|null
+     */
     public static function findByPasswordResetToken($token): ?User
     {
         if (!static::isPasswordResetTokenValid($token)) {

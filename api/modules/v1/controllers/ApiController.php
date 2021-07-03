@@ -9,6 +9,9 @@ use yii\rest\ActiveController;
 class ApiController extends ActiveController
 {
 
+    /**
+     * @inheritdoc
+     */
     function behaviors()
     {
         $behaviors = parent::behaviors();

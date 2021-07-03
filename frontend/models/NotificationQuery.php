@@ -22,7 +22,7 @@ class NotificationQuery extends ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return Notification|array|null
+     * @return array|\yii\db\ActiveRecord|null
      */
     public function one($db = null)
     {

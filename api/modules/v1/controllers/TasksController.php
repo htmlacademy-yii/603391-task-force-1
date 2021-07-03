@@ -8,7 +8,10 @@ class TasksController extends ApiController
 {
     public $modelClass = TaskList::class;
 
-    public function actions(): array
+    /**
+     * @inheritdoc
+     */
+    public function actions()
     {
         $actions = parent::actions();
         unset(

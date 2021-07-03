@@ -34,6 +34,12 @@ class Work extends ActiveRecord
         return 'work';
     }
 
+    /**
+     * @param UploadedFile|null $file
+     * @return string
+     * @throws Exception
+     * @throws FileException
+     */
     public static function saveFile(?UploadedFile $file): string
     {
         $userId = Yii::$app->user->getId();
@@ -110,7 +116,6 @@ class Work extends ActiveRecord
     }
 
     /**
-     *
      * @param int $id
      * @return  array
      */

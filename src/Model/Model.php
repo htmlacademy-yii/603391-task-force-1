@@ -5,6 +5,13 @@ namespace TaskForce\Model;
 
 class Model
 {
+    /**
+     * Model constructor.
+     * @param string $tableName
+     * @param array $fields
+     * @param array|null $dataObjects
+     * @param int|null $count
+     */
     public function __construct(
         public string $tableName,
         public array $fields,

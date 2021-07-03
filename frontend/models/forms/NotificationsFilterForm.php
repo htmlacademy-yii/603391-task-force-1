@@ -18,7 +18,10 @@ class NotificationsFilterForm extends Model
     private ?array $notifications = [];
     private ?array $notificationsId = null;
 
-    public function init(bool $defaultValue = false): void
+    /**
+     * @param bool $defaultValue
+     */
+    public function init(bool $defaultValue = false)
     {
         $this->notificationsId = ArrayHelper::map(Notification::find()->select(['id', 'name_rus'])->all(), 'id', 'name_rus');
 
@@ -27,7 +30,11 @@ class NotificationsFilterForm extends Model
         }
     }
 
-    public function __get($name): ?bool
+    /**
+     * @param string $name
+     * @return bool|null
+     */
+    public function __get($name)
     {
         if (array_key_exists($name, $this->notifications)) {
             return $this->notifications [$name];
@@ -36,23 +43,36 @@ class NotificationsFilterForm extends Model
         return null;
     }
 
+    /**
+     * @return array
+     */
     public function getNotificationsState(): array
     {
         return $this->notifications;
     }
 
-    public function __set($name, $value): void
+    /**
+     * @param string $name
+     * @param mixed $value
+     */
+    public function __set($name, $value)
     {
         if (array_key_exists($name, $this->notifications )) {
             $this->notifications [$name] = $value;
         }
     }
 
-    public function attributeLabels(): ?array
+    /**
+     * @return array|null
+     */
+    public function attributeLabels()
     {
         return $this->notificationsId;
     }
 
+    /**
+     * @param array $values
+     */
     public function updateProperties(array $values): void
     {
         foreach ($values as $name => $value) {
@@ -62,6 +82,9 @@ class NotificationsFilterForm extends Model
         }
     }
 
+    /**
+     * @param int $id
+     */
     public function setOneNotification(int $id): void
     {
         foreach ($this->notificationsId as $key => $element) {
@@ -70,6 +93,9 @@ class NotificationsFilterForm extends Model
         $this->notifications [$id] = true;
     }
 
+    /**
+     *
+     */
     public function saveData()
     {
         $userId = (int)yii::$app->user->id;
@@ -84,6 +110,9 @@ class NotificationsFilterForm extends Model
         }
     }
 
+    /**
+     *
+     */
     public function loadNotify(): void
     {
         $userId = (int)Yii::$app->user->identity->id;
@@ -97,6 +126,11 @@ class NotificationsFilterForm extends Model
         }
     }
 
+    /**
+     * @param array $data
+     * @param null $formName
+     * @return bool
+     */
     public function load($data, $formName = null)
     {
         if ($formName) {

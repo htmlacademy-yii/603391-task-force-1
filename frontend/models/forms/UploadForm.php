@@ -9,6 +9,9 @@ class UploadForm extends Model
 {
     public ?UploadedFile $file;
 
+    /**
+     * @inheritdoc
+     */
     public function rules()
     {
         return [

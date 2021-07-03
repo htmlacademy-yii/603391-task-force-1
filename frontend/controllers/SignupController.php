@@ -18,9 +18,9 @@ class SignupController extends Controller
     public $layout = 'mini';
 
     /**
-     * @return array|array[]
+     * @return array
      */
-    public function behaviors(): array
+    public function behaviors()
     {
         return [
             'access' => [

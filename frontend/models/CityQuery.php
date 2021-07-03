@@ -13,7 +13,6 @@ class CityQuery extends ActiveQuery
 {
     /**
      * {@inheritdoc}
-     * @return City[]|array
      */
     public function all($db = null)
     {
@@ -22,7 +21,6 @@ class CityQuery extends ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return City|array|null
      */
     public function one($db = null)
     {

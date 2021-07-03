@@ -6,6 +6,12 @@ use yii\web\NotFoundHttpException;
 
 trait ExceptionOnFindFail
 {
+    /**
+     * @param $param
+     * @param null $exceptionMessage
+     * @return mixed
+     * @throws NotFoundHttpException
+     */
     public static function findOrFail($param, $exceptionMessage = null)
     {
         if (($res = static::findOne($param)) === null) {

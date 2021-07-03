@@ -18,10 +18,10 @@ class TaskRefuseAction extends Action
     /**
      * Refuse Action
      * @param int $id
-     * @return string
+     * @return \yii\web\Response
      * @throws TaskForceException|NotFoundHttpException
      */
-    public function run(int $id): string
+    public function run(int $id)
     {
         $task = new TaskEntity($id);
         if (Yii::$app->request->getIsPost()

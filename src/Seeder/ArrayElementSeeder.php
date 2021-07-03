@@ -6,6 +6,10 @@ use Exception;
 
 class ArrayElementSeeder
 {
+    /**
+     * ArrayElementSeeder constructor.
+     * @param array $data
+     */
     public function __construct(private array $data)
     {
     }

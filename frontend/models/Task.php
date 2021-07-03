@@ -2,7 +2,6 @@
 
 namespace frontend\models;
 
-use frontend\models\forms\TasksFilterForm;
 use TaskForce\Constant\MyTask;
 use TaskForce\Constant\NotificationType;
 use TaskForce\Exception\TaskForceException;
@@ -41,6 +40,8 @@ use yii\web\NotFoundHttpException;
  */
 class Task extends ActiveRecord
 {
+    const DEFAULT_MAX_ELEMENTS = 5;
+
     use ExceptionOnFindFail;
 
     /**
@@ -120,7 +121,7 @@ class Task extends ActiveRecord
     /**
      * Gets query for [[Chats]].
      *
-     * @return ActiveQuery|ChatQuery
+     * @return ActiveQuery
      */
     public function getChats()
     {
@@ -130,7 +131,7 @@ class Task extends ActiveRecord
     /**
      * Gets query for [[Files]].
      *
-     * @return ActiveQuery|FileQuery
+     * @return ActiveQuery
      */
     public function getFiles()
     {
@@ -140,7 +141,7 @@ class Task extends ActiveRecord
     /**
      * Gets query for [[Responses]].
      *
-     * @return ActiveQuery|ResponseQuery
+     * @return ActiveQuery
      */
     public function getResponses()
     {
@@ -150,7 +151,7 @@ class Task extends ActiveRecord
     /**
      * Gets query for [[Category]].
      *
-     * @return ActiveQuery|CategoryQuery
+     * @return ActiveQuery
      */
     public function getCategory()
     {
@@ -160,7 +161,7 @@ class Task extends ActiveRecord
     /**
      * Gets query for [[City]].
      *
-     * @return ActiveQuery|CategoryQuery
+     * @return ActiveQuery
      */
     public function getCity()
     {
@@ -170,7 +171,7 @@ class Task extends ActiveRecord
     /**
      * Gets query for [[Customer]].
      *
-     * @return ActiveQuery|UserQuery
+     * @return ActiveQuery
      */
     public function getCustomer()
     {
@@ -180,7 +181,7 @@ class Task extends ActiveRecord
     /**
      * Gets query for [[Executor]].
      *
-     * @return ActiveQuery|UserQuery
+     * @return ActiveQuery
      */
     public function getExecutor()
     {
@@ -202,19 +203,11 @@ class Task extends ActiveRecord
      * @return Query
      * @throws TaskForceException
      */
-    public static function findNewTask(array $request = []): Query
+    public static function findNewTask(): Query
     {
         $isLoggedUser = Yii::$app->user->identity;
 
         $query = new Query();
-        $list = [];
-        if (isset($request['CategoriesFilterForm']['categories'])) {
-            foreach ($request['CategoriesFilterForm']['categories'] as $key => $item) {
-                if ($item) {
-                    $list[] = sprintf("'%s'", $key);
-                }
-            }
-        }
 
         $query->select(['t.*', 'c.name as cat_name', 'c.icon as icon'])->from('task t')
             ->join('LEFT JOIN', 'category as c', 't.category_id = c.id')
@@ -233,41 +226,14 @@ class Task extends ActiveRecord
             );
         }
 
-        if (!empty($list)) {
-            $categoryList = sprintf('c.id in (%s)', implode(",", $list));
-            $query->andWhere($categoryList);
-        }
-
-        $requestFilterForm = $request['TasksFilterForm'] ?? '';
-        $searchName = $requestFilterForm['searchName'] ?? '';
-        if (strlen($searchName) > 0) {
-            $query->andWhere(['LIKE', 't.name', $searchName, false]);
-        }
-
-        if (isset($requestFilterForm['withoutExecutor'])
-            && $requestFilterForm['withoutExecutor'] === '1') {
-            $query->andWhere('t.executor_id IS NULL');
-        }
-
-        if (isset($requestFilterForm['remoteWork'])
-            && $requestFilterForm['remoteWork'] === '1') {
-            $query->andWhere('t.lat IS NULL AND t.lng IS NULL');
-        }
-
-        if (isset($requestFilterForm['timeInterval'])
-            && $requestFilterForm['timeInterval'] !== TasksFilterForm::FILTER_ALL_TIME) {
-            $datetime = TasksFilterForm::timeBeforeInterval($requestFilterForm['timeInterval']);
-            $query->andWhere("t.date_add > STR_TO_DATE('$datetime','%Y-%m-%d %H:%i:%s')");
-        }
-
         return $query->orderBy(['date_add' => SORT_DESC]);
     }
 
     /**
      * Find Task By ID
      * @param int|null $id
-     * @return array
-     * @throws NotFoundHttpException
+     * @return array|null
+     * @throws \yii\web\NotFoundHttpException
      */
     public static function findTaskTitleInfoByID(int $id = null): ?array
     {
@@ -304,6 +270,10 @@ class Task extends ActiveRecord
         return self::find()->where(['id' => $id])->andWhere(['status' => TaskEntity::STATUS_COMPLETE])->count();
     }
 
+    /**
+     * @param string $filterRequest
+     * @return array
+     */
     public static function getTaskByStatus(string $filterRequest): array
     {
         $userId = Yii::$app->user->identity->id;
@@ -323,15 +293,15 @@ class Task extends ActiveRecord
             ->join('LEFT JOIN', 'profile as p', 't.executor_id = p.user_id')
             ->join('LEFT JOIN', ['cr' => $countReviews], 't.id = cr.task_id')
             ->where(['or', ['t.customer_id' => $userId], ['t.executor_id' => $userId]])
-            ->andWhere(['u.status' => MyTask::STATUS_BY_FILTER[$filterRequest]])
+            ->andWhere(['t.status' => MyTask::STATUS_BY_FILTER[$filterRequest]])
             ->asArray()
             ->all();
     }
 
     /**
      * @param int $taskId
-     * @return array|null
-     * @throws NotFoundHttpException
+     * @return array
+     * @throws \yii\web\NotFoundHttpException
      */
     public static function getBothUsers(int $taskId): array
     {
